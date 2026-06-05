@@ -21,7 +21,14 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-primary mb-1">Our Location</h4>
-                  <p className="text-sm text-gray-500">123 Resort Valley Road, Scenic District, Nature State, 560001</p>
+                  <a
+                    href="https://maps.app.goo.gl/Lu84a8a5iCgT2rEd9?g_st=ac"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-gray-500 hover:text-secondary transition-colors"
+                  >
+                    No 202/2, PONNIYAMMAN, Kovil Street, KOLLAIMEDU VP MAHAL Backside, Vanjur, Vellore - 632006
+                  </a>
                 </div>
               </div>
               <div className="flex items-start gap-6">
@@ -30,7 +37,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-primary mb-1">Phone Number</h4>
-                  <p className="text-sm text-gray-500">+91 98765 43210</p>
+                  <a href="tel:+919489455977" className="text-sm text-gray-500 hover:text-secondary transition-colors">+91 9489455977</a>
                 </div>
               </div>
               <div className="flex items-start gap-6">
@@ -39,7 +46,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-primary mb-1">Email Address</h4>
-                  <p className="text-sm text-gray-500">contact@dkstarresorts.com</p>
+                  <a href="mailto:dkresorts01@gmail.com" className="text-sm text-gray-500 hover:text-secondary transition-colors">dkresorts01@gmail.com</a>
                 </div>
               </div>
               <div className="flex items-start gap-6">

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { ResortProvider } from './context/ResortContext';
 
 // Pages
 import Home from './pages/Home';
@@ -13,26 +14,31 @@ import Pool from './pages/Pool';
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
+import Reception from './pages/Reception';
+import MyBookings from './pages/MyBookings';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
-        <AppContent />
-      </Router>
+      <ResortProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ResortProvider>
     </QueryClientProvider>
   );
 }
 
 function AppContent() {
   const location = useLocation();
-  const isAdmin = location.pathname === '/admin';
+  // Hide Navbar/Footer for staff dashboards
+  const isStaffPortal = location.pathname.startsWith('/admin') || location.pathname.startsWith('/reception');
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {!isAdmin && <Navbar />}
+    <div className="flex flex-col min-h-screen bg-cream">
+      {!isStaffPortal && <Navbar />}
       <main className="grow">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -42,10 +48,12 @@ function AppContent() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/reception" element={<Reception />} />
         </Routes>
       </main>
-      {!isAdmin && <Footer />}
+      {!isStaffPortal && <Footer />}
     </div>
   );
 }

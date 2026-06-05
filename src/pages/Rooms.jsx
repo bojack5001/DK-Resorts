@@ -2,34 +2,39 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, Wifi, Wind, Coffee, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useResort } from '../context/ResortContext';
 
 const RoomCard = ({ room }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    className="group bg-white overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100"
+    className="group bg-white overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 flex flex-col justify-between"
   >
-    <div className="relative h-72 overflow-hidden">
-      <img 
-        src={room.image} 
-        alt={room.name} 
-        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-      />
-      <div className="absolute top-4 right-4 bg-primary text-white px-4 py-2 text-sm font-bold">
-        ₹{room.price}/Night
-      </div>
-    </div>
-    <div className="p-8">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-2xl font-heading font-bold text-primary mb-1">{room.name}</h3>
-          <p className="text-secondary text-xs uppercase tracking-widest font-bold">{room.type}</p>
+    <div>
+      <div className="relative h-72 overflow-hidden">
+        <img 
+          src={room.image} 
+          alt={room.name} 
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+        <div className="absolute top-4 right-4 bg-primary text-white px-4 py-2 text-sm font-bold">
+          ₹{room.price.toLocaleString('en-IN')}/Night
         </div>
       </div>
-      <p className="text-gray-600 text-sm mb-6 leading-relaxed">
-        {room.description}
-      </p>
+      <div className="p-8">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="text-2xl font-heading font-bold text-primary mb-1">{room.name}</h3>
+            <p className="text-secondary text-xs uppercase tracking-widest font-bold">{room.type}</p>
+          </div>
+        </div>
+        <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+          {room.description}
+        </p>
+      </div>
+    </div>
+    <div className="px-8 pb-8 pt-0">
       <div className="flex items-center gap-6 mb-8 text-gray-500">
         <div className="flex items-center gap-2">
           <Users size={16} />
@@ -44,7 +49,10 @@ const RoomCard = ({ room }) => (
           <span className="text-xs">AC</span>
         </div>
       </div>
-      <Link to="/booking" className="w-full btn-outline flex justify-center items-center gap-2 group-hover:bg-primary group-hover:text-white">
+      <Link 
+        to={`/booking?type=room&id=${room.id}`} 
+        className="w-full btn-outline flex justify-center items-center gap-2 group-hover:bg-primary group-hover:text-white"
+      >
         Book Room <ArrowRight size={18} />
       </Link>
     </div>
@@ -52,35 +60,7 @@ const RoomCard = ({ room }) => (
 );
 
 const Rooms = () => {
-  const rooms = [
-    {
-      id: 1,
-      name: "Luxury Stag Suite",
-      type: "Premium Suite",
-      price: "12,000",
-      capacity: 2,
-      description: "Our flagship suite offering panoramic views of the forest, featuring a private balcony and a mahogany soaking tub.",
-      image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      id: 2,
-      name: "Forest View Deluxe",
-      type: "Deluxe Room",
-      price: "8,500",
-      capacity: 2,
-      description: "Experience the tranquility of nature in our forest view rooms, designed with earthy tones and premium amenities.",
-      image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-      id: 3,
-      name: "Family Heritage Villa",
-      type: "Family Villa",
-      price: "18,000",
-      capacity: 4,
-      description: "Perfect for families, this spacious villa includes two bedrooms, a private living area, and direct garden access.",
-      image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    }
-  ];
+  const { rooms } = useResort();
 
   return (
     <div className="pt-20">
@@ -101,7 +81,7 @@ const Rooms = () => {
             Luxury Rooms & Suites
           </motion.h1>
           <p className="text-gray-300 text-lg">
-            Choose from our curated selection of luxury stays, each designed to provide an unforgettable experience of comfort and style.
+            Choose from our curated selection of 10 luxury stays, each designed to provide an unforgettable experience of comfort and style.
           </p>
         </div>
       </section>

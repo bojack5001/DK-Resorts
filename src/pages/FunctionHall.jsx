@@ -1,12 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Music, Utensils, Camera, ArrowRight } from 'lucide-react';
+import { Users, Music, Utensils, Calendar, ArrowRight, Sparkles, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useResort } from '../context/ResortContext';
 
 const FunctionHall = () => {
+  const { halls } = useResort();
+
   return (
     <div className="pt-20">
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+      {/* Hero Header */}
+      <section className="relative h-[65vh] flex items-center justify-center overflow-hidden">
         <img 
           src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
           alt="Function Hall" 
@@ -19,7 +23,7 @@ const FunctionHall = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="text-5xl md:text-7xl font-heading font-bold mb-6"
           >
-            Grand Celebrations
+            Exquisite Venues
           </motion.h1>
           <p className="text-secondary font-bold uppercase tracking-[0.4em] text-sm">
             Elegant Venues for Timeless Memories
@@ -27,71 +31,103 @@ const FunctionHall = () => {
         </div>
       </section>
 
-      <section className="section-container">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-          <div className="space-y-8">
-            <h2 className="text-4xl font-heading font-bold text-primary">The Imperial Ballroom</h2>
-            <p className="text-gray-600 leading-relaxed">
-              Our grand function hall is designed to host the most prestigious events. From fairytale weddings to high-profile corporate galas, we provide a sophisticated backdrop with state-of-the-art facilities.
-            </p>
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="bg-secondary/10 p-3 text-secondary"><Users size={24} /></div>
-                <div>
-                  <h4 className="font-bold text-primary">Large Capacity</h4>
-                  <p className="text-sm text-gray-500">Host up to 1,000 guests comfortably.</p>
+      {/* Halls Listing */}
+      <section className="section-container space-y-24">
+        {halls.map((hall, idx) => (
+          <div 
+            key={hall.id}
+            className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${idx % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}
+          >
+            {/* Left/Right Text Column */}
+            <div className={`space-y-8 ${idx % 2 === 1 ? 'lg:order-2' : ''}`}>
+              <span className="text-secondary font-semibold uppercase tracking-widest text-xs flex items-center gap-2">
+                <Sparkles size={14} /> {hall.type}
+              </span>
+              <h2 className="text-4xl font-heading font-bold text-primary">{hall.name}</h2>
+              <p className="text-gray-600 leading-relaxed">
+                {hall.description}
+              </p>
+              
+              <div className="bg-cream p-6 border-l-4 border-secondary space-y-4">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-500 font-bold uppercase tracking-widest">Base Rate:</span>
+                  <span className="text-xl font-bold text-primary">₹{hall.price.toLocaleString('en-IN')}/Day</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-500 font-bold uppercase tracking-widest">Capacity:</span>
+                  <span className="text-base font-bold text-primary">Up to {hall.capacity} Guests</span>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="bg-secondary/10 p-3 text-secondary"><Utensils size={24} /></div>
-                <div>
-                  <h4 className="font-bold text-primary">Premium Catering</h4>
-                  <p className="text-sm text-gray-500">Customizable multi-cuisine menus.</p>
-                </div>
+
+              {/* Amenities tags */}
+              <div className="flex flex-wrap gap-2 pt-2">
+                {hall.amenities.map(amenity => (
+                  <span 
+                    key={amenity}
+                    className="bg-primary/5 text-primary text-xs font-semibold px-3 py-1.5 rounded-full"
+                  >
+                    {amenity}
+                  </span>
+                ))}
               </div>
-              <div className="flex items-center gap-4">
-                <div className="bg-secondary/10 p-3 text-secondary"><Music size={24} /></div>
-                <div>
-                  <h4 className="font-bold text-primary">AV & Lighting</h4>
-                  <p className="text-sm text-gray-500">Integrated professional sound and light systems.</p>
-                </div>
+
+              <div className="pt-4 flex gap-4">
+                <Link 
+                  to={`/booking?type=hall&id=${hall.id}`} 
+                  className="btn-primary flex items-center gap-2 group"
+                >
+                  Book Venue <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <a href="#enquiry-form" className="btn-outline">Download Details</a>
               </div>
             </div>
-            <button className="btn-primary mt-4">Download Brochure</button>
+
+            {/* Image Column */}
+            <div className={`relative ${idx % 2 === 1 ? 'lg:order-1' : ''}`}>
+              <div className="overflow-hidden shadow-2xl relative h-[450px]">
+                <img 
+                  src={hall.image} 
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
+                  alt={hall.name} 
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-6 md:-bottom-8 md:-right-8 bg-secondary text-primary font-bold p-6 shadow-lg flex flex-col justify-center items-center">
+                <Users size={24} className="mb-2 text-primary" />
+                <span className="text-xs uppercase tracking-widest font-bold">Capacity</span>
+                <span className="text-lg">{hall.capacity} max</span>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" className="w-full h-80 object-cover" alt="Event" />
-            <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" className="w-full h-80 object-cover mt-12" alt="Event" />
-          </div>
-        </div>
+        ))}
       </section>
 
       {/* Enquiry Form */}
-      <section className="bg-cream py-20">
+      <section id="enquiry-form" className="bg-cream py-20">
         <div className="max-w-4xl mx-auto px-4">
           <div className="bg-white p-12 shadow-xl border-t-4 border-secondary">
             <h2 className="text-3xl font-heading font-bold text-center mb-10 text-primary">Plan Your Event</h2>
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => {
+              e.preventDefault();
+              alert("Thank you for your interest! Our event coordinator will call you back within 2 hours.");
+            }}>
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Full Name</label>
-                <input type="text" className="w-full border-b border-gray-300 focus:border-secondary outline-none py-2 transition-colors" placeholder="John Doe" />
+                <input required type="text" className="w-full border-b border-gray-300 focus:border-secondary outline-none py-2 transition-colors" placeholder="John Doe" />
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Email Address</label>
-                <input type="email" className="w-full border-b border-gray-300 focus:border-secondary outline-none py-2 transition-colors" placeholder="john@example.com" />
+                <input required type="email" className="w-full border-b border-gray-300 focus:border-secondary outline-none py-2 transition-colors" placeholder="john@example.com" />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Event Type</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Event Venue</label>
                 <select className="w-full border-b border-gray-300 focus:border-secondary outline-none py-2 bg-transparent transition-colors">
-                  <option>Wedding</option>
-                  <option>Corporate</option>
-                  <option>Birthday</option>
-                  <option>Other</option>
+                  <option value="open-hall">Grand Lawn & Pavilion (Open Hall)</option>
+                  <option value="mini-hall">The Oak Room (Mini Hall)</option>
                 </select>
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Estimated Guests</label>
-                <input type="number" className="w-full border-b border-gray-300 focus:border-secondary outline-none py-2 transition-colors" placeholder="e.g. 200" />
+                <input required type="number" className="w-full border-b border-gray-300 focus:border-secondary outline-none py-2 transition-colors" placeholder="e.g. 200" />
               </div>
               <div className="md:col-span-2 space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Message</label>

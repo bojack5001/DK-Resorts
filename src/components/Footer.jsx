@@ -56,15 +56,22 @@ const Footer = () => {
             <ul className="space-y-4 text-sm text-gray-300">
               <li className="flex items-start space-x-3">
                 <MapPin className="text-secondary shrink-0" size={18} />
-                <span>123 Resort Valley Road, Scenic District, Nature State, 560001</span>
+                <a
+                  href="https://maps.app.goo.gl/Lu84a8a5iCgT2rEd9?g_st=ac"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  No 202/2, PONNIYAMMAN, Kovil Street, KOLLAIMEDU VP MAHAL Backside, Vanjur, Vellore - 632006
+                </a>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="text-secondary shrink-0" size={18} />
-                <span>+91 98765 43210</span>
+                <a href="tel:+919489455977" className="hover:text-white transition-colors">+91 9489455977</a>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="text-secondary shrink-0" size={18} />
-                <span>contact@dkstarresorts.com</span>
+                <a href="mailto:dkresorts01@gmail.com" className="hover:text-white transition-colors">dkresorts01@gmail.com</a>
               </li>
             </ul>
           </div>
