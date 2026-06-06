@@ -87,9 +87,18 @@ const Contact = () => {
           </div>
         </div>
         
-        {/* Map Placeholder */}
-        <div className="mt-20 h-96 bg-gray-100 border border-gray-200 flex items-center justify-center">
-          <p className="text-gray-400 font-bold uppercase tracking-widest">Google Maps Integration Placeholder</p>
+        {/* Map Section */}
+        <div className="mt-20 h-[450px] bg-gray-100 border border-secondary/15 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <iframe
+            src="https://maps.google.com/maps?q=Dk%20Star%20Resorts,%20No%20202/2,%20PONNIYAMMAN%20Kovil%20Street,%20VP%20MAHAL%20Backside,%20KOLLAIMEDU,%20Vanjur,%20Vellore,%20Tamil%20Nadu%20632006&z=16&ie=UTF8&iwloc=&output=embed"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="DK Star Resorts Location"
+          ></iframe>
         </div>
       </div>
     </div>

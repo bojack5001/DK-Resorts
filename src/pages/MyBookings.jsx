@@ -141,10 +141,9 @@ const MyBookings = () => {
                         <div className="flex gap-2 justify-stretch md:justify-end">
                           <button 
                             onClick={() => {
-                              // Print ticket simulation
-                              window.open(`/booking?type=${booking.itemType}&id=${booking.itemId}`, "_blank");
+                              window.open(`/booking?bookingId=${booking.id}`, "_blank");
                             }}
-                            className="btn-outline flex-1 md:flex-initial py-2 px-3 text-xs flex justify-center items-center gap-1.5 border-gray-300 text-gray-600 hover:bg-gray-50"
+                            className="btn-outline flex-1 md:flex-initial py-2 px-3 text-xs flex justify-center items-center gap-1.5 border-gray-300 text-gray-600 hover:bg-gray-50 cursor-pointer"
                           >
                             <Printer size={13} /> View Ticket
                           </button>

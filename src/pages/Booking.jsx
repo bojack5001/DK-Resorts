@@ -26,6 +26,59 @@ const Booking = () => {
   // Booking result screen
   const [confirmedBooking, setConfirmedBooking] = useState(null);
 
+  // Formatting Helpers for redesigned Receipt
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  };
+
+  const getRoomTypeOrName = (booking) => {
+    if (booking.itemType === 'room') {
+      const r = rooms.find(item => item.id === Number(booking.itemId));
+      return r ? r.name : 'Premium Room';
+    } else {
+      const h = halls.find(item => item.id === booking.itemId);
+      return h ? h.name : 'Function Hall';
+    }
+  };
+
+  const getNights = (checkInStr, checkOutStr) => {
+    const inDate = new Date(checkInStr);
+    const outDate = new Date(checkOutStr);
+    let diff = Math.ceil((outDate - inDate) / (1000 * 3600 * 24));
+    return diff <= 0 ? 1 : diff;
+  };
+
+  const formatCurrency = (val) => {
+    return Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const numberToWords = (num) => {
+    const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    
+    const convert = (n) => {
+      if (n < 20) return a[n];
+      const digit = n % 10;
+      if (n < 100) return b[Math.floor(n / 10)] + (digit ? ' ' + a[digit] : '');
+      if (n < 1000) return a[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' and ' + convert(n % 100) : '');
+      if (n < 100000) return convert(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 ? ' ' + convert(n % 1000) : '');
+      if (n < 10000000) return convert(Math.floor(n / 100000)) + ' Lakh' + (n % 100000 ? ' ' + convert(n % 100000) : '');
+      return convert(Math.floor(n / 10000000)) + ' Crore' + (n % 10000000 ? ' ' + convert(n % 10000000) : '');
+    };
+
+    const integerPart = Math.floor(num);
+    const decimalPart = Math.round((num - integerPart) * 100);
+    
+    let result = convert(integerPart) + ' Rupees';
+    if (decimalPart > 0) {
+      result += ' and ' + convert(decimalPart) + ' Paise';
+    }
+    return result + ' Only';
+  };
+
   // Synchronize initial selections from search parameters when rooms/halls are loaded
   useEffect(() => {
     if (prefillType) setItemType(prefillType);
@@ -37,6 +90,17 @@ const Booking = () => {
       setItemId(halls[0].id);
     }
   }, [prefillType, prefillId, rooms, halls]);
+
+  // Support direct booking lookup by URL parameters (for My Bookings page "View Ticket" option)
+  const bookingIdParam = searchParams.get('bookingId');
+  useEffect(() => {
+    if (bookingIdParam && bookings.length > 0) {
+      const found = bookings.find(b => b.id === bookingIdParam);
+      if (found) {
+        setConfirmedBooking(found);
+      }
+    }
+  }, [bookingIdParam, bookings]);
 
   // Adjust item selector when type changes
   const handleTypeChange = (type) => {
@@ -145,110 +209,396 @@ const Booking = () => {
   };
 
   if (confirmedBooking) {
+    const total = confirmedBooking.amount;
+    const subtotal = Math.round(total / 1.18 * 100) / 100;
+    const gstTotal = Math.round((total - subtotal) * 100) / 100;
+    const cgst = Math.round((gstTotal / 2) * 100) / 100;
+    const sgst = Math.round((gstTotal - cgst) * 100) / 100;
+    const nights = getNights(confirmedBooking.checkIn, confirmedBooking.checkOut);
+
     return (
       <div className="pt-32 pb-24 min-h-screen bg-gray-50 flex items-center justify-center px-4 print:p-0 print:bg-white">
+        {/* Inject print landscape styles */}
+        <style>{`
+          @media print {
+            body {
+              background: white !important;
+              color: black !important;
+            }
+            .print-hide {
+              display: none !important;
+            }
+            #receipt-print-container {
+              position: fixed;
+              left: 0;
+              top: 0;
+              width: 297mm;
+              height: 210mm;
+              padding: 10mm 15mm;
+              margin: 0;
+              border: none !important;
+              box-shadow: none !important;
+              background: white !important;
+              z-index: 9999999;
+              overflow: hidden;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+            }
+            @page {
+              size: A4 landscape;
+              margin: 0;
+            }
+          }
+        `}</style>
+        
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-2xl w-full bg-white shadow-2xl border border-gray-200 overflow-hidden print:shadow-none print:border-none"
+          id="receipt-print-container"
+          className="max-w-6xl w-[1000px] bg-white shadow-2xl p-8 rounded-xl border border-gray-150 relative font-body text-primary print:p-0 print:shadow-none print:border-none print:m-0 print:rounded-none"
         >
-          {/* Header */}
-          <div className="bg-primary text-white p-8 text-center relative print:bg-white print:text-primary print:border-b">
-            <CheckCircle className="mx-auto mb-4 text-secondary print:hidden" size={48} />
-            <h2 className="text-3xl font-heading font-bold mb-2">Booking Confirmed!</h2>
-            <p className="text-secondary uppercase tracking-widest text-xs font-semibold">Your stay has been reserved successfully</p>
+          {/* Hanging Vertical Ribbon Graphic - Top Right (as in reference image) */}
+          <div className="absolute top-0 right-10 w-8 h-12 bg-[#4A3728] flex items-center justify-center rounded-b-md shadow-md print:bg-[#4A3728]">
+            <span className="text-secondary font-bold text-lg">★</span>
           </div>
 
-          {/* Ticket Body */}
-          <div className="p-8 space-y-6">
-            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Booking ID</p>
-                <p className="text-xl font-bold text-primary">{confirmedBooking.id}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Status</p>
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider rounded-full">
-                  {confirmedBooking.status}
-                </span>
-              </div>
-            </div>
+          {/* Palm leaves decorations in corners */}
+          <div className="absolute bottom-0 left-0 w-36 h-36 pointer-events-none opacity-15 print:opacity-30">
+            <svg viewBox="0 0 120 120" className="w-full h-full fill-green-800">
+              <path d="M0,120 Q30,90 90,60 C70,75 50,85 0,120 Z" />
+              <path d="M0,120 Q40,70 110,40 C85,60 60,75 0,120 Z" />
+              <path d="M0,120 Q50,50 120,20 C95,45 70,65 0,120 Z" />
+              <path d="M0,120 Q60,35 110,0 C90,30 65,55 0,120 Z" />
+              <path d="M0,120 Q70,20 90,0 C75,20 55,45 0,120 Z" />
+            </svg>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Guest Details</p>
-                <p className="font-bold text-primary text-sm">{confirmedBooking.guestName}</p>
-                <p className="text-xs text-gray-500">{confirmedBooking.guestEmail}</p>
-                <p className="text-xs text-gray-500">{confirmedBooking.guestPhone}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Accommodation</p>
-                <p className="font-bold text-primary text-sm">{confirmedBooking.itemName}</p>
-                <p className="text-xs text-secondary font-bold uppercase tracking-widest">{confirmedBooking.itemType}</p>
-                <p className="text-xs text-gray-500">{confirmedBooking.guests} Guests</p>
-              </div>
-            </div>
+          <div className="absolute bottom-0 right-0 w-36 h-36 pointer-events-none opacity-15 print:opacity-35 transform scale-x-[-1]">
+            <svg viewBox="0 0 120 120" className="w-full h-full fill-green-800">
+              <path d="M0,120 Q30,90 90,60 C70,75 50,85 0,120 Z" />
+              <path d="M0,120 Q40,70 110,40 C85,60 60,75 0,120 Z" />
+              <path d="M0,120 Q50,50 120,20 C95,45 70,65 0,120 Z" />
+              <path d="M0,120 Q60,35 110,0 C90,30 65,55 0,120 Z" />
+              <path d="M0,120 Q70,20 90,0 C75,20 55,45 0,120 Z" />
+            </svg>
+          </div>
 
-            <div className="grid grid-cols-2 gap-4 border-t border-b border-gray-100 py-4 bg-gray-50 px-4">
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Check-In</p>
-                <p className="font-bold text-primary text-sm">{confirmedBooking.checkIn}</p>
-                <p className="text-xs text-gray-500">From 12:00 PM</p>
+          {/* TWO COLUMN CONTENT LAYOUT */}
+          <div className="grid grid-cols-[1.1fr_1.3fr] gap-8 pb-4">
+            
+            {/* LEFT COLUMN: GUEST & STAY INFORMATION */}
+            <div className="space-y-4 border-r border-gray-100 pr-8">
+              
+              {/* Logo block */}
+              <div className="flex flex-col items-start text-left">
+                <img src="/logo-v2.png" alt="DK Logo" className="h-16 w-auto object-contain brightness-95" />
+                <p className="text-[7px] uppercase tracking-[0.2em] font-extrabold text-secondary mt-1 whitespace-nowrap">LUXURY IN THE HEART OF NATURE</p>
               </div>
-              <div>
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Check-Out</p>
-                <p className="font-bold text-primary text-sm">{confirmedBooking.checkOut}</p>
-                <p className="text-xs text-gray-500">Before 11:00 AM</p>
-              </div>
-            </div>
 
-            {/* Price Detail */}
-            <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-2">Invoice Summary</p>
-              <div className="space-y-1.5 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">{confirmedBooking.itemName} x {Math.ceil((new Date(confirmedBooking.checkOut) - new Date(confirmedBooking.checkIn))/(1000*3600*24))} days</span>
-                  <span className="font-semibold text-primary">₹{(confirmedBooking.amount / 1.18).toFixed(0).toLocaleString('en-IN')}</span>
+              {/* Guest Info Section */}
+              <div className="space-y-2">
+                <div className="bg-[#4A3728] text-white text-[9px] font-bold py-1 px-2.5 uppercase tracking-widest rounded flex items-center gap-1.5">
+                  <User size={10} /> Guest Information
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">GST (18%)</span>
-                  <span className="font-semibold text-primary">₹{(confirmedBooking.amount - (confirmedBooking.amount / 1.18)).toFixed(0).toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between border-t border-gray-200 pt-3 text-base font-bold">
-                  <span className="text-primary font-heading">Total Amount Paid</span>
-                  <span className="text-secondary font-heading">₹{confirmedBooking.amount.toLocaleString('en-IN')}</span>
+                <div className="text-[10px] space-y-1 text-gray-700 leading-normal pl-1 text-left">
+                  <div className="grid grid-cols-[80px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">Guest Name</span>
+                    <span>:</span>
+                    <span className="font-bold text-primary">{confirmedBooking.guestName}</span>
+                  </div>
+                  <div className="grid grid-cols-[80px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">Phone</span>
+                    <span>:</span>
+                    <span className="text-primary font-mono">{confirmedBooking.guestPhone}</span>
+                  </div>
+                  <div className="grid grid-cols-[80px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">Email</span>
+                    <span>:</span>
+                    <span className="text-primary">{confirmedBooking.guestEmail}</span>
+                  </div>
+                  <div className="grid grid-cols-[80px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">Address</span>
+                    <span>:</span>
+                    <span className="text-primary leading-tight">
+                      45, Lake View Road, Saidapet, Chennai – 600015, Tamil Nadu, India.
+                    </span>
+                  </div>
                 </div>
               </div>
+
+              {/* Stay Info Section */}
+              <div className="space-y-2">
+                <div className="bg-[#4A3728] text-white text-[9px] font-bold py-1 px-2.5 uppercase tracking-widest rounded flex items-center gap-1.5">
+                  <Calendar size={10} /> Stay Information
+                </div>
+                <div className="text-[10px] space-y-1 text-gray-700 leading-normal pl-1 text-left">
+                  <div className="grid grid-cols-[90px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">Check-In Date</span>
+                    <span>:</span>
+                    <span className="text-primary font-bold">{formatDate(confirmedBooking.checkIn)}</span>
+                  </div>
+                  <div className="grid grid-cols-[90px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">Check-Out Date</span>
+                    <span>:</span>
+                    <span className="text-primary font-bold">{formatDate(confirmedBooking.checkOut)}</span>
+                  </div>
+                  <div className="grid grid-cols-[90px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">No. of Nights</span>
+                    <span>:</span>
+                    <span className="text-primary font-bold">{nights} {nights > 1 ? 'Nights' : 'Night'}</span>
+                  </div>
+                  <div className="grid grid-cols-[90px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">Room Type</span>
+                    <span>:</span>
+                    <span className="text-primary font-bold truncate" title={getRoomTypeOrName(confirmedBooking)}>
+                      {getRoomTypeOrName(confirmedBooking)}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-[90px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">Room No.</span>
+                    <span>:</span>
+                    <span className="text-primary font-bold">{confirmedBooking.itemId}</span>
+                  </div>
+                  <div className="grid grid-cols-[90px_10px_1fr]">
+                    <span className="font-bold text-gray-500 uppercase text-[8px]">No. of Guests</span>
+                    <span>:</span>
+                    <span className="text-primary">{confirmedBooking.guests} {confirmedBooking.guests > 1 ? 'Adults' : 'Adult'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Booking Message & Signature */}
+              <div className="pt-2 flex justify-between items-end gap-2 text-left">
+                <div className="border border-secondary/15 bg-cream/40 p-2.5 rounded text-[8px] text-gray-500 font-bold leading-normal max-w-[210px] relative">
+                  <span className="text-secondary text-lg absolute -top-1.5 -left-1 opacity-20">“</span>
+                  Thank you for booking with us. We look forward to welcoming you to a refreshing and memorable stay.
+                </div>
+                
+                <div className="text-right whitespace-nowrap">
+                  <svg className="w-24 h-8 text-primary opacity-90 mx-auto" viewBox="0 0 150 50">
+                    <path 
+                      d="M10,38 C25,28 35,8 45,28 C55,48 65,18 78,28 C90,38 105,18 120,28 C135,38 145,28 148,32" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                    />
+                    <path 
+                      d="M35,28 C55,18 85,14 110,24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="1.2" 
+                      strokeLinecap="round" 
+                    />
+                  </svg>
+                  <div className="h-px bg-secondary/35 w-28 mt-0.5 ml-auto"></div>
+                  <p className="text-[8px] font-bold text-primary mt-0.5">Authorized Signature</p>
+                  <p className="text-[7px] text-gray-400 font-bold uppercase tracking-wider">DK Star Resorts</p>
+                </div>
+              </div>
+
             </div>
 
-            {/* Print Note */}
-            <div className="text-[10px] text-center text-gray-400 border-t border-dashed border-gray-200 pt-4">
-              Please present this voucher or Booking ID at the reception during check-in.
+            {/* RIGHT COLUMN: BOOKING RECEIPT DETAILS */}
+            <div className="space-y-4 relative text-left">
+              
+              {/* Header Title */}
+              <div>
+                <h2 className="text-2xl font-heading font-bold text-primary tracking-widest uppercase">Booking Receipt</h2>
+                <div className="flex items-center gap-1 my-1 w-20">
+                  <div className="h-[1.5px] bg-secondary grow"></div>
+                  <div className="w-1 h-1 rotate-45 bg-secondary"></div>
+                  <div className="h-[1.5px] bg-secondary grow"></div>
+                </div>
+              </div>
+
+              {/* Receipt Metadata block */}
+              <div className="text-[9.5px] leading-relaxed space-y-1 bg-cream/70 border border-secondary/15 p-2.5 rounded-lg w-[260px]">
+                <div className="grid grid-cols-[110px_8px_1fr] font-bold">
+                  <span className="text-gray-500 font-semibold uppercase text-[8px]">Receipt No.</span>
+                  <span>:</span>
+                  <span className="text-primary font-mono">{`DKS/REC/2026/${confirmedBooking.id.replace('BK-', '')}`}</span>
+                </div>
+                <div className="grid grid-cols-[110px_8px_1fr] font-bold">
+                  <span className="text-gray-500 font-semibold uppercase text-[8px]">Booking ID</span>
+                  <span>:</span>
+                  <span className="text-primary font-mono">{`DKS/BOOK/2026/${confirmedBooking.id.replace('BK-', '')}`}</span>
+                </div>
+                <div className="grid grid-cols-[110px_8px_1fr] font-bold">
+                  <span className="text-gray-500 font-semibold uppercase text-[8px]">Date</span>
+                  <span>:</span>
+                  <span className="text-primary">{formatDate(new Date())}</span>
+                </div>
+                <div className="grid grid-cols-[110px_8px_1fr] font-bold">
+                  <span className="text-gray-500 font-semibold uppercase text-[8px]">Payment Mode</span>
+                  <span>:</span>
+                  <span className="text-primary">UPI</span>
+                </div>
+                <div className="grid grid-cols-[110px_8px_1fr] font-bold">
+                  <span className="text-gray-500 font-semibold uppercase text-[8px]">Payment Status</span>
+                  <span>:</span>
+                  <span className="text-green-700 uppercase font-extrabold text-[8px]">PAID</span>
+                </div>
+              </div>
+
+              {/* Booking Details Table */}
+              <div className="space-y-1.5">
+                <div className="bg-[#4A3728] text-white text-[9px] font-bold py-1 px-2.5 uppercase tracking-widest rounded flex items-center gap-1.5">
+                  <Home size={10} /> Booking Details
+                </div>
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <table className="w-full text-[10px]">
+                    <thead className="bg-[#4A3728] text-white text-[8px] uppercase tracking-wider font-bold">
+                      <tr>
+                        <th className="px-3 py-1.5 text-left">Description</th>
+                        <th className="px-3 py-1.5 text-center w-[60px]">Qty</th>
+                        <th className="px-3 py-1.5 text-right w-[90px]">Rate</th>
+                        <th className="px-3 py-1.5 text-right w-[95px]">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-150 font-medium text-gray-700 bg-white">
+                      {/* Room Charge */}
+                      <tr>
+                        <td className="px-3 py-2 text-left font-bold text-primary">
+                          Room Charge ({formatDate(confirmedBooking.checkIn)} – {formatDate(confirmedBooking.checkOut)})
+                        </td>
+                        <td className="px-3 py-2 text-center text-gray-500">{nights} {nights > 1 ? 'Nights' : 'Night'}</td>
+                        <td className="px-3 py-2 text-right text-gray-600">{formatCurrency(subtotal / nights)}</td>
+                        <td className="px-3 py-2 text-right font-bold text-primary">{formatCurrency(subtotal)}</td>
+                      </tr>
+                      {/* Breakfast */}
+                      <tr>
+                        <td className="px-3 py-2 text-left text-gray-600 italic">Complimentary Breakfast</td>
+                        <td className="px-3 py-2 text-center text-gray-500">{nights * confirmedBooking.guests}</td>
+                        <td className="px-3 py-2 text-right text-gray-600">0.00</td>
+                        <td className="px-3 py-2 text-right font-bold text-primary">0.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* CGST, SGST, Subtotal, Amount in Words */}
+              <div className="grid grid-cols-[1fr_180px] gap-4 items-start pt-1.5">
+                <div className="bg-cream/50 border border-secondary/10 p-2 rounded text-[8px] text-gray-500 font-bold leading-normal">
+                  <span className="text-primary font-extrabold uppercase tracking-wide block mb-0.5">Amount in Words:</span>
+                  {numberToWords(total)}
+                </div>
+
+                <div className="text-[9.5px] space-y-1.5 leading-tight">
+                  <div className="flex justify-between font-bold text-gray-500">
+                    <span>SUBTOTAL</span>
+                    <span className="text-primary">₹ {formatCurrency(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-gray-500">
+                    <span>CGST (9%)</span>
+                    <span className="text-primary">₹ {formatCurrency(cgst)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-gray-500">
+                    <span>SGST (9%)</span>
+                    <span className="text-primary">₹ {formatCurrency(sgst)}</span>
+                  </div>
+                  <div className="bg-[#4A3728] text-white p-2 rounded flex justify-between font-extrabold text-[10px] tracking-wider">
+                    <span>TOTAL</span>
+                    <span className="text-secondary">₹ {formatCurrency(total)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* UPI PAYMENTS QR & NOTES BOX */}
+              <div className="grid grid-cols-[1.1fr_1fr] gap-4 pt-1 items-stretch">
+                {/* UPI QR code box */}
+                <div className="border border-secondary/15 rounded-lg p-2 bg-cream/70 flex items-center gap-3">
+                  <svg className="w-10 h-10 text-primary shrink-0" viewBox="0 0 100 100">
+                    <rect x="0" y="0" width="30" height="30" fill="currentColor" />
+                    <rect x="4" y="4" width="22" height="22" fill="white" />
+                    <rect x="8" y="8" width="14" height="14" fill="currentColor" />
+
+                    <rect x="70" y="0" width="30" height="30" fill="currentColor" />
+                    <rect x="74" y="4" width="22" height="22" fill="white" />
+                    <rect x="78" y="8" width="14" height="14" fill="currentColor" />
+
+                    <rect x="0" y="70" width="30" height="30" fill="currentColor" />
+                    <rect x="4" y="74" width="22" height="22" fill="white" />
+                    <rect x="8" y="78" width="14" height="14" fill="currentColor" />
+
+                    <rect x="40" y="10" width="10" height="20" fill="currentColor" />
+                    <rect x="55" y="5" width="10" height="10" fill="currentColor" />
+                    <rect x="45" y="40" width="15" height="15" fill="currentColor" />
+                    <rect x="15" y="45" width="10" height="10" fill="currentColor" />
+                    <rect x="75" y="45" width="20" height="10" fill="currentColor" />
+                    <rect x="40" y="70" width="15" height="10" fill="currentColor" />
+                    <rect x="80" y="80" width="10" height="15" fill="currentColor" />
+                    <rect x="60" y="75" width="10" height="20" fill="currentColor" />
+                  </svg>
+                  <div className="text-[8px] space-y-0.5 font-bold text-gray-500">
+                    <p className="text-primary font-extrabold text-[9px] tracking-wider uppercase">Scan to Pay</p>
+                    <p><span className="text-secondary">UPI ID:</span> dkstarresorts@upi</p>
+                    <p><span className="text-secondary">GSTIN:</span> 33AAXFDK1234H1Z5</p>
+                  </div>
+                </div>
+
+                {/* Right note box */}
+                <div className="border border-secondary/15 rounded-lg p-2.5 bg-cream/70 text-[8px] leading-relaxed text-gray-500 font-bold flex flex-col justify-center">
+                  <p className="text-primary uppercase tracking-wider font-extrabold mb-1">Note:</p>
+                  <p>• Please keep this receipt for your records.</p>
+                  <p>• For any queries, please contact the front desk.</p>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="bg-gray-50 p-6 flex flex-col md:flex-row gap-4 justify-between border-t border-gray-100 print:hidden">
+          {/* CONTACT & ENQUIRIES FOOTER */}
+          <div className="border-t border-secondary/15 pt-3 mt-2">
+            <div className="grid grid-cols-3 gap-6 text-[8px] font-bold text-gray-500 text-left">
+              <div className="flex items-start gap-1.5">
+                <User size={12} className="text-secondary shrink-0" />
+                <div>
+                  <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">Guest Information</p>
+                  <p>{confirmedBooking.guestName}</p>
+                  <p className="font-mono text-gray-400">{confirmedBooking.guestPhone}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <Phone size={12} className="text-secondary shrink-0" />
+                <div>
+                  <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">Resort Contact</p>
+                  <p className="font-mono">+91 94894 55977</p>
+                  <p className="lowercase font-mono text-gray-400">dkresort01@gmail.com</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <Home size={12} className="text-secondary shrink-0" />
+                <div>
+                  <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">www.dkstarresorts.com</p>
+                  <p className="leading-relaxed text-gray-400">No 202/2, PONNIYAMMAN Kovil Street, KOLLAIMEDU VP MAHAL Backside, Vanjur, Vellore - 632006, Tamil Nadu, India.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* print-hide CTA buttons */}
+          <div className="mt-6 flex gap-4 print-hide">
             <button 
               onClick={() => setConfirmedBooking(null)}
-              className="btn-outline flex items-center justify-center gap-2 text-xs py-3 w-full md:w-auto"
+              className="w-1/3 btn-outline py-2 text-xs flex justify-center items-center gap-1.5 border-gray-300 text-gray-600 hover:bg-gray-50 font-bold uppercase tracking-wider cursor-pointer"
             >
-              <ArrowLeft size={16} /> New Booking
+              <ArrowLeft size={13} /> New Booking
             </button>
-            <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-              <button 
-                onClick={handlePrint}
-                className="btn-outline flex items-center justify-center gap-2 text-xs py-3 bg-secondary/15 border-secondary text-secondary hover:bg-secondary hover:text-white"
-              >
-                <Printer size={16} /> Print Ticket
-              </button>
-              <Link 
-                to="/my-bookings"
-                className="btn-primary flex items-center justify-center gap-2 text-xs py-3"
-              >
-                Go to My Bookings
-              </Link>
-            </div>
+            <button 
+              onClick={handlePrint}
+              className="w-1/3 btn-outline py-2 text-xs flex justify-center items-center gap-1.5 border-secondary text-secondary hover:bg-secondary/10 font-bold uppercase tracking-wider cursor-pointer"
+            >
+              <Printer size={13} /> Print Receipt
+            </button>
+            <Link 
+              to="/my-bookings"
+              className="w-1/3 btn-primary py-2 text-xs font-bold uppercase tracking-wider text-center flex justify-center items-center cursor-pointer"
+            >
+              Go to My Bookings
+            </Link>
           </div>
         </motion.div>
       </div>

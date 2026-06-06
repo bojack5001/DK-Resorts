@@ -21,7 +21,7 @@ import {
   ShieldCheck,
   Clock,
   Sparkles,
-  Image
+  Image as ImageIcon
 } from 'lucide-react';
 import { useResort } from '../context/ResortContext';
 
@@ -78,6 +78,57 @@ const Admin = () => {
 
   // Form states for gallery photo
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
+  const [uploadMode, setUploadMode] = useState('file'); // 'file' or 'url'
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  const processAndAddFile = (file) => {
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select a valid image file (JPG, PNG, WebP).');
+      return;
+    }
+
+    setIsProcessingImage(true);
+    setUploadError('');
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1000;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        addGalleryPhoto(compressedBase64);
+        setIsProcessingImage(false);
+      };
+      img.onerror = () => {
+        setUploadError('Failed to load image. The file might be corrupted.');
+        setIsProcessingImage(false);
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = () => {
+      setUploadError('Failed to read file.');
+      setIsProcessingImage(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Handle credentials verification
   const handleLogin = (e) => {
@@ -361,7 +412,7 @@ const Admin = () => {
             onClick={() => setActiveTab('gallery')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded transition-colors text-sm uppercase tracking-wider font-semibold ${activeTab === 'gallery' ? 'bg-secondary text-primary' : 'hover:bg-white/5 text-gray-300'}`}
           >
-            <Image size={18} /> Gallery Manager
+            <ImageIcon size={18} /> Gallery Manager
           </button>
         </nav>
         <div className="p-4 border-t border-white/5">
@@ -770,32 +821,88 @@ const Admin = () => {
                 <div className="bg-white p-6 border border-gray-100 rounded-xl shadow-sm space-y-4 lg:col-span-1">
                   <h3 className="font-heading font-bold text-primary text-lg">Add New Photo</h3>
                   
-                  <form onSubmit={(e) => {
-                    e.preventDefault();
-                    if (!newPhotoUrl.trim()) return;
-                    addGalleryPhoto(newPhotoUrl.trim());
-                    setNewPhotoUrl('');
-                  }} className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Image URL</label>
-                      <input 
-                        type="url" 
-                        required
-                        placeholder="https://images.unsplash.com/photo-..."
-                        value={newPhotoUrl}
-                        onChange={(e) => setNewPhotoUrl(e.target.value)}
-                        className="w-full border border-gray-200 focus:border-secondary px-3 py-2 text-sm outline-none font-medium"
-                      />
-                    </div>
-                    <button 
-                      type="submit" 
-                      className="w-full bg-secondary hover:bg-secondary/90 text-primary py-2.5 text-xs font-bold uppercase tracking-widest transition-colors rounded shadow-md flex items-center justify-center gap-1.5 font-semibold"
+                  <div className="flex gap-2 mb-4 bg-gray-50 p-1.5 rounded-lg border border-gray-100">
+                    <button
+                      type="button"
+                      onClick={() => { setUploadMode('file'); setUploadError(''); }}
+                      className={`flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition-colors ${uploadMode === 'file' ? 'bg-primary text-white' : 'text-gray-400 hover:text-primary'}`}
                     >
-                      <Plus size={14} /> Add to Gallery
+                      Upload File
                     </button>
-                  </form>
+                    <button
+                      type="button"
+                      onClick={() => { setUploadMode('url'); setUploadError(''); }}
+                      className={`flex-1 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded transition-colors ${uploadMode === 'url' ? 'bg-primary text-white' : 'text-gray-400 hover:text-primary'}`}
+                    >
+                      Image URL
+                    </button>
+                  </div>
 
-                  {newPhotoUrl.trim() && (
+                  {uploadError && (
+                    <div className="p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs rounded mb-4 font-medium">
+                      {uploadError}
+                    </div>
+                  )}
+
+                  {uploadMode === 'file' ? (
+                    <div className="space-y-4">
+                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 hover:border-secondary transition-colors text-center relative bg-gray-50/50">
+                        <input
+                          type="file"
+                          accept="image/png, image/jpeg, image/jpg, image/webp"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          disabled={isProcessingImage}
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              processAndAddFile(file);
+                              e.target.value = '';
+                            }
+                          }}
+                        />
+                        <div className="space-y-2">
+                          <Plus className="mx-auto text-gray-400" size={24} />
+                          <div className="text-xs font-bold text-primary">
+                            {isProcessingImage ? 'Compressing Image...' : 'Select or Drop Photo'}
+                          </div>
+                          <p className="text-[10px] text-gray-400 font-medium">Accepts JPG, PNG, WebP up to 10MB</p>
+                        </div>
+                      </div>
+                      {isProcessingImage && (
+                        <div className="flex items-center justify-center gap-2 text-xs text-secondary font-bold uppercase tracking-wider animate-pulse">
+                          <span className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full animate-spin"></span>
+                          Processing Device Photo...
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!newPhotoUrl.trim()) return;
+                      addGalleryPhoto(newPhotoUrl.trim());
+                      setNewPhotoUrl('');
+                    }} className="space-y-4">
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Image URL</label>
+                        <input 
+                          type="url" 
+                          required
+                          placeholder="https://images.unsplash.com/photo-..."
+                          value={newPhotoUrl}
+                          onChange={(e) => setNewPhotoUrl(e.target.value)}
+                          className="w-full border border-gray-200 focus:border-secondary px-3 py-2 text-sm outline-none font-medium"
+                        />
+                      </div>
+                      <button 
+                        type="submit" 
+                        className="w-full bg-secondary hover:bg-secondary/90 text-primary py-2.5 text-xs font-bold uppercase tracking-widest transition-colors rounded shadow-md flex items-center justify-center gap-1.5 font-semibold"
+                      >
+                        <Plus size={14} /> Add to Gallery
+                      </button>
+                    </form>
+                  )}
+
+                  {uploadMode === 'url' && newPhotoUrl.trim() && (
                     <div className="pt-4 border-t border-gray-100">
                       <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-2">Live Preview</p>
                       <div className="h-40 w-full rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center">

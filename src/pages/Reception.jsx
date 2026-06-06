@@ -34,6 +34,59 @@ const Reception = () => {
     setRoomCleaningStatus 
   } = useResort();
 
+  // Formatting Helpers for redesigned Invoice
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  };
+
+  const getRoomTypeOrName = (booking) => {
+    if (booking.itemType === 'room') {
+      const r = rooms.find(item => item.id === Number(booking.itemId));
+      return r ? r.name : 'Premium Room';
+    } else {
+      const h = halls.find(item => item.id === booking.itemId);
+      return h ? h.name : 'Function Hall';
+    }
+  };
+
+  const getNights = (checkInStr, checkOutStr) => {
+    const inDate = new Date(checkInStr);
+    const outDate = new Date(checkOutStr);
+    let diff = Math.ceil((outDate - inDate) / (1000 * 3600 * 24));
+    return diff <= 0 ? 1 : diff;
+  };
+
+  const formatCurrency = (val) => {
+    return Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const numberToWords = (num) => {
+    const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    
+    const convert = (n) => {
+      if (n < 20) return a[n];
+      const digit = n % 10;
+      if (n < 100) return b[Math.floor(n / 10)] + (digit ? ' ' + a[digit] : '');
+      if (n < 1000) return a[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' and ' + convert(n % 100) : '');
+      if (n < 100000) return convert(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 ? ' ' + convert(n % 1000) : '');
+      if (n < 10000000) return convert(Math.floor(n / 100000)) + ' Lakh' + (n % 100000 ? ' ' + convert(n % 100000) : '');
+      return convert(Math.floor(n / 10000000)) + ' Crore' + (n % 10000000 ? ' ' + convert(n % 10000000) : '');
+    };
+
+    const integerPart = Math.floor(num);
+    const decimalPart = Math.round((num - integerPart) * 100);
+    
+    let result = convert(integerPart) + ' Rupees';
+    if (decimalPart > 0) {
+      result += ' and ' + convert(decimalPart) + ' Paise';
+    }
+    return result + ' Only';
+  };
+
   // Credentials State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loggedInStaff, setLoggedInStaff] = useState(null);
@@ -668,76 +721,359 @@ const Reception = () => {
       )}
 
       {/* MODAL: CHECK-OUT INVOICE PRINTOUT */}
-      {showCheckoutInvoice && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="max-w-md w-full bg-white shadow-2xl p-8 rounded-xl border border-gray-100 relative print:p-0 print:border-none"
-          >
-            {/* Invoice Ticket Design */}
-            <div className="text-center pb-6 border-b border-gray-100">
-              <img src="/logo-v2.png" alt="Logo" className="h-10 mx-auto mb-2 text-primary" />
-              <h3 className="text-xl font-heading font-bold text-primary">Stay Invoice Summary</h3>
-              <p className="text-[9px] uppercase tracking-widest text-gray-400 mt-0.5">DK Star Resorts Front Desk</p>
-            </div>
+      {/* MODAL: CHECK-OUT INVOICE PRINTOUT */}
+      {showCheckoutInvoice && (() => {
+        const total = showCheckoutInvoice.amount;
+        const subtotal = Math.round(total / 1.18 * 100) / 100;
+        const gstTotal = Math.round((total - subtotal) * 100) / 100;
+        const cgst = Math.round((gstTotal / 2) * 100) / 100;
+        const sgst = Math.round((gstTotal - cgst) * 100) / 100;
+        const nights = getNights(showCheckoutInvoice.checkIn, showCheckoutInvoice.checkOut);
+        
+        return (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            {/* Inject print stylesheet rule */}
+            <style>{`
+              @media print {
+                body {
+                  background: white !important;
+                  color: black !important;
+                }
+                .print-hide {
+                  display: none !important;
+                }
+                #invoice-print-container {
+                  position: fixed;
+                  left: 0;
+                  top: 0;
+                  width: 210mm;
+                  height: 297mm;
+                  padding: 15mm 20mm;
+                  margin: 0;
+                  border: none !important;
+                  box-shadow: none !important;
+                  background: white !important;
+                  z-index: 9999999;
+                  overflow: hidden;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                }
+                @page {
+                  size: A4 portrait;
+                  margin: 0;
+                }
+              }
+            `}</style>
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              id="invoice-print-container"
+              className="bg-white shadow-2xl p-10 rounded-xl border border-gray-150 relative max-w-4xl w-[850px] font-body text-primary print:p-0 print:shadow-none print:border-none print:m-0"
+            >
+              {/* Corner palm leaves decorative vectors (only shown on screen and high quality print) */}
+              <div className="absolute bottom-0 left-0 w-44 h-44 pointer-events-none opacity-15 print:opacity-35">
+                <svg viewBox="0 0 120 120" className="w-full h-full fill-green-800">
+                  <path d="M0,120 Q30,90 90,60 C70,75 50,85 0,120 Z" />
+                  <path d="M0,120 Q40,70 110,40 C85,60 60,75 0,120 Z" />
+                  <path d="M0,120 Q50,50 120,20 C95,45 70,65 0,120 Z" />
+                  <path d="M0,120 Q60,35 110,0 C90,30 65,55 0,120 Z" />
+                  <path d="M0,120 Q70,20 90,0 C75,20 55,45 0,120 Z" />
+                </svg>
+              </div>
 
-            <div className="py-6 space-y-4 text-xs">
-              <div className="flex justify-between">
-                <span className="text-gray-400 uppercase tracking-wider font-bold">Booking ID</span>
-                <span className="text-primary font-bold">{showCheckoutInvoice.id}</span>
+              <div className="absolute bottom-0 right-0 w-44 h-44 pointer-events-none opacity-15 print:opacity-35 transform scale-x-[-1]">
+                <svg viewBox="0 0 120 120" className="w-full h-full fill-green-800">
+                  <path d="M0,120 Q30,90 90,60 C70,75 50,85 0,120 Z" />
+                  <path d="M0,120 Q40,70 110,40 C85,60 60,75 0,120 Z" />
+                  <path d="M0,120 Q50,50 120,20 C95,45 70,65 0,120 Z" />
+                  <path d="M0,120 Q60,35 110,0 C90,30 65,55 0,120 Z" />
+                  <path d="M0,120 Q70,20 90,0 C75,20 55,45 0,120 Z" />
+                </svg>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 uppercase tracking-wider font-bold">Guest Name</span>
-                <span className="text-primary font-bold">{showCheckoutInvoice.guestName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 uppercase tracking-wider font-bold">Stay Period</span>
-                <span className="text-primary">{showCheckoutInvoice.checkIn} to {showCheckoutInvoice.checkOut}</span>
-              </div>
-              <div className="flex justify-between border-b border-gray-50 pb-3">
-                <span className="text-gray-400 uppercase tracking-wider font-bold">Booked Unit</span>
-                <span className="text-primary font-bold">{showCheckoutInvoice.itemName}</span>
-              </div>
-              
-              {/* Calculations */}
-              <div className="space-y-1">
-                <div className="flex justify-between text-gray-600">
-                  <span>Room Charge</span>
-                  <span>₹{(showCheckoutInvoice.amount / 1.18).toFixed(0).toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Tax (GST 18%)</span>
-                  <span>₹{(showCheckoutInvoice.amount - (showCheckoutInvoice.amount / 1.18)).toFixed(0).toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between text-base font-bold border-t border-gray-100 pt-3">
-                  <span className="text-primary">Total Bill Settled</span>
-                  <span className="text-secondary">₹{showCheckoutInvoice.amount.toLocaleString('en-IN')}</span>
-                </div>
-              </div>
-            </div>
 
-            <div className="p-3 bg-green-50 border border-green-200 text-green-700 text-[10px] text-center rounded">
-              Payment Status: Succeeded via Credit/Debit Settlement
-            </div>
+              {/* TOP HEADER SECTION */}
+              <div className="grid grid-cols-[1fr_2fr_1.5fr] gap-4 items-center pb-6 border-b border-secondary/15">
+                {/* Logo & Slogan */}
+                <div className="flex flex-col items-start text-left">
+                  <img src="/logo-v2.png" alt="DK Logo" className="h-16 w-auto object-contain brightness-95" />
+                  <p className="text-[7.5px] uppercase tracking-[0.15em] font-extrabold text-secondary mt-1 whitespace-nowrap">LUXURY IN THE HEART OF NATURE</p>
+                </div>
 
-            <div className="mt-8 flex gap-4 print:hidden">
-              <button 
-                onClick={() => window.print()}
-                className="w-1/2 btn-outline py-2.5 text-xs flex justify-center items-center gap-1.5 border-gray-300 text-gray-600 hover:bg-gray-50"
-              >
-                <Printer size={13} /> Print Invoice
-              </button>
-              <button 
-                onClick={() => setShowCheckoutInvoice(null)}
-                className="w-1/2 btn-primary py-2.5 text-xs"
-              >
-                Dismiss & Clean Unit
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
+                {/* Document Title */}
+                <div className="flex flex-col items-center justify-center text-center">
+                  <h2 className="text-3xl font-heading font-bold text-primary tracking-widest uppercase">Invoice</h2>
+                  <div className="flex items-center gap-1.5 my-1 w-24">
+                    <div className="h-[1.5px] bg-secondary grow"></div>
+                    <div className="w-1.5 h-1.5 rotate-45 bg-secondary"></div>
+                    <div className="h-[1.5px] bg-secondary grow"></div>
+                  </div>
+                  <p className="text-[10px] text-gray-500 font-medium italic">Thank you for choosing DK Star Resorts</p>
+                </div>
+
+                {/* Metadata Details */}
+                <div className="text-[10px] leading-relaxed space-y-1 bg-cream border border-secondary/15 p-3 rounded-lg self-center justify-self-end w-[220px]">
+                  <div className="grid grid-cols-[100px_8px_1fr] font-bold">
+                    <span className="text-gray-500 font-semibold uppercase tracking-wider text-[8px]">Invoice No.</span>
+                    <span className="text-gray-400">:</span>
+                    <span className="text-primary font-mono">{`DKS/INV/2026/${showCheckoutInvoice.id.replace('BK-', '')}`}</span>
+                  </div>
+                  <div className="grid grid-cols-[100px_8px_1fr] font-bold">
+                    <span className="text-gray-500 font-semibold uppercase tracking-wider text-[8px]">Date</span>
+                    <span className="text-gray-400">:</span>
+                    <span className="text-primary">{formatDate(new Date())}</span>
+                  </div>
+                  <div className="grid grid-cols-[100px_8px_1fr] font-bold">
+                    <span className="text-gray-500 font-semibold uppercase tracking-wider text-[8px]">Check-In Date</span>
+                    <span className="text-gray-400">:</span>
+                    <span className="text-primary">{formatDate(showCheckoutInvoice.checkIn)}</span>
+                  </div>
+                  <div className="grid grid-cols-[100px_8px_1fr] font-bold">
+                    <span className="text-gray-500 font-semibold uppercase tracking-wider text-[8px]">Check-Out Date</span>
+                    <span className="text-gray-400">:</span>
+                    <span className="text-primary">{formatDate(showCheckoutInvoice.checkOut)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* BILLED TO & RESERVATION DETAILS */}
+              <div className="grid grid-cols-2 gap-8 my-6">
+                {/* Column 1: Billed To */}
+                <div className="space-y-1.5">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-secondary border-b border-secondary/15 pb-1">Billed To</h4>
+                  <div className="text-[10px] space-y-1 text-gray-700">
+                    <p className="font-bold text-xs text-primary">{showCheckoutInvoice.guestName}</p>
+                    <p>45, Lake View Road</p>
+                    <p>Saidapet, Chennai – 600015, Tamil Nadu</p>
+                    <p>India</p>
+                    <p className="pt-0.5"><span className="font-bold text-gray-500 uppercase text-[8px]">Phone:</span> {showCheckoutInvoice.guestPhone}</p>
+                    <p><span className="font-bold text-gray-500 uppercase text-[8px]">Email:</span> {showCheckoutInvoice.guestEmail}</p>
+                  </div>
+                </div>
+
+                {/* Column 2: Reservation Details */}
+                <div className="space-y-1.5">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-secondary border-b border-secondary/15 pb-1">Reservation Details</h4>
+                  <div className="text-[10px] space-y-1 text-gray-700">
+                    <div className="grid grid-cols-[90px_8px_1fr]">
+                      <span className="font-semibold text-gray-500 uppercase text-[8px]">Booking ID</span>
+                      <span>:</span>
+                      <span className="font-bold text-primary">{`DKS/BOOK/2026/${showCheckoutInvoice.id.replace('BK-', '')}`}</span>
+                    </div>
+                    <div className="grid grid-cols-[90px_8px_1fr]">
+                      <span className="font-semibold text-gray-500 uppercase text-[8px]">Room Type</span>
+                      <span>:</span>
+                      <span className="font-bold text-primary truncate" title={getRoomTypeOrName(showCheckoutInvoice)}>
+                        {getRoomTypeOrName(showCheckoutInvoice)}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-[90px_8px_1fr]">
+                      <span className="font-semibold text-gray-500 uppercase text-[8px]">Room No.</span>
+                      <span>:</span>
+                      <span className="font-bold text-primary">{showCheckoutInvoice.itemId}</span>
+                    </div>
+                    <div className="grid grid-cols-[90px_8px_1fr]">
+                      <span className="font-semibold text-gray-500 uppercase text-[8px]">No. of Guests</span>
+                      <span>:</span>
+                      <span className="text-primary">{showCheckoutInvoice.guests} {showCheckoutInvoice.guests > 1 ? 'Adults' : 'Adult'}</span>
+                    </div>
+                    <div className="grid grid-cols-[90px_8px_1fr]">
+                      <span className="font-semibold text-gray-500 uppercase text-[8px]">Payment Method</span>
+                      <span>:</span>
+                      <span className="font-bold text-primary">UPI</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ITEMIZED TABLE */}
+              <div className="border border-gray-200 rounded-lg overflow-hidden my-6">
+                <table className="w-full text-xs">
+                  <thead className="bg-primary text-white text-[9.5px] uppercase tracking-wider font-bold">
+                    <tr>
+                      <th className="px-4 py-2.5 text-left">Description</th>
+                      <th className="px-4 py-2.5 text-center w-[80px]">Qty</th>
+                      <th className="px-4 py-2.5 text-right w-[120px]">Rate (INR)</th>
+                      <th className="px-4 py-2.5 text-right w-[120px]">Amount (INR)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-150 font-medium text-gray-700 bg-white">
+                    {/* Room charge row */}
+                    <tr className="hover:bg-gray-50/50">
+                      <td className="px-4 py-3 text-left font-bold text-primary">
+                        <div>Room Charge ({formatDate(showCheckoutInvoice.checkIn)} – {formatDate(showCheckoutInvoice.checkOut)})</div>
+                      </td>
+                      <td className="px-4 py-3 text-center text-gray-500">{nights} {nights > 1 ? 'Nights' : 'Night'}</td>
+                      <td className="px-4 py-3 text-right text-gray-600">{formatCurrency(subtotal / nights)}</td>
+                      <td className="px-4 py-3 text-right font-bold text-primary">{formatCurrency(subtotal)}</td>
+                    </tr>
+                    
+                    {/* Breakfast row */}
+                    <tr className="hover:bg-gray-50/50">
+                      <td className="px-4 py-3 text-left text-gray-600 italic">Complimentary Breakfast</td>
+                      <td className="px-4 py-3 text-center text-gray-500">{nights * showCheckoutInvoice.guests}</td>
+                      <td className="px-4 py-3 text-right text-gray-600">0.00</td>
+                      <td className="px-4 py-3 text-right font-bold text-primary">0.00</td>
+                    </tr>
+
+                    {/* Wifi row */}
+                    <tr className="hover:bg-gray-50/50">
+                      <td className="px-4 py-3 text-left text-gray-600 italic">Complimentary High-speed WiFi & Spa Access</td>
+                      <td className="px-4 py-3 text-center text-gray-500">1 Package</td>
+                      <td className="px-4 py-3 text-right text-gray-600">0.00</td>
+                      <td className="px-4 py-3 text-right font-bold text-primary">0.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* TOTALS & NOTES LAYOUT */}
+              <div className="grid grid-cols-[1.2fr_1fr] gap-8 items-start my-6">
+                {/* Notes and Signature */}
+                <div className="space-y-4">
+                  <div className="text-[9px] leading-relaxed space-y-1">
+                    <h5 className="font-bold text-primary uppercase tracking-wider text-[10px]">Notes</h5>
+                    <ul className="list-disc pl-4 text-gray-500 space-y-0.5 font-bold">
+                      <li>Thank you for staying with us.</li>
+                      <li>Please settle the bill at the time of check-out.</li>
+                      <li>For any queries, please contact the front desk.</li>
+                    </ul>
+                  </div>
+
+                  <div className="pt-2">
+                    {/* Artistic signature SVG path */}
+                    <svg className="w-32 h-10 text-primary opacity-90" viewBox="0 0 150 50">
+                      <path 
+                        d="M10,38 C25,28 35,8 45,28 C55,48 65,18 78,28 C90,38 105,18 120,28 C135,38 145,28 148,32" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                      />
+                      <path 
+                        d="M35,28 C55,18 85,14 110,24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="1.2" 
+                        strokeLinecap="round" 
+                      />
+                    </svg>
+                    <div className="h-px bg-secondary/35 w-40 mt-1"></div>
+                    <p className="text-[9px] font-bold text-primary mt-1">Authorized Signature</p>
+                    <p className="text-[7.5px] text-gray-400 font-bold uppercase tracking-widest">DK Star Resorts</p>
+                  </div>
+                </div>
+
+                {/* Subtotal table & Amount in Words */}
+                <div className="space-y-4">
+                  <div className="text-[10px] space-y-2 border-t border-b border-gray-150 py-3">
+                    <div className="flex justify-between font-bold text-gray-500 tracking-wider">
+                      <span>SUBTOTAL</span>
+                      <span className="text-primary">₹ {formatCurrency(subtotal)}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-gray-500 tracking-wider">
+                      <span>CGST (9%)</span>
+                      <span className="text-primary">₹ {formatCurrency(cgst)}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-gray-500 tracking-wider">
+                      <span>SGST (9%)</span>
+                      <span className="text-primary">₹ {formatCurrency(sgst)}</span>
+                    </div>
+                    <div className="bg-[#4A3728] text-white p-2.5 rounded flex justify-between font-bold text-xs tracking-widest mt-1">
+                      <span>TOTAL AMOUNT</span>
+                      <span className="text-secondary">₹ {formatCurrency(total)}</span>
+                    </div>
+                  </div>
+
+                  {/* Word Amount representation */}
+                  <div className="bg-cream/50 border border-secondary/10 p-2.5 rounded text-[8.5px] text-gray-500 font-bold leading-normal">
+                    <span className="text-primary font-extrabold uppercase tracking-wide block mb-0.5">Amount in Words:</span>
+                    {numberToWords(total)}
+                  </div>
+                </div>
+              </div>
+
+              {/* UPI PAYMENTS & GST INFO BOX */}
+              <div className="border border-secondary/15 rounded-lg p-3 bg-cream/70 flex items-center gap-4 my-6">
+                {/* SVG mock QR Code */}
+                <svg className="w-12 h-12 text-primary shrink-0" viewBox="0 0 100 100">
+                  <rect x="0" y="0" width="30" height="30" fill="currentColor" />
+                  <rect x="4" y="4" width="22" height="22" fill="white" />
+                  <rect x="8" y="8" width="14" height="14" fill="currentColor" />
+
+                  <rect x="70" y="0" width="30" height="30" fill="currentColor" />
+                  <rect x="74" y="4" width="22" height="22" fill="white" />
+                  <rect x="78" y="8" width="14" height="14" fill="currentColor" />
+
+                  <rect x="0" y="70" width="30" height="30" fill="currentColor" />
+                  <rect x="4" y="74" width="22" height="22" fill="white" />
+                  <rect x="8" y="78" width="14" height="14" fill="currentColor" />
+
+                  <rect x="40" y="10" width="10" height="20" fill="currentColor" />
+                  <rect x="55" y="5" width="10" height="10" fill="currentColor" />
+                  <rect x="45" y="40" width="15" height="15" fill="currentColor" />
+                  <rect x="15" y="45" width="10" height="10" fill="currentColor" />
+                  <rect x="75" y="45" width="20" height="10" fill="currentColor" />
+                  <rect x="40" y="70" width="15" height="10" fill="currentColor" />
+                  <rect x="80" y="80" width="10" height="15" fill="currentColor" />
+                  <rect x="60" y="75" width="10" height="20" fill="currentColor" />
+                </svg>
+                <div className="text-[9px] space-y-0.5 font-bold text-gray-500">
+                  <p className="text-primary font-extrabold text-[10px] tracking-wider uppercase">Scan to Pay</p>
+                  <p><span className="text-secondary">UPI ID:</span> dkstarresorts@upi</p>
+                  <p><span className="text-secondary">GSTIN:</span> 33AAXFDK1234H1Z5</p>
+                </div>
+              </div>
+
+              {/* CONTACT FOOTER */}
+              <div className="border-t border-secondary/15 pt-4 mt-6">
+                <div className="grid grid-cols-3 gap-6 text-[8px] font-bold text-gray-500">
+                  <div className="flex items-start gap-1.5">
+                    <Users size={12} className="text-secondary shrink-0" />
+                    <div>
+                      <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">Guest Contact</p>
+                      <p>{showCheckoutInvoice.guestName}</p>
+                      <p className="font-mono text-gray-400">{showCheckoutInvoice.guestPhone}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <Phone size={12} className="text-secondary shrink-0" />
+                    <div>
+                      <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">Resort Desk</p>
+                      <p className="font-mono">+91 94894 55977</p>
+                      <p className="lowercase font-mono text-gray-400">dkresort01@gmail.com</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <Home size={12} className="text-secondary shrink-0" />
+                    <div>
+                      <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">www.dkstarresorts.com</p>
+                      <p className="leading-relaxed">No 202/2, PONNIYAMMAN Kovil Street, KOLLAIMEDU VP MAHAL Backside, Vanjur, Vellore - 632006, Tamil Nadu, India.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* print-hide CTA buttons */}
+              <div className="mt-8 flex gap-4 print-hide">
+                <button 
+                  onClick={() => window.print()}
+                  className="w-1/2 btn-outline py-2.5 text-xs flex justify-center items-center gap-1.5 border-gray-300 text-gray-600 hover:bg-gray-50 font-bold uppercase tracking-wider cursor-pointer"
+                >
+                  <Printer size={13} /> Print Invoice
+                </button>
+                <button 
+                  onClick={() => setShowCheckoutInvoice(null)}
+                  className="w-1/2 btn-primary py-2.5 text-xs font-bold uppercase tracking-wider cursor-pointer"
+                >
+                  Dismiss & Clean Unit
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
