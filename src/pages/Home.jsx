@@ -136,7 +136,7 @@ const Home = () => {
             {/* Service 2 */}
             <Link to="/function-hall" className="group relative overflow-hidden h-[500px]">
               <img
-                src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                src="/exquisite_venues_bg.jpg"
                 alt="Function Hall"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />

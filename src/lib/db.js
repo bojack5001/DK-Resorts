@@ -111,7 +111,7 @@ const INITIAL_HALLS = [
     price: 75000,
     capacity: 1000,
     description: "An expansive lush green lawn bordered by scenic woods, featuring a central covered wooden pavilion, ideal for dream weddings and massive corporate events.",
-    image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    image: "/exquisite_venues_bg.jpg",
     amenities: ["Outdoor Seating", "Catering Stall setup", "Surround Sound", "Bridal Suites", "Valet Parking"]
   },
   {
@@ -211,7 +211,7 @@ const INITIAL_ROOM_STATES = {
 const INITIAL_GALLERY = [
   { id: 1, url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" },
   { id: 2, url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600&q=80" },
-  { id: 3, url: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80" },
+  { id: 3, url: "/exquisite_venues_bg.jpg" },
   { id: 4, url: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=80" },
   { id: 5, url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" },
   { id: 6, url: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80" }
@@ -242,7 +242,23 @@ export const getDBRooms = () => {
 
 export const getDBHalls = () => {
   initializeDB();
-  return JSON.parse(localStorage.getItem("dk_halls"));
+  let halls = JSON.parse(localStorage.getItem("dk_halls"));
+  let changed = false;
+  halls = halls.map(h => {
+    if (h.id === "open-hall" && h.image !== "/exquisite_venues_bg.jpg") {
+      h.image = "/exquisite_venues_bg.jpg";
+      changed = true;
+    }
+    if (h.id === "mini-hall" && h.image === "/exquisite_venues_bg.jpg") {
+      h.image = "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+      changed = true;
+    }
+    return h;
+  });
+  if (changed) {
+    saveDBHalls(halls);
+  }
+  return halls;
 };
 
 export const getDBBookings = () => {
@@ -273,7 +289,19 @@ export const saveDBRoomStates = (roomStates) => {
 
 export const getDBGallery = () => {
   initializeDB();
-  return JSON.parse(localStorage.getItem("dk_gallery"));
+  let gallery = JSON.parse(localStorage.getItem("dk_gallery"));
+  let changed = false;
+  gallery = gallery.map(item => {
+    if (item.url.includes("photo-1519167758481-83f550bb49b3")) {
+      item.url = "/exquisite_venues_bg.jpg";
+      changed = true;
+    }
+    return item;
+  });
+  if (changed) {
+    saveDBGallery(gallery);
+  }
+  return gallery;
 };
 
 export const saveDBGallery = (gallery) => {

@@ -12,7 +12,7 @@ const FunctionHall = () => {
       {/* Hero Header */}
       <section className="relative h-[65vh] flex items-center justify-center overflow-hidden">
         <img 
-          src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+          src="/exquisite_venues_bg.jpg" 
           alt="Function Hall" 
           className="absolute inset-0 w-full h-full object-cover"
         />
