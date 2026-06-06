@@ -208,6 +208,15 @@ const INITIAL_ROOM_STATES = {
   "mini-hall": { status: "available" }
 };
 
+const INITIAL_GALLERY = [
+  { id: 1, url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" },
+  { id: 2, url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600&q=80" },
+  { id: 3, url: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=600&q=80" },
+  { id: 4, url: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=80" },
+  { id: 5, url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" },
+  { id: 6, url: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80" }
+];
+
 export const initializeDB = () => {
   if (!localStorage.getItem("dk_rooms")) {
     localStorage.setItem("dk_rooms", JSON.stringify(INITIAL_ROOMS));
@@ -220,6 +229,9 @@ export const initializeDB = () => {
   }
   if (!localStorage.getItem("dk_room_states")) {
     localStorage.setItem("dk_room_states", JSON.stringify(INITIAL_ROOM_STATES));
+  }
+  if (!localStorage.getItem("dk_gallery")) {
+    localStorage.setItem("dk_gallery", JSON.stringify(INITIAL_GALLERY));
   }
 };
 
@@ -257,4 +269,13 @@ export const saveDBBookings = (bookings) => {
 
 export const saveDBRoomStates = (roomStates) => {
   localStorage.setItem("dk_room_states", JSON.stringify(roomStates));
+};
+
+export const getDBGallery = () => {
+  initializeDB();
+  return JSON.parse(localStorage.getItem("dk_gallery"));
+};
+
+export const saveDBGallery = (gallery) => {
+  localStorage.setItem("dk_gallery", JSON.stringify(gallery));
 };

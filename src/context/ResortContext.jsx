@@ -4,10 +4,12 @@ import {
   getDBHalls, 
   getDBBookings, 
   getDBRoomStates,
+  getDBGallery,
   saveDBRooms,
   saveDBHalls,
   saveDBBookings,
-  saveDBRoomStates
+  saveDBRoomStates,
+  saveDBGallery
 } from '../lib/db';
 
 const ResortContext = createContext();
@@ -17,12 +19,14 @@ export const ResortProvider = ({ children }) => {
   const [halls, setHalls] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [roomStates, setRoomStates] = useState({});
+  const [gallery, setGallery] = useState([]);
 
   useEffect(() => {
     setRooms(getDBRooms());
     setHalls(getDBHalls());
     setBookings(getDBBookings());
     setRoomStates(getDBRoomStates());
+    setGallery(getDBGallery());
   }, []);
 
   const calculateAmount = (itemId, itemType, checkInStr, checkOutStr) => {
@@ -160,12 +164,27 @@ export const ResortProvider = ({ children }) => {
     saveDBRoomStates(updated);
   };
 
+  const addGalleryPhoto = (url) => {
+    const newPhoto = { id: Date.now(), url };
+    const updated = [...gallery, newPhoto];
+    setGallery(updated);
+    saveDBGallery(updated);
+    return newPhoto;
+  };
+
+  const removeGalleryPhoto = (id) => {
+    const updated = gallery.filter(item => item.id !== id);
+    setGallery(updated);
+    saveDBGallery(updated);
+  };
+
   return (
     <ResortContext.Provider value={{
       rooms,
       halls,
       bookings,
       roomStates,
+      gallery,
       addBooking,
       updateBookingStatus,
       updateRoomPricing,
@@ -173,7 +192,9 @@ export const ResortProvider = ({ children }) => {
       updateHallPricing,
       updateHallDetails,
       setRoomCleaningStatus,
-      calculateAmount
+      calculateAmount,
+      addGalleryPhoto,
+      removeGalleryPhoto
     }}>
       {children}
     </ResortContext.Provider>

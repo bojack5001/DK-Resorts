@@ -23,7 +23,7 @@ import {
   Sparkles,
   Image
 } from 'lucide-react';
-import { useResort } from '../context/ResortContext';
+import { useResort } from '../../context/ResortContext';
 
 const Admin = () => {
   const { 
@@ -306,7 +306,7 @@ const Admin = () => {
                 type="text" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. deena@staff"
+                placeholder="e.g. deena@admin"
                 className="w-full bg-white/5 border border-white/10 px-4 py-3 rounded text-sm focus:border-secondary outline-none transition-colors"
               />
             </div>
