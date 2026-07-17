@@ -1,15 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  getDBRooms, 
-  getDBHalls, 
-  getDBBookings, 
+import {
+  getDBRooms,
+  getDBHalls,
+  getDBBookings,
   getDBRoomStates,
   getDBGallery,
   saveDBRooms,
   saveDBHalls,
   saveDBBookings,
+  saveDBBooking,
   saveDBRoomStates,
-  saveDBGallery
+  updateDBBookingStatus,
+  updateDBRoom,
+  updateDBHall,
+  addDBGalleryPhoto,
+  removeDBGalleryPhoto,
+  saveDBGallery,
 } from '../lib/db';
 
 const ResortContext = createContext();
@@ -20,13 +26,30 @@ export const ResortProvider = ({ children }) => {
   const [bookings, setBookings] = useState([]);
   const [roomStates, setRoomStates] = useState({});
   const [gallery, setGallery] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setRooms(getDBRooms());
-    setHalls(getDBHalls());
-    setBookings(getDBBookings());
-    setRoomStates(getDBRoomStates());
-    setGallery(getDBGallery());
+    const init = async () => {
+      try {
+        const [r, h, b, rs, g] = await Promise.all([
+          getDBRooms(),
+          getDBHalls(),
+          getDBBookings(),
+          getDBRoomStates(),
+          getDBGallery(),
+        ]);
+        setRooms(r || []);
+        setHalls(h || []);
+        setBookings(b || []);
+        setRoomStates(rs || {});
+        setGallery(g || []);
+      } catch (err) {
+        console.error('[ResortContext] init error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
   }, []);
 
   const calculateAmount = (itemId, itemType, checkInStr, checkOutStr) => {
@@ -44,7 +67,7 @@ export const ResortProvider = ({ children }) => {
     }
   };
 
-  const addBooking = (newBookingData) => {
+  const addBooking = async (newBookingData) => {
     const id = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
     const amount = calculateAmount(
       newBookingData.itemId,
@@ -58,124 +81,104 @@ export const ResortProvider = ({ children }) => {
       ...newBookingData,
       itemId: newBookingData.itemType === 'room' ? Number(newBookingData.itemId) : newBookingData.itemId,
       amount,
-      status: newBookingData.status || "Pending",
-      created_at: new Date().toISOString()
+      status: newBookingData.status || 'Pending',
+      created_at: new Date().toISOString(),
     };
 
     const updatedBookings = [booking, ...bookings];
     setBookings(updatedBookings);
-    saveDBBookings(updatedBookings);
+    await saveDBBooking(booking);
 
-    // If immediate check-in (e.g. walk-in)
+    // If immediate check-in (walk-in)
     if (booking.status === 'Checked-in') {
       const updatedStates = {
         ...roomStates,
-        [booking.itemId]: { status: 'occupied', bookingId: id }
+        [booking.itemId]: { status: 'occupied', bookingId: id },
       };
       setRoomStates(updatedStates);
-      saveDBRoomStates(updatedStates);
+      await saveDBRoomStates(updatedStates);
     }
 
     return booking;
   };
 
-  const updateBookingStatus = (bookingId, newStatus) => {
-    const updated = bookings.map(b => {
-      if (b.id === bookingId) {
-        return { ...b, status: newStatus };
-      }
-      return b;
-    });
+  const updateBookingStatus = async (bookingId, newStatus) => {
+    const updated = bookings.map(b =>
+      b.id === bookingId ? { ...b, status: newStatus } : b
+    );
     setBookings(updated);
-    saveDBBookings(updated);
+    await updateDBBookingStatus(bookingId, newStatus);
 
     const booking = bookings.find(b => b.id === bookingId);
     if (!booking) return;
 
-    // Side-effects on room states based on check-in/out
     let updatedStates = { ...roomStates };
     if (newStatus === 'Checked-in') {
       updatedStates[booking.itemId] = { status: 'occupied', bookingId };
     } else if (newStatus === 'Checked-out') {
       updatedStates[booking.itemId] = { status: 'dirty' };
     } else if (newStatus === 'Cancelled') {
-      // If cancelling an active check-in
       if (roomStates[booking.itemId]?.bookingId === bookingId) {
         updatedStates[booking.itemId] = { status: 'available' };
       }
     }
     setRoomStates(updatedStates);
-    saveDBRoomStates(updatedStates);
+    await saveDBRoomStates(updatedStates);
   };
 
-  const updateRoomPricing = (roomId, newPrice) => {
-    const updated = rooms.map(r => {
-      if (r.id === Number(roomId)) {
-        return { ...r, price: Number(newPrice) };
-      }
-      return r;
-    });
+  const updateRoomPricing = async (roomId, newPrice) => {
+    const updated = rooms.map(r =>
+      r.id === Number(roomId) ? { ...r, price: Number(newPrice) } : r
+    );
     setRooms(updated);
-    saveDBRooms(updated);
+    await updateDBRoom(Number(roomId), { price: Number(newPrice) });
   };
 
-  const updateRoomDetails = (roomId, updatedFields) => {
-    const updated = rooms.map(r => {
-      if (r.id === Number(roomId)) {
-        return { ...r, ...updatedFields };
-      }
-      return r;
-    });
+  const updateRoomDetails = async (roomId, updatedFields) => {
+    const updated = rooms.map(r =>
+      r.id === Number(roomId) ? { ...r, ...updatedFields } : r
+    );
     setRooms(updated);
-    saveDBRooms(updated);
+    await updateDBRoom(Number(roomId), updatedFields);
   };
 
-  const updateHallPricing = (hallId, newPrice) => {
-    const updated = halls.map(h => {
-      if (h.id === hallId) {
-        return { ...h, price: Number(newPrice) };
-      }
-      return h;
-    });
+  const updateHallPricing = async (hallId, newPrice) => {
+    const updated = halls.map(h =>
+      h.id === hallId ? { ...h, price: Number(newPrice) } : h
+    );
     setHalls(updated);
-    saveDBHalls(updated);
+    await updateDBHall(hallId, { price: Number(newPrice) });
   };
 
-  const updateHallDetails = (hallId, updatedFields) => {
-    const updated = halls.map(h => {
-      if (h.id === hallId) {
-        return { ...h, ...updatedFields };
-      }
-      return h;
-    });
+  const updateHallDetails = async (hallId, updatedFields) => {
+    const updated = halls.map(h =>
+      h.id === hallId ? { ...h, ...updatedFields } : h
+    );
     setHalls(updated);
-    saveDBHalls(updated);
+    await updateDBHall(hallId, updatedFields);
   };
 
-  const setRoomCleaningStatus = (itemId, cleanStatus) => {
+  const setRoomCleaningStatus = async (itemId, cleanStatus) => {
     const updated = {
       ...roomStates,
-      [itemId]: { 
-        status: cleanStatus, 
-        bookingId: cleanStatus === 'occupied' ? roomStates[itemId]?.bookingId : undefined 
-      }
+      [itemId]: {
+        status: cleanStatus,
+        bookingId: cleanStatus === 'occupied' ? roomStates[itemId]?.bookingId : undefined,
+      },
     };
     setRoomStates(updated);
-    saveDBRoomStates(updated);
+    await saveDBRoomStates(updated);
   };
 
-  const addGalleryPhoto = (url) => {
-    const newPhoto = { id: Date.now(), url };
-    const updated = [...gallery, newPhoto];
-    setGallery(updated);
-    saveDBGallery(updated);
+  const addGalleryPhoto = async (url) => {
+    const newPhoto = await addDBGalleryPhoto(url);
+    setGallery(prev => [...prev, newPhoto]);
     return newPhoto;
   };
 
-  const removeGalleryPhoto = (id) => {
-    const updated = gallery.filter(item => item.id !== id);
-    setGallery(updated);
-    saveDBGallery(updated);
+  const removeGalleryPhoto = async (id) => {
+    setGallery(prev => prev.filter(item => item.id !== id));
+    await removeDBGalleryPhoto(id);
   };
 
   return (
@@ -185,6 +188,7 @@ export const ResortProvider = ({ children }) => {
       bookings,
       roomStates,
       gallery,
+      loading,
       addBooking,
       updateBookingStatus,
       updateRoomPricing,
@@ -194,7 +198,7 @@ export const ResortProvider = ({ children }) => {
       setRoomCleaningStatus,
       calculateAmount,
       addGalleryPhoto,
-      removeGalleryPhoto
+      removeGalleryPhoto,
     }}>
       {children}
     </ResortContext.Provider>

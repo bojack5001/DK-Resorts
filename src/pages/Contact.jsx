@@ -1,5 +1,100 @@
-import React from 'react';
+﻿import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
+
+// ─── Contact Form with Supabase integration ───────────────────
+const ContactForm = () => {
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+
+  const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      if (supabase) {
+        const { error } = await supabase.from('contact_messages').insert({
+          name:    form.name,
+          email:   form.email,
+          subject: form.subject,
+          message: form.message,
+        });
+        if (error) throw error;
+      }
+      setStatus('success');
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      console.error('[Contact] submit error:', err);
+      setStatus('error');
+    }
+  };
+
+  return (
+    <div className="bg-white p-10 shadow-2xl border border-gray-100">
+      <h3 className="text-2xl font-heading font-bold mb-8 text-primary">Send a Message</h3>
+
+      {status === 'success' && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+          ✅ Thank you! Your message has been sent. We will get back to you shortly.
+        </div>
+      )}
+      {status === 'error' && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+          ❌ Something went wrong. Please try again or call us directly.
+        </div>
+      )}
+
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Name</label>
+            <input
+              type="text" name="name" required
+              value={form.name} onChange={handleChange}
+              className="w-full border-b border-gray-200 focus:border-secondary outline-none py-3"
+              placeholder="Your Name"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Email</label>
+            <input
+              type="email" name="email" required
+              value={form.email} onChange={handleChange}
+              className="w-full border-b border-gray-200 focus:border-secondary outline-none py-3"
+              placeholder="Your Email"
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Subject</label>
+          <input
+            type="text" name="subject"
+            value={form.subject} onChange={handleChange}
+            className="w-full border-b border-gray-200 focus:border-secondary outline-none py-3"
+            placeholder="How can we help?"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Message</label>
+          <textarea
+            name="message" required
+            value={form.message} onChange={handleChange}
+            className="w-full border-b border-gray-200 focus:border-secondary outline-none py-3 h-32"
+            placeholder="Your Message..."
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={status === 'loading'}
+          className="w-full btn-primary py-4 disabled:opacity-60"
+        >
+          {status === 'loading' ? 'Sending...' : 'Send Message'}
+        </button>
+      </form>
+    </div>
+  );
+};
 
 const Contact = () => {
   return (
@@ -10,7 +105,7 @@ const Contact = () => {
             <div>
               <h1 className="text-4xl md:text-6xl font-heading font-bold mb-6 text-primary">Get in Touch</h1>
               <p className="text-gray-600 leading-relaxed">
-                Whether you have a question about our rooms, want to book the function hall, or simply want to say hello, we're here to help.
+                Whether you have a question about our rooms, want to book the function hall, or simply want to say hello, we are here to help.
               </p>
             </div>
 
@@ -61,32 +156,9 @@ const Contact = () => {
             </div>
           </div>
 
-          <div className="bg-white p-10 shadow-2xl border border-gray-100">
-            <h3 className="text-2xl font-heading font-bold mb-8 text-primary">Send a Message</h3>
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Name</label>
-                  <input type="text" className="w-full border-b border-gray-200 focus:border-secondary outline-none py-3" placeholder="Your Name" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Email</label>
-                  <input type="email" className="w-full border-b border-gray-200 focus:border-secondary outline-none py-3" placeholder="Your Email" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Subject</label>
-                <input type="text" className="w-full border-b border-gray-200 focus:border-secondary outline-none py-3" placeholder="How can we help?" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Message</label>
-                <textarea className="w-full border-b border-gray-200 focus:border-secondary outline-none py-3 h-32" placeholder="Your Message..."></textarea>
-              </div>
-              <button className="w-full btn-primary py-4">Send Message</button>
-            </form>
-          </div>
+          <ContactForm />
         </div>
-        
+
         {/* Map Section */}
         <div className="mt-20 h-[450px] bg-gray-100 border border-secondary/15 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
           <iframe
