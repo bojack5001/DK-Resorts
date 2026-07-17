@@ -122,8 +122,15 @@ const Pool = () => {
 
       if (supabase) {
         const { error: sbError } = await supabase.from('pool_bookings').insert(booking);
-        if (sbError) throw sbError;
+        if (sbError) {
+          console.warn('[Supabase] pool_bookings insert failed (did you run the SQL?), falling back to localStorage:', sbError.message);
+        }
       }
+
+      // Local storage fallback so the UI works even without Supabase
+      const cached = JSON.parse(localStorage.getItem('dk_pool_bookings') || '[]');
+      cached.push(booking);
+      localStorage.setItem('dk_pool_bookings', JSON.stringify(cached));
 
       setConfirmed({ ...booking, slotLabel: slot.label, slotTime: slot.time });
       setStep(3);
