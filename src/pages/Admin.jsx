@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   Clock,
   Sparkles,
+  Star,
   Image as ImageIcon,
   MessageSquare
 } from 'lucide-react';
@@ -39,7 +40,8 @@ const Admin = () => {
     gallery,
     addGalleryPhoto,
     removeGalleryPhoto,
-    contactMessages
+    contactMessages,
+    feedbacks
   } = useResort();
 
   // Authentication state
@@ -426,6 +428,12 @@ const Admin = () => {
                 {contactMessages.length}
               </span>
             )}
+          </button>
+          <button 
+            onClick={() => setActiveTab('feedbacks')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded transition-colors text-sm uppercase tracking-wider font-semibold ${activeTab === 'feedbacks' ? 'bg-secondary text-primary' : 'hover:bg-white/5 text-gray-300'}`}
+          >
+            <Star size={18} /> Reviews
           </button>
         </nav>
         <div className="p-4 border-t border-white/5">
@@ -996,6 +1004,63 @@ const Admin = () => {
                       </div>
                       <p className="text-gray-700 text-sm whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border border-gray-100">
                         {msg.message}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB: FEEDBACKS */}
+          {activeTab === 'feedbacks' && (
+            <div className="animate-fade-in">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h2 className="text-2xl font-heading font-bold text-primary">Guest Reviews</h2>
+                  <p className="text-gray-500 text-sm mt-1">Feedback from checked-out guests</p>
+                </div>
+                <div className="bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm flex items-center gap-2">
+                  <Star className="text-secondary fill-secondary" size={18} />
+                  <span className="font-bold text-primary text-lg">
+                    {feedbacks.length > 0 
+                      ? (feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length).toFixed(1)
+                      : '0.0'}
+                  </span>
+                  <span className="text-gray-400 text-xs font-bold uppercase tracking-widest ml-2">Avg Rating</span>
+                </div>
+              </div>
+
+              {feedbacks.length === 0 ? (
+                <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
+                  <Star size={48} className="mx-auto text-gray-200 mb-4" />
+                  <p className="text-gray-400 font-medium">No reviews yet.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {feedbacks.map((fb, idx) => (
+                    <div key={fb.id || idx} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-3 border-b border-gray-100 pb-3">
+                        <div>
+                          <h4 className="font-bold text-primary">{fb.guest_name}</h4>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{fb.guest_email}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="flex gap-0.5 mb-1 justify-end">
+                            {[1, 2, 3, 4, 5].map(star => (
+                              <Star key={star} size={14} className={star <= fb.rating ? 'text-secondary fill-secondary' : 'text-gray-200'} />
+                            ))}
+                          </div>
+                          <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                            {new Date(fb.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-xs bg-primary/5 text-primary px-2 py-1 rounded inline-block mb-3 font-mono">
+                        Booking: {fb.booking_id}
+                      </div>
+                      <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
+                        "{fb.comments}"
                       </p>
                     </div>
                   ))}

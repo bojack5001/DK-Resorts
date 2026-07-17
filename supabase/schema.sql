@@ -169,3 +169,21 @@ CREATE POLICY "pool_bookings_select" ON public.pool_bookings FOR SELECT USING (t
 CREATE POLICY "pool_bookings_insert" ON public.pool_bookings FOR INSERT WITH CHECK (true);
 CREATE POLICY "pool_bookings_update" ON public.pool_bookings FOR UPDATE USING (true) WITH CHECK (true);
 CREATE POLICY "pool_bookings_delete" ON public.pool_bookings FOR DELETE USING (true);
+-- Add feedbacks table to Supabase
+-- Run this in the Supabase SQL Editor
+
+CREATE TABLE IF NOT EXISTS public.feedbacks (
+  id           TEXT        PRIMARY KEY,   -- e.g. "FB-1234"
+  booking_id   TEXT        NOT NULL,
+  guest_name   TEXT        NOT NULL,
+  guest_email  TEXT        NOT NULL,
+  rating       INTEGER     NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comments     TEXT,
+  created_at   TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.feedbacks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "feedbacks_select" ON public.feedbacks FOR SELECT USING (true);
+CREATE POLICY "feedbacks_insert" ON public.feedbacks FOR INSERT WITH CHECK (true);
+CREATE POLICY "feedbacks_update" ON public.feedbacks FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "feedbacks_delete" ON public.feedbacks FOR DELETE USING (true);

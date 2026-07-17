@@ -1,13 +1,43 @@
 import React, { useState } from 'react';
 import { useResort } from '../context/ResortContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Mail, Calendar, Home, AlertCircle, Trash2, Printer, CheckCircle } from 'lucide-react';
+import { Search, Mail, Calendar, Home, AlertCircle, Trash2, Printer, CheckCircle, MessageSquare, Star, X } from 'lucide-react';
 
 const MyBookings = () => {
-  const { bookings, updateBookingStatus } = useResort();
+  const { bookings, updateBookingStatus, addFeedback } = useResort();
   const [emailInput, setEmailInput] = useState('');
   const [searched, setSearched] = useState(false);
   const [foundBookings, setFoundBookings] = useState([]);
+  
+  // Feedback Modal State
+  const [feedbackBooking, setFeedbackBooking] = useState(null);
+  const [rating, setRating] = useState(5);
+  const [comments, setComments] = useState('');
+  const [feedbackStatus, setFeedbackStatus] = useState('idle');
+
+  const handleFeedbackSubmit = async (e) => {
+    e.preventDefault();
+    setFeedbackStatus('loading');
+    try {
+      await addFeedback({
+        booking_id: feedbackBooking.id,
+        guest_name: feedbackBooking.guestName,
+        guest_email: feedbackBooking.guestEmail,
+        rating: rating,
+        comments: comments,
+      });
+      setFeedbackStatus('success');
+      setTimeout(() => {
+        setFeedbackBooking(null);
+        setFeedbackStatus('idle');
+        setRating(5);
+        setComments('');
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      setFeedbackStatus('error');
+    }
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -156,6 +186,15 @@ const MyBookings = () => {
                               <Trash2 size={13} /> Cancel
                             </button>
                           )}
+                          
+                          {booking.status === 'Checked-out' && (
+                            <button 
+                              onClick={() => { setFeedbackBooking(booking); setRating(5); setComments(''); }}
+                              className="btn-primary flex-1 md:flex-initial py-2 px-3 text-xs flex justify-center items-center gap-1.5"
+                            >
+                              <MessageSquare size={13} /> Leave Feedback
+                            </button>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -166,6 +205,81 @@ const MyBookings = () => {
           </motion.div>
         )}
       </div>
+
+      {/* FEEDBACK MODAL */}
+      <AnimatePresence>
+        {feedbackBooking && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white max-w-md w-full rounded-2xl p-8 relative shadow-2xl"
+            >
+              <button onClick={() => setFeedbackBooking(null)} className="absolute top-4 right-4 text-gray-400 hover:text-primary">
+                <X size={20} />
+              </button>
+              
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-heading font-bold text-primary">How was your stay?</h3>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-widest">{feedbackBooking.itemName}</p>
+              </div>
+
+              {feedbackStatus === 'success' ? (
+                <div className="text-center py-8">
+                  <CheckCircle size={48} className="mx-auto text-green-500 mb-4" />
+                  <p className="font-bold text-primary">Thank you for your feedback!</p>
+                  <p className="text-sm text-gray-500 mt-1">We hope to see you again soon.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleFeedbackSubmit} className="space-y-6">
+                  {/* Star Rating */}
+                  <div className="flex justify-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        className="transition-transform hover:scale-110 focus:outline-none"
+                      >
+                        <Star 
+                          size={32} 
+                          className={star <= rating ? 'text-secondary fill-secondary' : 'text-gray-300'} 
+                        />
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Additional Comments</label>
+                    <textarea 
+                      required
+                      value={comments}
+                      onChange={e => setComments(e.target.value)}
+                      placeholder="Tell us what you loved, or how we can improve..."
+                      className="w-full border border-gray-200 focus:border-secondary outline-none p-3 text-sm h-32 rounded-lg resize-none"
+                    />
+                  </div>
+
+                  {feedbackStatus === 'error' && (
+                    <p className="text-red-500 text-xs text-center bg-red-50 p-2 rounded border border-red-100">
+                      Something went wrong. Please try again.
+                    </p>
+                  )}
+
+                  <button 
+                    type="submit" 
+                    disabled={feedbackStatus === 'loading'}
+                    className="w-full btn-primary py-3 flex items-center justify-center disabled:opacity-50"
+                  >
+                    {feedbackStatus === 'loading' ? 'Submitting...' : 'Submit Feedback'}
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

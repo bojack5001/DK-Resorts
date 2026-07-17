@@ -17,6 +17,8 @@ import {
   removeDBGalleryPhoto,
   saveDBGallery,
   getDBContactMessages,
+  getDBFeedbacks,
+  saveDBFeedback,
 } from '../lib/db';
 
 const ResortContext = createContext();
@@ -28,18 +30,20 @@ export const ResortProvider = ({ children }) => {
   const [roomStates, setRoomStates] = useState({});
   const [gallery, setGallery] = useState([]);
   const [contactMessages, setContactMessages] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const init = async () => {
       try {
-        const [r, h, b, rs, g, cm] = await Promise.all([
+        const [r, h, b, rs, g, cm, fb] = await Promise.all([
           getDBRooms(),
           getDBHalls(),
           getDBBookings(),
           getDBRoomStates(),
           getDBGallery(),
           getDBContactMessages(),
+          getDBFeedbacks(),
         ]);
         setRooms(r || []);
         setHalls(h || []);
@@ -47,6 +51,7 @@ export const ResortProvider = ({ children }) => {
         setRoomStates(rs || {});
         setGallery(g || []);
         setContactMessages(cm || []);
+        setFeedbacks(fb || []);
       } catch (err) {
         console.error('[ResortContext] init error:', err);
       } finally {
@@ -185,6 +190,12 @@ export const ResortProvider = ({ children }) => {
     await removeDBGalleryPhoto(id);
   };
 
+  const addFeedback = async (feedbackData) => {
+    const fb = await saveDBFeedback(feedbackData);
+    setFeedbacks(prev => [fb, ...prev]);
+    return fb;
+  };
+
   return (
     <ResortContext.Provider value={{
       rooms,
@@ -193,6 +204,7 @@ export const ResortProvider = ({ children }) => {
       roomStates,
       gallery,
       contactMessages,
+      feedbacks,
       loading,
       addBooking,
       updateBookingStatus,
@@ -204,6 +216,7 @@ export const ResortProvider = ({ children }) => {
       calculateAmount,
       addGalleryPhoto,
       removeGalleryPhoto,
+      addFeedback,
     }}>
       {children}
     </ResortContext.Provider>

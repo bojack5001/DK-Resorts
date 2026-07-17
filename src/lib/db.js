@@ -320,3 +320,37 @@ export const saveDBContactMessage = async (msgData) => {
   
   return newMsg;
 };
+
+// ─── GUEST FEEDBACKS ───────────────────────────────────────────────────────────
+
+export const getDBFeedbacks = async () => {
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('feedbacks')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error && data?.length) return data;
+  }
+  return ls('dk_feedbacks') || [];
+};
+
+export const saveDBFeedback = async (feedbackData) => {
+  const newFeedback = {
+    ...feedbackData,
+    created_at: new Date().toISOString(),
+  };
+
+  if (supabase) {
+    const { error } = await supabase.from('feedbacks').insert(newFeedback);
+    if (error) {
+      console.warn('[Supabase] feedbacks insert failed, falling back to localStorage:', error.message);
+    }
+  }
+
+  // Fallback to localStorage
+  const cached = ls('dk_feedbacks') || [];
+  cached.unshift(newFeedback);
+  lsSave('dk_feedbacks', cached);
+  
+  return newFeedback;
+};
