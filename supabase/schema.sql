@@ -147,3 +147,25 @@ INSERT INTO public.gallery (url) VALUES
 ('https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=600&q=80'),
 ('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80'),
 ('https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=600&q=80');
+-- Add pool_bookings table to Supabase
+-- Run this in the Supabase SQL Editor
+
+CREATE TABLE IF NOT EXISTS public.pool_bookings (
+  id           TEXT        PRIMARY KEY,   -- e.g. "PL-1234"
+  booking_date DATE        NOT NULL,
+  slot         TEXT        NOT NULL CHECK (slot IN ('morning','afternoon','evening')),
+  guest_name   TEXT        NOT NULL,
+  guest_email  TEXT        NOT NULL,
+  guest_phone  TEXT,
+  guests       INTEGER     NOT NULL DEFAULT 1,
+  amount       NUMERIC     NOT NULL DEFAULT 0,
+  status       TEXT        NOT NULL DEFAULT 'Confirmed'
+                            CHECK (status IN ('Confirmed','Cancelled')),
+  created_at   TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.pool_bookings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "pool_bookings_select" ON public.pool_bookings FOR SELECT USING (true);
+CREATE POLICY "pool_bookings_insert" ON public.pool_bookings FOR INSERT WITH CHECK (true);
+CREATE POLICY "pool_bookings_update" ON public.pool_bookings FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "pool_bookings_delete" ON public.pool_bookings FOR DELETE USING (true);
