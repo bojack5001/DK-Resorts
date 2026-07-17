@@ -22,6 +22,7 @@ const Booking = () => {
   const [guestPhone, setGuestPhone] = useState('');
   const [guestsCount, setGuestsCount] = useState(1);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Booking result screen
   const [confirmedBooking, setConfirmedBooking] = useState(null);
@@ -156,7 +157,7 @@ const Booking = () => {
     return conflicts.length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
 
@@ -186,7 +187,7 @@ const Booking = () => {
       return;
     }
 
-    // Book it!
+    // Book it! — await because addBooking saves to Supabase async
     const bookingDetails = {
       itemId,
       itemName: selectedItem.name,
@@ -197,11 +198,19 @@ const Booking = () => {
       checkIn,
       checkOut,
       guests: Number(guestsCount),
-      status: 'Confirmed' // User bookings are auto-confirmed in this demo
+      status: 'Confirmed'
     };
 
-    const newBooking = addBooking(bookingDetails);
-    setConfirmedBooking(newBooking);
+    setIsSubmitting(true);
+    try {
+      const newBooking = await addBooking(bookingDetails);
+      setConfirmedBooking(newBooking);
+    } catch (err) {
+      console.error('[Booking] submit error:', err);
+      setErrorMessage('Something went wrong while saving your booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePrint = () => {
@@ -776,8 +785,12 @@ const Booking = () => {
               )}
 
               <div className="pt-6">
-                <button type="submit" className="w-full btn-primary py-5 text-base shadow-lg shadow-primary/20">
-                  Book Reservation Now
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full btn-primary py-5 text-base shadow-lg shadow-primary/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? 'Booking…' : 'Book Reservation Now'}
                 </button>
                 <p className="text-center text-[10px] text-gray-400 mt-4 uppercase tracking-[0.2em]">
                   Secure booking verified by resort desk
