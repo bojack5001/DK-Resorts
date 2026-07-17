@@ -134,13 +134,30 @@ export const updateDBHall = async (hallId, fields) => {
 
 // ─── BOOKINGS ─────────────────────────────────────────────────────────────────
 
+// ─── Normalize Supabase snake_case → camelCase for booking rows ───────────────
+const normalizeBooking = (row) => ({
+  id:          row.id,
+  itemId:      isNaN(row.item_id) ? row.item_id : Number(row.item_id),
+  itemName:    row.item_name,
+  itemType:    row.item_type,
+  guestName:   row.guest_name,
+  guestEmail:  row.guest_email  || '',
+  guestPhone:  row.guest_phone  || '',
+  checkIn:     row.check_in,
+  checkOut:    row.check_out,
+  guests:      row.guests,
+  status:      row.status,
+  amount:      row.amount,
+  created_at:  row.created_at,
+});
+
 export const getDBBookings = async () => {
   if (supabase) {
     const { data, error } = await supabase
       .from('bookings')
       .select('*')
       .order('created_at', { ascending: false });
-    if (!error && data?.length) return data;
+    if (!error && data?.length) return data.map(normalizeBooking);
   }
   const cached = ls('dk_bookings');
   if (cached) return cached;

@@ -237,10 +237,10 @@ const Reception = () => {
   // Filtered check-in ledger search
   const filteredBookings = bookings.filter(b => {
     const q = searchQuery.toLowerCase();
-    return b.guestName.toLowerCase().includes(q) || 
-           b.id.toLowerCase().includes(q) || 
-           b.guestEmail.toLowerCase().includes(q) ||
-           b.guestPhone.includes(q);
+    return (b.guestName  || '').toLowerCase().includes(q) ||
+           (b.id         || '').toLowerCase().includes(q) ||
+           (b.guestEmail || '').toLowerCase().includes(q) ||
+           (b.guestPhone || '').includes(q);
   });
 
   if (!isAuthenticated) {
