@@ -21,7 +21,8 @@ import {
   ShieldCheck,
   Clock,
   Sparkles,
-  Image as ImageIcon
+  Image as ImageIcon,
+  MessageSquare
 } from 'lucide-react';
 import { useResort } from '../context/ResortContext';
 
@@ -37,7 +38,8 @@ const Admin = () => {
     calculateAmount,
     gallery,
     addGalleryPhoto,
-    removeGalleryPhoto
+    removeGalleryPhoto,
+    contactMessages
   } = useResort();
 
   // Authentication state
@@ -413,6 +415,17 @@ const Admin = () => {
             className={`w-full flex items-center gap-3 px-4 py-3 rounded transition-colors text-sm uppercase tracking-wider font-semibold ${activeTab === 'gallery' ? 'bg-secondary text-primary' : 'hover:bg-white/5 text-gray-300'}`}
           >
             <ImageIcon size={18} /> Gallery Manager
+          </button>
+          <button 
+            onClick={() => setActiveTab('messages')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded transition-colors text-sm uppercase tracking-wider font-semibold ${activeTab === 'messages' ? 'bg-secondary text-primary' : 'hover:bg-white/5 text-gray-300'}`}
+          >
+            <MessageSquare size={18} /> Messages
+            {contactMessages?.length > 0 && (
+              <span className="ml-auto bg-secondary text-primary text-[10px] px-2 py-0.5 rounded-full font-bold">
+                {contactMessages.length}
+              </span>
+            )}
           </button>
         </nav>
         <div className="p-4 border-t border-white/5">
@@ -953,6 +966,44 @@ const Admin = () => {
               </div>
             </div>
           )}
+          {/* TAB: MESSAGES */}
+          {activeTab === 'messages' && (
+            <div className="animate-fade-in">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h2 className="text-2xl font-heading font-bold text-primary">Guest Messages</h2>
+                  <p className="text-gray-500 text-sm mt-1">Inquiries from the contact page</p>
+                </div>
+              </div>
+
+              {contactMessages.length === 0 ? (
+                <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
+                  <MessageSquare size={48} className="mx-auto text-gray-200 mb-4" />
+                  <p className="text-gray-400 font-medium">No messages yet.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-4">
+                  {contactMessages.map((msg, idx) => (
+                    <div key={msg.id || idx} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-bold text-primary">{msg.subject || 'No Subject'}</h4>
+                          <p className="text-sm text-gray-500">{msg.name} ({msg.email})</p>
+                        </div>
+                        <span className="text-xs text-gray-400 font-bold bg-gray-50 px-2 py-1 rounded">
+                          {new Date(msg.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                        </span>
+                      </div>
+                      <p className="text-gray-700 text-sm whitespace-pre-wrap bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        {msg.message}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
         </main>
       </div>
 

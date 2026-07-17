@@ -1,6 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient';
+import { saveDBContactMessage } from '../lib/db';
 
 // ─── Contact Form with Supabase integration ───────────────────
 const ContactForm = () => {
@@ -13,15 +13,12 @@ const ContactForm = () => {
     e.preventDefault();
     setStatus('loading');
     try {
-      if (supabase) {
-        const { error } = await supabase.from('contact_messages').insert({
-          name:    form.name,
-          email:   form.email,
-          subject: form.subject,
-          message: form.message,
-        });
-        if (error) throw error;
-      }
+      await saveDBContactMessage({
+        name:    form.name,
+        email:   form.email,
+        subject: form.subject,
+        message: form.message,
+      });
       setStatus('success');
       setForm({ name: '', email: '', subject: '', message: '' });
     } catch (err) {

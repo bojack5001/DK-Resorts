@@ -16,6 +16,7 @@ import {
   addDBGalleryPhoto,
   removeDBGalleryPhoto,
   saveDBGallery,
+  getDBContactMessages,
 } from '../lib/db';
 
 const ResortContext = createContext();
@@ -26,23 +27,26 @@ export const ResortProvider = ({ children }) => {
   const [bookings, setBookings] = useState([]);
   const [roomStates, setRoomStates] = useState({});
   const [gallery, setGallery] = useState([]);
+  const [contactMessages, setContactMessages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const init = async () => {
       try {
-        const [r, h, b, rs, g] = await Promise.all([
+        const [r, h, b, rs, g, cm] = await Promise.all([
           getDBRooms(),
           getDBHalls(),
           getDBBookings(),
           getDBRoomStates(),
           getDBGallery(),
+          getDBContactMessages(),
         ]);
         setRooms(r || []);
         setHalls(h || []);
         setBookings(b || []);
         setRoomStates(rs || {});
         setGallery(g || []);
+        setContactMessages(cm || []);
       } catch (err) {
         console.error('[ResortContext] init error:', err);
       } finally {
@@ -188,6 +192,7 @@ export const ResortProvider = ({ children }) => {
       bookings,
       roomStates,
       gallery,
+      contactMessages,
       loading,
       addBooking,
       updateBookingStatus,

@@ -285,3 +285,38 @@ export const saveDBGallery = async (gallery) => {
 
 // ─── Legacy sync wrappers (kept for backward compat) ─────────────────────────
 export const initializeDB = () => {};
+
+// ─── CONTACT MESSAGES ──────────────────────────────────────────────────────────
+
+export const getDBContactMessages = async () => {
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error && data?.length) return data;
+  }
+  return ls('dk_contact_messages') || [];
+};
+
+export const saveDBContactMessage = async (msgData) => {
+  const newMsg = {
+    ...msgData,
+    created_at: new Date().toISOString(),
+  };
+
+  if (supabase) {
+    const { error } = await supabase.from('contact_messages').insert(newMsg);
+    if (error) {
+      console.warn('[Supabase] contact_messages insert failed, falling back to localStorage:', error.message);
+    }
+  }
+
+  // Fallback to localStorage
+  const cached = ls('dk_contact_messages') || [];
+  newMsg.id = Date.now(); // local ID
+  cached.unshift(newMsg);
+  lsSave('dk_contact_messages', cached);
+  
+  return newMsg;
+};
