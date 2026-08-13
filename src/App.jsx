@@ -45,6 +45,7 @@ function AppContent() {
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/function-hall" element={<FunctionHall />} />
           <Route path="/pool" element={<Pool />} />
+          <Route path="/swimmingpool" element={<Pool />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
