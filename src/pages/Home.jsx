@@ -113,60 +113,79 @@ const Home = () => {
             <h2 className="text-4xl md:text-5xl font-heading font-bold">Exclusive Experiences</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Service 1 */}
-            <Link to="/rooms" className="group relative overflow-hidden h-[500px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Luxury Rooms */}
+            <Link to="/rooms" className="group relative overflow-hidden h-[480px]">
               <img
                 src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                 alt="Luxury Rooms"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-500"></div>
-              <div className="absolute bottom-0 left-0 p-8 w-full translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
-                <h3 className="text-2xl font-heading font-bold mb-2">Luxury Rooms</h3>
-                <p className="text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-6">
-                  Experience ultimate comfort in our elegantly designed suites with panoramic nature views.
+              <div className="absolute bottom-0 left-0 p-6 w-full translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                <h3 className="text-xl font-heading font-bold mb-2">Solar Rooms</h3>
+                <p className="text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-4">
+                  9 Solar System themed rooms — Mercury to Pluto — with weekday & weekend pricing.
                 </p>
-                <div className="flex items-center text-secondary gap-2 text-sm font-bold uppercase tracking-widest">
-                  View Rooms <ArrowRight size={16} />
+                <div className="flex items-center text-secondary gap-2 text-xs font-bold uppercase tracking-widest">
+                  View Rooms <ArrowRight size={14} />
                 </div>
               </div>
             </Link>
 
-            {/* Service 2 */}
-            <Link to="/function-hall" className="group relative overflow-hidden h-[500px]">
+            {/* Function Halls */}
+            <Link to="/function-hall" className="group relative overflow-hidden h-[480px]">
               <img
-                src="/exquisite_venues_bg.jpg"
-                alt="Function Hall"
+                src="/outdoor1.png"
+                alt="Sun & Moon Halls"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-500"></div>
-              <div className="absolute bottom-0 left-0 p-8 w-full translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
-                <h3 className="text-2xl font-heading font-bold mb-2">Function Hall</h3>
-                <p className="text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-6">
-                  The perfect venue for weddings, corporate events, and grand celebrations with premium catering.
+              <div className="absolute bottom-0 left-0 p-6 w-full translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                <h3 className="text-xl font-heading font-bold mb-2">Sun & Moon Halls</h3>
+                <p className="text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-4">
+                  Sun Hall (outdoor, 200 guests) and Moon Hall (indoor, 100 guests) for every celebration.
                 </p>
-                <div className="flex items-center text-secondary gap-2 text-sm font-bold uppercase tracking-widest">
-                  Explore Hall <ArrowRight size={16} />
+                <div className="flex items-center text-secondary gap-2 text-xs font-bold uppercase tracking-widest">
+                  Explore Halls <ArrowRight size={14} />
                 </div>
               </div>
             </Link>
 
-            {/* Service 3 */}
-            <Link to="/pool" className="group relative overflow-hidden h-[500px]">
+            {/* Galaxy Dining */}
+            <Link to="/dining" className="group relative overflow-hidden h-[480px]">
               <img
-                src="https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Swimming Pool"
+                src="/dining1.png"
+                alt="Galaxy Dining"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-500"></div>
-              <div className="absolute bottom-0 left-0 p-8 w-full translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
-                <h3 className="text-2xl font-heading font-bold mb-2">Swimming Pool</h3>
-                <p className="text-sm text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-6">
-                  Relax and rejuvenate in our temperature-controlled infinity pool overlooking the lush greenery.
+              <div className="absolute bottom-0 left-0 p-6 w-full translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                <h3 className="text-xl font-heading font-bold mb-2">Galaxy Dining</h3>
+                <p className="text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-4">
+                  Multi-cuisine restaurant with poolside dining, buffet breakfast and à la carte dinner.
                 </p>
-                <div className="flex items-center text-secondary gap-2 text-sm font-bold uppercase tracking-widest">
-                  Pool Slots <ArrowRight size={16} />
+                <div className="flex items-center text-secondary gap-2 text-xs font-bold uppercase tracking-widest">
+                  Explore Dining <ArrowRight size={14} />
+                </div>
+              </div>
+            </Link>
+
+            {/* Milky Way Pool */}
+            <Link to="/pool" className="group relative overflow-hidden h-[480px]">
+              <img
+                src="/pool4.png"
+                alt="Milky Way Pool"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-500"></div>
+              <div className="absolute bottom-0 left-0 p-6 w-full translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                <h3 className="text-xl font-heading font-bold mb-2">Milky Way Pool</h3>
+                <p className="text-xs text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-4">
+                  Temperature-controlled infinity pool with morning, afternoon and evening swim slots.
+                </p>
+                <div className="flex items-center text-secondary gap-2 text-xs font-bold uppercase tracking-widest">
+                  Pool Slots <ArrowRight size={14} />
                 </div>
               </div>
             </Link>

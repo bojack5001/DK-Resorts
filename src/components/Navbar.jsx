@@ -11,6 +11,7 @@ const Navbar = () => {
     { name: 'Home', path: '/' },
     { name: 'Rooms', path: '/rooms' },
     { name: 'Function Hall', path: '/function-hall' },
+    { name: 'Dining', path: '/dining' },
     { name: 'Swimming Pool', path: '/pool' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'My Bookings', path: '/my-bookings' },

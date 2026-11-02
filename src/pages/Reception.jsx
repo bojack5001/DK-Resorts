@@ -355,7 +355,7 @@ const Reception = () => {
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-primary flex items-center gap-2">
                   <Activity size={24} className="text-secondary animate-pulse" /> Live Status Grid
                 </h1>
-                <p className="text-gray-500 text-xs mt-1">Interactive overview of all 10 guest rooms and 2 function halls.</p>
+                <p className="text-gray-500 text-xs mt-1">Interactive overview of all 8 guest rooms and 2 party halls (Indoor & Outdoor).</p>
               </div>
 
               {/* Status Indicators */}
@@ -369,8 +369,8 @@ const Reception = () => {
 
             {/* Grid of rooms */}
             <div className="space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Guest Rooms</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Guest Rooms (8)</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {rooms.map(room => {
                   const details = getCellDetails(room, 'room');
                   const cardColor = {
@@ -400,7 +400,7 @@ const Reception = () => {
 
             {/* Grid of halls */}
             <div className="space-y-4 pt-4">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Function Halls</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Party Halls (Indoor & Outdoor)</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {halls.map(hall => {
                   const details = getCellDetails(hall, 'hall');
@@ -420,7 +420,14 @@ const Reception = () => {
                     >
                       <div>
                         <h4 className="text-xl font-heading font-bold">{hall.name}</h4>
-                        <span className="text-[10px] uppercase tracking-wider font-bold mt-1 opacity-70 block">{hall.type}</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[10px] uppercase tracking-wider font-bold opacity-70 block">{hall.type}</span>
+                          {hall.hasSeparateRoom && (
+                            <span className="text-[9px] bg-amber-200/80 text-amber-900 font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+                              ★ 1 Separate Room
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="text-right">
                         <span className="text-xs font-bold uppercase tracking-wider block">{details.visualStatus}</span>
@@ -575,6 +582,11 @@ const Reception = () => {
                 <div className="text-xs space-y-1">
                   <p className="font-bold text-primary">Price: ₹{selectedCell.item.price.toLocaleString('en-IN')}/{selectedCell.type === 'room' ? 'Night' : 'Day'}</p>
                   <p className="text-gray-500">Capacity: {selectedCell.item.capacity} guests</p>
+                  {selectedCell.item.hasSeparateRoom && (
+                    <span className="inline-block bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded text-[10px]">
+                      ★ 1 Dedicated Separate Room Included
+                    </span>
+                  )}
                   <p className="text-gray-400 line-clamp-2">{selectedCell.item.description}</p>
                 </div>
               </div>
@@ -1097,7 +1109,7 @@ const Reception = () => {
                     <div>
                       <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">Resort Desk</p>
                       <p className="font-mono">+91 94894 55977</p>
-                      <p className="lowercase font-mono text-gray-400">dkresort01@gmail.com</p>
+                      <p className="lowercase font-mono text-gray-400">destarresorts@gmail.com</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-1.5">

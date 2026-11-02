@@ -575,7 +575,7 @@ const Booking = () => {
                 <div>
                   <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">Resort Contact</p>
                   <p className="font-mono">+91 94894 55977</p>
-                  <p className="lowercase font-mono text-gray-400">dkresort01@gmail.com</p>
+                  <p className="lowercase font-mono text-gray-400">destarresorts@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-1.5">
@@ -673,7 +673,7 @@ const Booking = () => {
                     ) : (
                       halls.map(h => (
                         <option key={h.id} value={h.id}>
-                          {h.name} - ₹{h.price.toLocaleString('en-IN')}/day
+                          {h.name} {h.hasSeparateRoom ? '(Includes 1 Separate Room)' : ''} - ₹{h.price.toLocaleString('en-IN')}/day
                         </option>
                       ))
                     )}
@@ -807,6 +807,11 @@ const Booking = () => {
                 <div>
                   <span className="text-secondary text-[10px] uppercase font-bold tracking-widest">{selectedItem.type}</span>
                   <h4 className="text-xl font-heading font-bold text-primary">{selectedItem.name}</h4>
+                  {selectedItem.hasSeparateRoom && (
+                    <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-50 border border-amber-300 text-amber-900 text-[11px] font-bold">
+                      <span>⭐ Includes 1 Dedicated Separate Room</span>
+                    </div>
+                  )}
                   <p className="text-xs text-gray-500 leading-relaxed mt-2">{selectedItem.description}</p>
                 </div>
               </div>
@@ -843,7 +848,7 @@ const Booking = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="text-secondary" size={18} />
-                  <span className="text-sm font-semibold">booking@dkstar.com</span>
+                  <a href="mailto:destarresorts@gmail.com" className="text-sm font-semibold hover:text-secondary transition-colors">destarresorts@gmail.com</a>
                 </div>
               </div>
             </div>

@@ -13,9 +13,10 @@ import Booking from './pages/Booking';
 import Pool from './pages/Pool';
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
-import Admin from './pages/Admin';
+import Admin from './pages/Admin.jsx';
 import Reception from './pages/Reception';
 import MyBookings from './pages/MyBookings';
+import GalaxyDining from './pages/GalaxyDining';
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ function AppContent() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/dining" element={<GalaxyDining />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/reception" element={<Reception />} />
         </Routes>

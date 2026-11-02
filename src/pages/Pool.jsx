@@ -257,8 +257,8 @@ const Pool = () => {
       {/* ── Hero ───────────────────────────────────────────── */}
       <section className="relative h-[70vh] min-h-[500px] overflow-hidden flex items-center justify-center">
         <img
-          src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1800&q=80"
-          alt="Crystal Infinity Pool at DK Star Resorts"
+          src="/pool4.png"
+          alt="Milky Way Pool at DK Star Resorts"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-primary/80" />
@@ -271,14 +271,14 @@ const Pool = () => {
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <Waves size={28} className="text-secondary" />
-            <span className="text-secondary font-bold uppercase tracking-[0.3em] text-sm">Swimming Pool</span>
+            <span className="text-secondary font-bold uppercase tracking-[0.3em] text-sm">Resort Facilities</span>
             <Waves size={28} className="text-secondary" />
           </div>
           <h1 className="text-5xl md:text-7xl font-heading font-bold text-white mb-4">
-            Crystal Infinity Pool
+            Milky Way Pool
           </h1>
-          <p className="text-white/80 text-lg max-w-xl mx-auto">
-            Temperature-controlled paradise with breathtaking hill views. Reserve your private slot today.
+          <p className="text-white/90 text-lg max-w-xl mx-auto">
+            Temperature-controlled resort swimming pool with leisure fountain and ambient night lighting. Reserve your slot today.
           </p>
         </motion.div>
       </section>
@@ -589,11 +589,56 @@ const Pool = () => {
         </div>
       </div>
 
+      {/* ── Pool Photographs Strip ───────────────────────── */}
+      <section className="bg-cream py-16 border-t border-gray-200">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <span className="text-secondary font-bold uppercase tracking-[0.3em] text-xs block mb-2">
+              Visual Tour
+            </span>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary">
+              Milky Way Pool Gallery
+            </h2>
+            <p className="text-gray-500 text-sm mt-2">
+              Glistening clear water, mushroom splash fountain, and enchanting evening lights
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { src: '/pool1.png', caption: 'Daylight Pool Deck & Water Umbrella' },
+              { src: '/pool2.png', caption: 'Sunset Ambience & Pool Deck' },
+              { src: '/pool3.png', caption: 'Fountain Splash & Dining Pavilion' },
+              { src: '/pool4.png', caption: 'Night Swimming & Underwater LED Glow' },
+            ].map((p, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="group relative h-64 overflow-hidden rounded-xl shadow-md border border-gray-200"
+              >
+                <img
+                  src={p.src}
+                  alt={p.caption}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+                <p className="absolute bottom-3 left-3 right-3 text-white text-xs font-semibold drop-shadow">
+                  {p.caption}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Gallery / Reviews Strip ───────────────────────── */}
       <section className="bg-primary/5 border-t border-gray-200 py-16">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-heading font-bold text-primary text-center mb-3">What Our Guests Say</h2>
-          <p className="text-gray-500 text-center mb-10 text-sm">About the Crystal Infinity Pool experience</p>
+          <p className="text-gray-500 text-center mb-10 text-sm">About the Milky Way Pool experience</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { name: 'Priya S.', stars: 5, text: 'The evening slot was absolutely magical — ambient lights, cool water, and total peace. Will book again!' },

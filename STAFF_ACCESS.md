@@ -40,7 +40,7 @@ _(or your live domain: `https://yoursite.com/reception`)_
 | Jagan | `jagan@staff` | `deena@123` |
 
 **Reception Capabilities:**
-- 🟩 Live Room Grid — color-coded occupancy status for all 10 rooms + 2 halls
+- 🟩 Live Room Grid — color-coded occupancy status for all 8 rooms + 2 party halls (Indoor & Outdoor)
   - 🟢 **Green** = Available
   - 🟠 **Orange** = Booked (check-in today)
   - 🔵 **Blue** = Occupied (guest checked in)
@@ -55,27 +55,26 @@ _(or your live domain: `https://yoursite.com/reception`)_
 
 ## 🏨 Resort Inventory Summary
 
-### Rooms (101–110)
+### Rooms (01–09) — 9 Solar System Guest Rooms
 
-| Room No. | Name | Type | Rate/Night |
-|----------|------|------|-----------|
-| 101 | Cozy Standard | Standard | ₹4,500 |
-| 102 | Classic Double | Standard | ₹6,000 |
-| 103 | Forest View Deluxe | Deluxe | ₹8,500 |
-| 104 | Garden View Executive | Executive | ₹10,500 |
-| 105 | Poolside Cabin | Cabin | ₹12,500 |
-| 106 | Luxury Stag Suite | Premium Suite | ₹15,000 |
-| 107 | Canopy Treehouse | Chalet | ₹18,000 |
-| 108 | Family Heritage Villa | Family Villa | ₹22,000 |
-| 109 | Vintage Royal Suite | Premium Suite | ₹26,000 |
-| 110 | Presidential Penthouse | Penthouse | ₹38,000 |
+| Room No. | Name | Category | Weekday Rate | Weekend Rate | Key Details |
+| :---: | :--- | :--- | :---: | :---: | :--- |
+| **01** | Mercury | Standard Room | ₹2,499 | ₹2,999 | 1 bed, attached bathroom |
+| **02** | Venus | Family Double Bedroom | ₹3,999 | ₹3,499 | 2 bedrooms, 2 beds, 1 bath, inside room |
+| **03** | Jupiter | Master Family Suite | ₹3,499 | ₹3,999 | Master bedroom + attached bedroom, 2 beds |
+| **04** | Earth | Balcony View Room | ₹2,999 | ₹3,499 | Private balcony view, 1 bedroom |
+| **05** | Mars | Standard Room | ₹2,499 | ₹2,999 | 1 bed, attached bathroom |
+| **06** | Saturn | Standard Room | ₹2,499 | ₹2,999 | 1 bed, attached bathroom |
+| **07** | Uranus | Standard Room | ₹2,499 | ₹2,999 | 1 bed, attached bathroom |
+| **08** | Neptune | Standard Room | ₹2,499 | ₹2,999 | 1 bed, attached bathroom |
+| **09** | Pluto | Hall Attached Room | *Included in Sun Hall* | *Included in Sun Hall* | Attached private room with Sun Hall |
 
-### Function Halls
+### Party Halls (2 Venues)
 
-| Hall | Type | Capacity | Rate/Day |
-|------|------|----------|---------|
-| Grand Lawn & Pavilion | Open Function Hall | 1,000 guests | ₹75,000 |
-| The Oak Room | Mini Function Hall | 150 guests | ₹25,000 |
+| Hall | Type | Capacity | Weekday Rate | Weekend Rate | Special Features |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **Sun Hall** | Outdoor Party Hall | 200 guests | ₹20,000 | ₹23,000 | Open-air lawn, grand stage under stars, **Pluto Room Included** |
+| **Moon Hall** | Indoor Party Hall | 100 guests | ₹15,000 | ₹18,000 | Central AC, acoustic paneling, stage & AV projector |
 
 ---
 

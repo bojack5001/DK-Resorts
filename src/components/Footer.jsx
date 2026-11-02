@@ -32,6 +32,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm text-gray-300">
               <li><Link to="/rooms" className="hover:text-white transition-colors">Our Rooms</Link></li>
               <li><Link to="/function-hall" className="hover:text-white transition-colors">Function Hall</Link></li>
+              <li><Link to="/dining" className="hover:text-white transition-colors">Galaxy Dining</Link></li>
               <li><Link to="/pool" className="hover:text-white transition-colors">Swimming Pool</Link></li>
               <li><Link to="/gallery" className="hover:text-white transition-colors">Photo Gallery</Link></li>
               <li><Link to="/booking" className="hover:text-white transition-colors">Book a Stay</Link></li>
@@ -71,7 +72,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="text-secondary shrink-0" size={18} />
-                <a href="mailto:dkresorts01@gmail.com" className="hover:text-white transition-colors">dkresorts01@gmail.com</a>
+                <a href="mailto:destarresorts@gmail.com" className="hover:text-white transition-colors">destarresorts@gmail.com</a>
               </li>
             </ul>
           </div>

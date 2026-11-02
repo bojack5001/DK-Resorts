@@ -23,7 +23,13 @@ import {
   Sparkles,
   Star,
   Image as ImageIcon,
-  MessageSquare
+  MessageSquare,
+  Camera,
+  Upload,
+  Link as LinkIcon,
+  CheckCircle2,
+  AlertCircle,
+  IndianRupee
 } from 'lucide-react';
 import { useResort } from '../context/ResortContext';
 
@@ -79,6 +85,58 @@ const Admin = () => {
   const [editRoomPrice, setEditRoomPrice] = useState(0);
   const [editRoomCapacity, setEditRoomCapacity] = useState(2);
   const [editRoomDescription, setEditRoomDescription] = useState('');
+  const [editRoomImage, setEditRoomImage] = useState('');
+  const [editRoomImageMode, setEditRoomImageMode] = useState('file'); // 'file' or 'url'
+  const [isProcessingRoomImage, setIsProcessingRoomImage] = useState(false);
+  const [roomImageError, setRoomImageError] = useState('');
+  const [isSavingRoom, setIsSavingRoom] = useState(false);
+  const [inventorySuccessMsg, setInventorySuccessMsg] = useState('');
+
+  const handleRoomImageFile = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setRoomImageError('Please select a valid image file (JPG, PNG, WebP).');
+      return;
+    }
+    setIsProcessingRoomImage(true);
+    setRoomImageError('');
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.82);
+        setEditRoomImage(compressedBase64);
+        setIsProcessingRoomImage(false);
+      };
+      img.onerror = () => {
+        setRoomImageError('Failed to load image. The file might be corrupted.');
+        setIsProcessingRoomImage(false);
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = () => {
+      setRoomImageError('Failed to read file.');
+      setIsProcessingRoomImage(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Form states for gallery photo
   const [newPhotoUrl, setNewPhotoUrl] = useState('');
@@ -294,29 +352,41 @@ const Admin = () => {
     setEditRoomPrice(item.price);
     setEditRoomCapacity(item.capacity);
     setEditRoomDescription(item.description);
+    setEditRoomImage(item.image || '');
+    setEditRoomImageMode('file');
+    setRoomImageError('');
+    setIsProcessingRoomImage(false);
   };
 
-  const saveRoomEdit = (e) => {
+  const saveRoomEdit = async (e) => {
     e.preventDefault();
     if (!editingRoom) return;
 
-    if (editingRoom.type === 'room') {
-      updateRoomDetails(editingRoom.id, {
+    setIsSavingRoom(true);
+    try {
+      const updatedFields = {
         name: editRoomName,
         price: Number(editRoomPrice),
         capacity: Number(editRoomCapacity),
-        description: editRoomDescription
-      });
-    } else {
-      updateHallDetails(editingRoom.id, {
-        name: editRoomName,
-        price: Number(editRoomPrice),
-        capacity: Number(editRoomCapacity),
-        description: editRoomDescription
-      });
-    }
+        description: editRoomDescription,
+        image: editRoomImage || editingRoom.image,
+      };
 
-    setEditingRoom(null);
+      if (editingRoom.type === 'room') {
+        await updateRoomDetails(editingRoom.id, updatedFields);
+      } else {
+        await updateHallDetails(editingRoom.id, updatedFields);
+      }
+
+      setInventorySuccessMsg(`Updated price and photo for ${editingRoom.name} successfully!`);
+      setTimeout(() => setInventorySuccessMsg(''), 5000);
+      setEditingRoom(null);
+    } catch (err) {
+      console.error('Failed to update inventory:', err);
+      alert('Failed to save changes. Please try again.');
+    } finally {
+      setIsSavingRoom(false);
+    }
   };
 
   // Filtered booking data
@@ -760,71 +830,140 @@ const Admin = () => {
 
           {/* TAB: ROOMS & HALLS MANAGER */}
           {activeTab === 'rooms' && (
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-heading font-bold text-primary">Accommodation Inventory</h1>
-                <p className="text-gray-500 text-sm">Review, rename, adjust rates, and edit details of resort rooms and halls dynamically.</p>
+            <div className="space-y-8">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h1 className="text-3xl font-heading font-bold text-primary">Accommodation & Venues</h1>
+                  <p className="text-gray-500 text-sm mt-1">
+                    Update prices, upload new photos, and edit guest capacity for all 8 rooms and 2 party halls live.
+                  </p>
+                </div>
               </div>
 
-              {/* Grid of rooms & halls */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {rooms.map(room => (
-                  <div key={room.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-                    <div>
-                      <div className="h-44 relative">
-                        <img src={room.image} alt={room.name} className="w-full h-full object-cover" />
-                        <div className="absolute top-3 right-3 bg-primary text-white font-bold px-3 py-1 rounded text-xs">
-                          ₹{room.price.toLocaleString('en-IN')}/Night
-                        </div>
-                      </div>
-                      <div className="p-6 space-y-2">
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-heading font-bold text-primary text-xl">{room.name}</h3>
-                          <span className="text-[9px] bg-secondary/15 text-secondary border border-secondary/10 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Room {room.id}</span>
-                        </div>
-                        <p className="text-xs text-gray-500 leading-relaxed line-clamp-3">{room.description}</p>
-                      </div>
-                    </div>
-                    <div className="p-6 pt-0 border-t border-gray-50 flex justify-between items-center bg-gray-50/50">
-                      <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">Cap: {room.capacity} guests</span>
-                      <button 
-                        onClick={() => startEditRoom(room, 'room')}
-                        className="text-secondary hover:text-primary transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
-                      >
-                        <Edit2 size={13} /> Edit Config
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              {inventorySuccessMsg && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl flex items-center gap-3 text-sm font-semibold shadow-sm"
+                >
+                  <CheckCircle2 size={20} className="text-green-600 shrink-0" />
+                  <span>{inventorySuccessMsg}</span>
+                </motion.div>
+              )}
 
-                {halls.map(hall => (
-                  <div key={hall.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-                    <div>
-                      <div className="h-44 relative">
-                        <img src={hall.image} alt={hall.name} className="w-full h-full object-cover" />
-                        <div className="absolute top-3 right-3 bg-secondary text-primary font-bold px-3 py-1 rounded text-xs">
-                          ₹{hall.price.toLocaleString('en-IN')}/Day
+              {/* Section 1: Guest Rooms */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                  <h2 className="text-lg font-heading font-bold text-primary flex items-center gap-2">
+                    <BedDouble size={20} className="text-secondary" /> Guest Rooms (8)
+                  </h2>
+                  <span className="text-xs text-gray-400 font-semibold">Click any card to change price or photo</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {rooms.map(room => (
+                    <div 
+                      key={room.id} 
+                      className="group bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="h-44 relative overflow-hidden bg-gray-100 cursor-pointer" onClick={() => startEditRoom(room, 'room')}>
+                          <img 
+                            src={room.image} 
+                            alt={room.name} 
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-1.5 p-2 text-center">
+                            <Camera size={22} className="text-secondary" />
+                            <span className="text-xs font-bold uppercase tracking-wider">Change Photo / Price</span>
+                          </div>
+                          <div className="absolute top-3 right-3 bg-primary/95 text-white font-bold px-3 py-1 rounded text-xs shadow-md backdrop-blur-sm">
+                            ₹{room.price.toLocaleString('en-IN')}/Night
+                          </div>
+                          <div className="absolute top-3 left-3 bg-white/90 text-primary font-bold px-2 py-0.5 rounded text-[10px] shadow-sm uppercase tracking-wider">
+                            Room {room.id}
+                          </div>
+                        </div>
+
+                        <div className="p-5 space-y-2">
+                          <h3 className="font-heading font-bold text-primary text-lg truncate" title={room.name}>{room.name}</h3>
+                          <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed">{room.description}</p>
                         </div>
                       </div>
-                      <div className="p-6 space-y-2">
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-heading font-bold text-primary text-xl">{hall.name}</h3>
-                          <span className="text-[9px] bg-primary/10 text-primary border border-primary/10 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Venue</span>
-                        </div>
-                        <p className="text-xs text-gray-500 leading-relaxed line-clamp-3">{hall.description}</p>
+
+                      <div className="p-4 pt-0 border-t border-gray-50 flex justify-between items-center bg-gray-50/50">
+                        <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Cap: {room.capacity} guests</span>
+                        <button 
+                          onClick={() => startEditRoom(room, 'room')}
+                          className="bg-primary text-white hover:bg-secondary hover:text-primary transition-colors text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm"
+                        >
+                          <Edit2 size={13} /> Edit Price & Photo
+                        </button>
                       </div>
                     </div>
-                    <div className="p-6 pt-0 border-t border-gray-50 flex justify-between items-center bg-gray-50/50">
-                      <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">Cap: {hall.capacity} max</span>
-                      <button 
-                        onClick={() => startEditRoom(hall, 'hall')}
-                        className="text-secondary hover:text-primary transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
-                      >
-                        <Edit2 size={13} /> Edit Config
-                      </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Section 2: Party Halls */}
+              <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                  <h2 className="text-lg font-heading font-bold text-primary flex items-center gap-2">
+                    <Sparkles size={20} className="text-secondary" /> Party Halls (2 Venues)
+                  </h2>
+                  <span className="text-xs text-gray-400 font-semibold">Indoor & Outdoor party venues</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {halls.map(hall => (
+                    <div 
+                      key={hall.id} 
+                      className="group bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="h-48 relative overflow-hidden bg-gray-100 cursor-pointer" onClick={() => startEditRoom(hall, 'hall')}>
+                          <img 
+                            src={hall.image} 
+                            alt={hall.name} 
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-1.5 p-2 text-center">
+                            <Camera size={22} className="text-secondary" />
+                            <span className="text-xs font-bold uppercase tracking-wider">Change Photo / Price</span>
+                          </div>
+                          <div className="absolute top-3 right-3 bg-secondary text-primary font-bold px-3 py-1 rounded text-xs shadow-md">
+                            ₹{hall.price.toLocaleString('en-IN')}/Day
+                          </div>
+                          <div className="absolute top-3 left-3 bg-white/90 text-primary font-bold px-2 py-0.5 rounded text-[10px] shadow-sm uppercase tracking-wider">
+                            {hall.type}
+                          </div>
+                        </div>
+
+                        <div className="p-5 space-y-2">
+                          <div className="flex justify-between items-start gap-2">
+                            <h3 className="font-heading font-bold text-primary text-xl">{hall.name}</h3>
+                          </div>
+                          {hall.hasSeparateRoom && (
+                            <div className="inline-block bg-amber-50 border border-amber-300 text-amber-900 text-[10px] font-bold px-2.5 py-1 rounded">
+                              ★ 1 Dedicated Attached Separate / Dressing Room Included
+                            </div>
+                          )}
+                          <p className="text-xs text-gray-500 leading-relaxed line-clamp-3">{hall.description}</p>
+                        </div>
+                      </div>
+
+                      <div className="p-4 pt-0 border-t border-gray-50 flex justify-between items-center bg-gray-50/50">
+                        <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Cap: {hall.capacity} guests</span>
+                        <button 
+                          onClick={() => startEditRoom(hall, 'hall')}
+                          className="bg-primary text-white hover:bg-secondary hover:text-primary transition-colors text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm"
+                        >
+                          <Edit2 size={13} /> Edit Price & Photo
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -1166,67 +1305,220 @@ const Admin = () => {
 
       {/* MODAL: EDIT ROOM/HALL CONFIG */}
       {editingRoom && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="max-w-lg w-full bg-white shadow-2xl p-8 rounded-xl border border-gray-100"
+            className="max-w-2xl w-full bg-white shadow-2xl p-6 sm:p-8 rounded-2xl border border-gray-100 my-8 max-h-[90vh] overflow-y-auto"
           >
             <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-6">
-              <h3 className="text-xl font-heading font-bold text-primary">Modify Inventory: {editingRoom.name}</h3>
-              <button onClick={() => setEditingRoom(null)} className="text-gray-400 hover:text-primary">
+              <div>
+                <span className="text-secondary text-[10px] font-bold uppercase tracking-widest block">
+                  {editingRoom.type === 'room' ? 'Room Price & Photo Manager' : 'Party Hall Venue Manager'}
+                </span>
+                <h3 className="text-2xl font-heading font-bold text-primary">
+                  Edit {editingRoom.name}
+                </h3>
+              </div>
+              <button 
+                onClick={() => setEditingRoom(null)} 
+                className="p-2 text-gray-400 hover:text-primary rounded-full hover:bg-gray-100 transition-colors"
+              >
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={saveRoomEdit} className="space-y-4">
+
+            <form onSubmit={saveRoomEdit} className="space-y-6">
+              {/* Photo Section */}
+              <div className="bg-gray-50/70 p-4 rounded-xl border border-gray-100 space-y-3">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                    <Camera size={16} className="text-secondary" /> {editingRoom.type === 'room' ? 'Room Photo' : 'Party Hall Photo'}
+                  </label>
+                  <div className="flex bg-white rounded-lg p-0.5 border border-gray-200 text-[11px] font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setEditRoomImageMode('file')}
+                      className={`px-3 py-1 rounded-md transition-colors ${
+                        editRoomImageMode === 'file' 
+                          ? 'bg-primary text-white shadow-xs' 
+                          : 'text-gray-500 hover:text-primary'
+                      }`}
+                    >
+                      Upload File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditRoomImageMode('url')}
+                      className={`px-3 py-1 rounded-md transition-colors ${
+                        editRoomImageMode === 'url' 
+                          ? 'bg-primary text-white shadow-xs' 
+                          : 'text-gray-500 hover:text-primary'
+                      }`}
+                    >
+                      Image URL
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                  {/* Photo Preview Thumbnail */}
+                  <div className="sm:col-span-1">
+                    <div className="relative h-28 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 shadow-inner group">
+                      <img 
+                        src={editRoomImage || editingRoom.image} 
+                        alt="Preview" 
+                        className="w-full h-full object-cover" 
+                      />
+                      <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-xs">
+                        Current Preview
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Input controls based on mode */}
+                  <div className="sm:col-span-2 space-y-2">
+                    {editRoomImageMode === 'file' ? (
+                      <div className="space-y-1">
+                        <label className="border-2 border-dashed border-gray-300 hover:border-secondary transition-colors rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer bg-white text-center">
+                          <Upload size={22} className="text-secondary mb-1" />
+                          <span className="text-xs font-bold text-primary">
+                            {isProcessingRoomImage ? 'Processing photo...' : 'Click to select photo from device'}
+                          </span>
+                          <span className="text-[10px] text-gray-400 mt-0.5">
+                            JPG, PNG, WebP (auto-compressed for high speed)
+                          </span>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => handleRoomImageFile(e.target.files[0])}
+                            disabled={isProcessingRoomImage}
+                          />
+                        </label>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Paste Image Link / URL</label>
+                        <div className="relative">
+                          <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                          <input 
+                            type="url"
+                            value={editRoomImage}
+                            onChange={(e) => setEditRoomImage(e.target.value)}
+                            placeholder="https://images.unsplash.com/photo-..."
+                            className="w-full border border-gray-200 focus:border-secondary pl-9 pr-3 py-2 text-xs outline-none rounded-lg bg-white font-mono"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {roomImageError && (
+                      <p className="text-red-500 text-[11px] font-semibold flex items-center gap-1">
+                        <AlertCircle size={12} /> {roomImageError}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Price & Capacity Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5 bg-amber-50/40 p-4 rounded-xl border border-amber-200/60">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[11px] uppercase font-bold text-amber-900 tracking-wider flex items-center gap-1">
+                      <IndianRupee size={13} className="text-secondary" />
+                      {editingRoom.type === 'room' ? 'Room Rate / Price' : 'Party Hall Rate / Price'}
+                    </label>
+                    <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">
+                      {editingRoom.type === 'room' ? 'per night' : 'per day'}
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-gray-500 text-sm">₹</span>
+                    <input 
+                      required
+                      type="number" 
+                      min="0"
+                      step="100"
+                      value={editRoomPrice}
+                      onChange={(e) => setEditRoomPrice(e.target.value)}
+                      className="w-full border border-amber-300 focus:border-secondary pl-7 pr-3 py-2.5 text-base outline-none font-bold text-primary rounded-lg bg-white"
+                    />
+                  </div>
+                  <p className="text-[10px] text-gray-500 mt-1">
+                    Live Booking Rate: <strong className="text-primary">₹{Number(editRoomPrice || 0).toLocaleString('en-IN')}</strong> / {editingRoom.type === 'room' ? 'Night' : 'Day'}
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 p-4 rounded-xl border border-gray-200 bg-gray-50/40">
+                  <label className="text-[11px] uppercase font-bold text-gray-500 tracking-wider flex items-center gap-1">
+                    <Users size={14} className="text-secondary" /> Guest Capacity Limit
+                  </label>
+                  <input 
+                    required
+                    type="number" 
+                    min="1"
+                    value={editRoomCapacity}
+                    onChange={(e) => setEditRoomCapacity(e.target.value)}
+                    className="w-full border border-gray-200 focus:border-secondary px-3 py-2.5 text-base outline-none font-bold text-primary rounded-lg bg-white"
+                  />
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    Maximum allowed guests for reservations
+                  </p>
+                </div>
+              </div>
+
+              {/* Name & Description */}
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Configuration Name</label>
+                <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                  {editingRoom.type === 'room' ? 'Room Display Name' : 'Venue Display Name'}
+                </label>
                 <input 
                   required
                   type="text" 
                   value={editRoomName}
                   onChange={(e) => setEditRoomName(e.target.value)}
-                  className="w-full border border-gray-200 focus:border-secondary px-3 py-2 text-sm outline-none font-medium"
+                  className="w-full border border-gray-200 focus:border-secondary px-3 py-2 text-sm outline-none font-medium rounded-lg"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Price (₹ per day/night)</label>
-                  <input 
-                    required
-                    type="number" 
-                    value={editRoomPrice}
-                    onChange={(e) => setEditRoomPrice(e.target.value)}
-                    className="w-full border border-gray-200 focus:border-secondary px-3 py-2 text-sm outline-none font-medium"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Capacity Limit</label>
-                  <input 
-                    required
-                    type="number" 
-                    value={editRoomCapacity}
-                    onChange={(e) => setEditRoomCapacity(e.target.value)}
-                    className="w-full border border-gray-200 focus:border-secondary px-3 py-2 text-sm outline-none font-medium"
-                  />
-                </div>
-              </div>
+
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Short Description</label>
+                <label className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Description & Amenities Summary</label>
                 <textarea 
                   required
                   value={editRoomDescription}
                   onChange={(e) => setEditRoomDescription(e.target.value)}
-                  rows={4}
-                  className="w-full border border-gray-200 focus:border-secondary px-3 py-2 text-sm outline-none font-medium"
+                  rows={3}
+                  className="w-full border border-gray-200 focus:border-secondary px-3 py-2 text-xs outline-none font-medium rounded-lg leading-relaxed"
                 />
               </div>
-              <div className="pt-4 flex gap-4">
-                <button type="button" onClick={() => setEditingRoom(null)} className="w-1/2 btn-outline py-2.5 text-xs">
-                  Cancel Edits
+
+              {/* Submit Buttons */}
+              <div className="pt-2 flex gap-4">
+                <button 
+                  type="button" 
+                  onClick={() => setEditingRoom(null)} 
+                  disabled={isSavingRoom}
+                  className="w-1/3 btn-outline py-3 text-xs rounded-xl"
+                >
+                  Cancel
                 </button>
-                <button type="submit" className="w-1/2 btn-primary py-2.5 text-xs">
-                  Update Configuration
+                <button 
+                  type="submit" 
+                  disabled={isSavingRoom || isProcessingRoomImage}
+                  className="w-2/3 btn-primary py-3 text-xs rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all"
+                >
+                  {isSavingRoom ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      Saving Price & Photo to Database...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 size={16} /> Save Price & Photo Changes
+                    </>
+                  )}
                 </button>
               </div>
             </form>
