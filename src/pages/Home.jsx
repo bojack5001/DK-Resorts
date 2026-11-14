@@ -421,10 +421,26 @@ const Home = () => {
                 Wonders Swimming Pool
               </h2>
               <p className="text-gray-600 leading-relaxed text-base md:text-lg">
-                Immerse yourself in serenity at the <strong>Wonders Swimming Pool</strong>. Featuring crystal-clear temperature-controlled waters, a refreshing mushroom water fountain, and ambient underwater LED illumination, it provides the ultimate refreshing leisure experience for resort guests.
+                Immerse yourself in serenity at the <strong>Wonders Swimming Pool</strong>. Featuring crystal-clear temperature-controlled waters, a refreshing mushroom water fountain, and ambient underwater LED illumination, it provides the ultimate refreshing leisure experience.
               </p>
 
-              <div className="grid grid-cols-2 gap-4 pt-2">
+              {/* Free Pool Access Policy Highlight */}
+              <div className="p-4 bg-emerald-50 border border-emerald-300/80 rounded-xl flex items-start gap-3.5 text-emerald-950">
+                <Sparkles size={20} className="text-emerald-600 shrink-0 mt-0.5" />
+                <div className="text-xs space-y-0.5">
+                  <span className="font-bold uppercase tracking-wider block text-emerald-900 text-xs">
+                    FREE Pool Access for Room & Hall Bookings
+                  </span>
+                  <p className="text-emerald-800 leading-relaxed">
+                    All guests staying in our <strong>Rooms</strong> or hosting celebrations at <strong>Nakshatra Halls</strong> receive <strong>100% complimentary unlimited swimming pool access</strong> throughout their stay!
+                  </p>
+                  <p className="text-[11px] text-emerald-700 font-semibold pt-1">
+                    * Day visitors / non-resident guests can book session passes online or at reception.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-1">
                 <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                   <span className="font-heading font-bold text-lg text-primary block">Mushroom Fountain</span>
                   <span className="text-xs text-gray-500">Interactive Splash Feature</span>
@@ -438,14 +454,17 @@ const Home = () => {
                   <span className="text-xs text-gray-500">Poolside Lounge Seating</span>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                  <span className="font-heading font-bold text-lg text-primary block">Guest Access</span>
-                  <span className="text-xs text-gray-500">Morning & Evening Slots</span>
+                  <span className="font-heading font-bold text-lg text-emerald-800 block">FREE for Residents</span>
+                  <span className="text-xs text-gray-500">Paid slots for day visitors</span>
                 </div>
               </div>
 
-              <div className="pt-2">
-                <Link to="/pool" className="btn-primary inline-flex items-center gap-2 px-8 py-3.5 text-xs font-bold uppercase tracking-wider rounded-lg">
-                  Explore Pool Sessions & Slots <ArrowRight size={16} />
+              <div className="pt-2 flex flex-wrap gap-3">
+                <Link to="/pool" className="btn-primary inline-flex items-center gap-2 px-7 py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
+                  Explore Pool Sessions & Passes <ArrowRight size={16} />
+                </Link>
+                <Link to="/booking" className="btn-outline inline-flex items-center gap-2 px-6 py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
+                  Book Stay (Free Pool)
                 </Link>
               </div>
             </div>

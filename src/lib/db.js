@@ -15,7 +15,7 @@ const INITIAL_ROOMS = [
     description: 'One bed, one attached bathroom. A refined standard room offering quiet sophistication, bespoke comfort, and plush amenities.',
     image: '/mercury1.webp',
     images: ['/mercury1.webp', '/mercury2.webp', '/mercury3.webp', '/mercury4.webp'],
-    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
+    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom', 'Free Pool Access']
   },
   {
     id: 2, name: 'Signature', type: 'Family Room',
@@ -23,7 +23,7 @@ const INITIAL_ROOMS = [
     description: 'Two bedrooms, two beds, one bathroom, and an additional inside room. Specially crafted for distinguished family retreats.',
     image: '/venus1.webp',
     images: ['/venus1.webp', '/venus2.webp', '/venus3.webp', '/venus4.webp', '/venus5.webp'],
-    amenities: ['WiFi', 'AC', 'TV', 'Two Bedrooms', 'Extra Room']
+    amenities: ['WiFi', 'AC', 'TV', 'Two Bedrooms', 'Extra Room', 'Free Pool Access']
   },
   {
     id: 3, name: 'Crown', type: 'Master Family Suite',
@@ -31,7 +31,7 @@ const INITIAL_ROOMS = [
     description: 'Master bedroom with attached additional bedroom and two beds. An opulent suite designed for unforgettable family stays.',
     image: '/jupiter1.webp',
     images: ['/jupiter1.webp', '/jupiter2.webp', '/jupiter3.webp', '/jupiter4.webp', '/jupiter5.webp'],
-    amenities: ['WiFi', 'AC', 'Smart TV', 'Master Suite', 'Two Beds']
+    amenities: ['WiFi', 'AC', 'Smart TV', 'Master Suite', 'Two Beds', 'Free Pool Access']
   },
   {
     id: 4, name: 'Legacy', type: 'Balcony View Room',
@@ -39,7 +39,7 @@ const INITIAL_ROOMS = [
     description: 'One bedroom with private balcony view. Panoramic scenic perspectives paired with royal tranquility.',
     image: '/earth1.webp',
     images: ['/earth1.webp', '/earth2.webp', '/earth3.webp', '/earth4.webp'],
-    amenities: ['WiFi', 'AC', 'TV', 'Private Balcony', 'Scenic View']
+    amenities: ['WiFi', 'AC', 'TV', 'Private Balcony', 'Scenic View', 'Free Pool Access']
   },
   {
     id: 5, name: 'Majestic', type: 'Standard Room',
@@ -47,7 +47,7 @@ const INITIAL_ROOMS = [
     description: 'One bed, one attached bathroom. Beautifully proportioned with bespoke woodwork and serene ambiance.',
     image: '/mars1.webp',
     images: ['/mars1.webp', '/mars2.webp', '/mars3.webp'],
-    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
+    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom', 'Free Pool Access']
   },
   {
     id: 6, name: 'Grande', type: 'Standard Room',
@@ -55,7 +55,7 @@ const INITIAL_ROOMS = [
     description: 'One bed, one attached bathroom. Modern luxury appointments delivering an exceptional restful stay.',
     image: '/saturn1.webp',
     images: ['/saturn1.webp', '/saturn2.webp', '/saturn3.webp'],
-    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
+    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom', 'Free Pool Access']
   },
   {
     id: 7, name: 'Imperial', type: 'Standard Room',
@@ -63,7 +63,7 @@ const INITIAL_ROOMS = [
     description: 'One bed, one attached bathroom. Serene, tasteful decor offering peaceful seclusion and refined luxury.',
     image: '/uranus1.webp',
     images: ['/uranus1.webp', '/uranus2.webp'],
-    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
+    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom', 'Free Pool Access']
   },
   {
     id: 8, name: 'Supreme', type: 'Standard Room',
@@ -71,7 +71,7 @@ const INITIAL_ROOMS = [
     description: 'One bed, one attached bathroom. Distinctive character, elegant craftsmanship, and complete comfort.',
     image: '/neptune1.webp',
     images: ['/neptune1.webp', '/neptune2.webp', '/neptune3.webp'],
-    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
+    amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom', 'Free Pool Access']
   },
   {
     id: 9, name: 'Nakshatra', type: 'Hall Attached Room',
@@ -79,7 +79,7 @@ const INITIAL_ROOMS = [
     description: 'Attached private dressing suite included with the Nakshatra Hall 2 package. Not charged separately when Nakshatra Hall 2 is booked.',
     image: '/nakshatra1.webp',
     images: ['/nakshatra1.webp', '/nakshatra2.webp'],
-    amenities: ['WiFi', 'AC', 'Included with Nakshatra Hall 2 Package'],
+    amenities: ['WiFi', 'AC', 'Included with Nakshatra Hall 2 Package', 'Free Pool Access'],
     isSunHallPackage: true,
     isNakshatraPackage: true
   },
@@ -100,6 +100,7 @@ const INITIAL_HALLS = [
     images: ['/indoor1.webp', '/indoor2.webp', '/indoor3.webp', '/indoor4.webp', '/indoor5.webp'],
     amenities: [
       'Central AC',
+      'Free Pool Access',
       'Acoustic Audio & DJ System',
       'AV Projector & Screen',
       'Banquet Seating',
@@ -121,6 +122,7 @@ const INITIAL_HALLS = [
     images: ['/outdoor1.webp', '/outdoor2.webp', '/outdoor3.webp', '/outdoor4.webp'],
     amenities: [
       'Outdoor Celebration Lawn',
+      'Free Pool Access',
       'Nakshatra Suite Included',
       'Grand Stage Setup',
       'Catering Setup',
@@ -183,7 +185,7 @@ export const getPriceForDate = (item, dateStr) => {
 };
 
 // ─── Inventory Version Sync ──────────────────────────────────────────────────
-const CURRENT_INVENTORY_VERSION = 'v7_nakshatra_halls_pricing';
+const CURRENT_INVENTORY_VERSION = 'v8_free_pool_access';
 
 const syncInventoryIfNeeded = () => {
   const version = ls('dk_inventory_version');

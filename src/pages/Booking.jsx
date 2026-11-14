@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, User, Phone, Mail, Home, MapPin, Printer, CheckCircle, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Calendar, User, Phone, Mail, Home, MapPin, Printer, CheckCircle, AlertTriangle, ArrowLeft, Waves } from 'lucide-react';
 import { useResort } from '../context/ResortContext';
 
 const Booking = () => {
@@ -576,6 +576,7 @@ const Booking = () => {
                 <div className="border border-secondary/15 rounded-lg p-2.5 bg-cream/70 text-[8px] leading-relaxed text-gray-500 font-bold flex flex-col justify-center">
                   <p className="text-primary uppercase tracking-wider font-extrabold mb-1">Note:</p>
                   <p>• Please keep this receipt for your records.</p>
+                  <p>• Complimentary Wonders Swimming Pool access included with your reservation.</p>
                   <p>• For any queries, please contact the front desk.</p>
                 </div>
               </div>
@@ -841,6 +842,11 @@ const Booking = () => {
                         <span className="text-secondary font-heading text-lg">
                           {isComplimentary ? 'Complimentary / Included with Hall' : `₹${total.toLocaleString('en-IN')}`}
                         </span>
+                      </div>
+
+                      <div className="pt-2 border-t border-secondary/15 flex items-center gap-2 text-[11px] text-emerald-800 font-semibold bg-emerald-50/70 p-2 rounded">
+                        <Waves size={14} className="text-emerald-600 shrink-0" />
+                        <span>Includes 100% FREE access to Wonders Swimming Pool throughout your stay!</span>
                       </div>
 
                       <p className="text-[11px] text-gray-400 italic pt-1">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Wifi, Wind, ArrowRight, ChevronLeft, ChevronRight, Star, Sparkles, CheckCircle2, X } from 'lucide-react';
+import { Users, Wifi, Wind, ArrowRight, ChevronLeft, ChevronRight, Star, Sparkles, CheckCircle2, X, Waves } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useResort } from '../context/ResortContext';
 
@@ -162,7 +162,7 @@ const RoomCard = ({ room, onSelectDetails }) => {
       </div>
 
       <div className="px-7 pb-7 pt-0">
-        <div className="flex items-center gap-5 mb-5 text-gray-500 border-t border-gray-100 pt-4">
+        <div className="flex items-center gap-3 sm:gap-4 mb-5 text-gray-500 border-t border-gray-100 pt-4 flex-wrap">
           <div className="flex items-center gap-1.5">
             <Users size={14} className="text-secondary" />
             <span className="text-xs font-semibold">{room.capacity} Guests</span>
@@ -174,6 +174,10 @@ const RoomCard = ({ room, onSelectDetails }) => {
           <div className="flex items-center gap-1.5">
             <Wind size={14} className="text-secondary" />
             <span className="text-xs font-semibold">AC</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 px-2 py-0.5 rounded">
+            <Waves size={13} className="text-emerald-600" />
+            <span className="text-[11px] font-bold">Free Pool</span>
           </div>
           {gallery.length > 1 && (
             <div className="flex items-center gap-1.5 text-secondary ml-auto">
@@ -252,6 +256,24 @@ const Rooms = () => {
         </div>
       </section>
 
+      {/* ── Complimentary Pool Access Alert ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
+        <div className="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3.5 sm:p-4 shadow-md flex items-center justify-between gap-4 text-emerald-950 flex-wrap">
+          <div className="flex items-center gap-3">
+            <span className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Waves size={18} />
+            </span>
+            <div className="text-xs sm:text-sm">
+              <strong className="text-emerald-900">All Room Reservations Include 100% FREE Swimming Pool Access!</strong>
+              <span className="hidden md:inline text-emerald-800 ml-1.5">— Unlimited entry to Wonders Swimming Pool throughout your stay.</span>
+            </div>
+          </div>
+          <Link to="/pool" className="text-xs font-bold text-emerald-800 hover:text-emerald-950 underline shrink-0">
+            View Pool Details →
+          </Link>
+        </div>
+      </div>
+
       {/* ── Room Cards Grid ────────────────────────────────── */}
       <section className="section-container py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -328,6 +350,9 @@ const Rooms = () => {
                 <div className="space-y-2">
                   <h4 className="text-xs font-bold uppercase tracking-widest text-primary">Amenities & Inclusions</h4>
                   <div className="flex flex-wrap gap-2">
+                    <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+                      <Waves size={13} className="text-emerald-600" /> FREE Swimming Pool Access
+                    </span>
                     {detailModal.room.amenities.map(a => (
                       <span key={a} className="bg-primary/5 text-primary text-xs px-3 py-1.5 rounded-full font-semibold flex items-center gap-1.5">
                         <CheckCircle2 size={13} className="text-secondary" /> {a}

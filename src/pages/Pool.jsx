@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import {
   Waves, Sun, Sunset, Moon, Users, Calendar, Phone, Mail,
   User, CheckCircle, Clock, Droplets, Wind, Thermometer,
-  ArrowLeft, Printer, Star
+  ArrowLeft, Printer, Star, Sparkles, ShieldCheck
 } from 'lucide-react';
 
 // ─── Slot Config ─────────────────────────────────────────────
@@ -336,8 +337,42 @@ const Pool = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
               >
-                <h2 className="text-3xl font-heading font-bold text-primary mb-2">Choose Your Slot</h2>
-                <p className="text-gray-500 mb-8 text-sm">Select a time slot and date for your pool session.</p>
+                {/* ── Complimentary Pool Access Notice for Room & Hall Bookings ── */}
+                <div className="mb-8 p-5 sm:p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-2xl shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                      <Waves size={24} />
+                    </div>
+                    <div className="space-y-1.5 text-left">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-heading font-extrabold text-base sm:text-lg text-emerald-950">
+                          Room & Function Hall Bookings: 100% FREE Pool Access!
+                        </span>
+                        <span className="bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
+                          Complimentary Stay Perk
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-emerald-800 leading-relaxed">
+                        If you have booked any of our <strong>9 Prestige Rooms</strong> or celebrated at <strong>Nakshatra Hall 1 & 2</strong>, swimming pool access is <strong>completely FREE</strong> for all registered guests throughout your stay. No tickets required — simply present your room key or booking confirmation at the pool deck!
+                      </p>
+                      <div className="pt-2 border-t border-emerald-200/70 flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <span className="text-emerald-900 font-semibold flex items-center gap-1.5">
+                          <Sparkles size={14} className="text-emerald-600" />
+                          <span>Day Visitors / Outside Guests: Purchase session slots below</span>
+                        </span>
+                        <Link to="/booking" className="text-xs font-bold text-emerald-800 hover:text-emerald-950 underline flex items-center gap-1">
+                          Book a Room or Hall Stay →
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+                  <h2 className="text-3xl font-heading font-bold text-primary">Day Visitor Pool Slots</h2>
+                  <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Pay-Per-Entry For Non-Residents</span>
+                </div>
+                <p className="text-gray-500 mb-8 text-sm">Select a time slot and date to purchase pool entry for visitors without a room or hall reservation.</p>
 
                 {/* Date picker */}
                 <div className="mb-8">
@@ -519,9 +554,27 @@ const Pool = () => {
 
         {/* ── Right: Booking Summary Sidebar ───────────────── */}
         <div className="space-y-6">
+          {/* Room / Hall In-house Guest Callout */}
+          <div className="bg-[#4A3728] text-white rounded-xl p-5 border-l-4 border-secondary space-y-2 shadow-md">
+            <div className="flex items-center gap-2 text-secondary font-bold text-[11px] uppercase tracking-wider">
+              <Sparkles size={14} />
+              <span>In-House Resident Privilege</span>
+            </div>
+            <h4 className="font-heading font-bold text-base text-white">Booked a Room or Hall?</h4>
+            <p className="text-xs text-gray-200 leading-relaxed">
+              You do <strong>not</strong> need to pay or buy pool tickets! Swimming pool access is <strong>100% complimentary</strong> for all guests with room or hall reservations.
+            </p>
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+              <span className="text-[10px] text-gray-300">Show room key at deck</span>
+              <Link to="/booking" className="text-xs font-bold text-secondary hover:text-white transition-colors underline">
+                Reserve Room / Hall →
+              </Link>
+            </div>
+          </div>
+
           <div className="bg-white border border-gray-100 shadow-lg rounded-xl overflow-hidden sticky top-28">
             <div className="bg-primary px-6 py-4">
-              <h3 className="text-white font-heading font-bold text-lg">Booking Summary</h3>
+              <h3 className="text-white font-heading font-bold text-lg">Day Visitor Ticket Summary</h3>
             </div>
             <div className="p-6 space-y-4">
               {selectedSlot && slot ? (
@@ -568,9 +621,17 @@ const Pool = () => {
 
           {/* Pool Rules */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
-            <h4 className="font-bold text-primary text-sm uppercase tracking-widest mb-3">Pool Rules</h4>
+            <h4 className="font-bold text-primary text-sm uppercase tracking-widest mb-3">Pool Guidelines & Access</h4>
             <ul className="space-y-2 text-xs text-gray-600">
-              {['Swim cap mandatory for all', 'No outside food or drinks', 'Children under 12 need adult supervision', 'Please shower before entering', 'Non-swimmers must wear floats'].map(r => (
+              {[
+                'FREE access for all in-house Room & Function Hall guests',
+                'Outside day visitors must hold a valid paid slot booking',
+                'Swim cap mandatory for all swimmers',
+                'No outside food or drinks allowed on deck',
+                'Children under 12 need adult supervision',
+                'Please shower before entering the pool',
+                'Non-swimmers must wear floats'
+              ].map(r => (
                 <li key={r} className="flex items-start gap-2">
                   <span className="text-secondary font-bold shrink-0">→</span> {r}
                 </li>
