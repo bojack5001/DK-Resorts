@@ -111,12 +111,12 @@ const RoomCard = ({ room, onSelectDetails }) => {
             {!isNakshatraPackage && (
               <div className="text-right">
                 <span className="text-[10px] text-gray-500 uppercase tracking-wider block font-bold">
-                  {isWeekendToday ? 'Weekend Rate' : 'Weekday Rate'}
+                  {isWeekendToday ? 'Weekend Rate (Sat–Sun)' : 'Weekday Rate (Mon–Fri)'}
                 </span>
-                <span className="font-bold text-primary font-heading text-lg">
+                <span className={`font-bold font-heading text-lg ${isWeekendToday ? 'text-secondary' : 'text-primary'}`}>
                   ₹{currentTodayRate.toLocaleString('en-IN')}
                 </span>
-                <span className="text-[10px] text-secondary font-semibold block">Today's Tariff</span>
+                <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
               </div>
             )}
           </div>
@@ -125,22 +125,30 @@ const RoomCard = ({ room, onSelectDetails }) => {
             {room.description}
           </p>
 
-          {/* Dual Dynamic Tariff Box: Monday-Friday vs Saturday-Sunday */}
+          {/* Dynamic Tariff Box: Monday-Friday vs Saturday-Sunday */}
           {!isNakshatraPackage && (
-            <div className="bg-cream p-3 rounded-lg border border-secondary/25 mb-3 text-xs space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className={`font-semibold flex items-center gap-1.5 ${!isWeekendToday ? 'text-primary font-bold' : 'text-gray-600'}`}>
-                  <span>Mon–Fri (Weekday):</span>
-                </span>
-                <span className="font-bold text-primary">₹{weekdayRate.toLocaleString('en-IN')}/Night</span>
-              </div>
-              <div className="flex items-center justify-between border-t border-secondary/15 pt-1.5">
-                <span className={`font-semibold flex items-center gap-1.5 ${isWeekendToday ? 'text-secondary font-bold' : 'text-gray-600'}`}>
-                  <span>Sat–Sun (Weekend):</span>
-                </span>
-                <span className="font-bold text-secondary">₹{weekendRate.toLocaleString('en-IN')}/Night</span>
-              </div>
-              <p className="text-[10px] text-gray-400 text-right pt-0.5">All rates tax inclusive</p>
+            <div className="bg-cream p-3 rounded-lg border border-secondary/25 mb-3 text-xs">
+              {!isWeekendToday ? (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-primary block">Weekday Tariff (Mon–Fri)</span>
+                    <span className="text-[10px] text-gray-500">All rates tax inclusive</span>
+                  </div>
+                  <span className="font-bold text-primary text-base font-heading">
+                    ₹{weekdayRate.toLocaleString('en-IN')}/Night
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-secondary block">Weekend Tariff (Sat–Sun)</span>
+                    <span className="text-[10px] text-gray-500">All rates tax inclusive</span>
+                  </div>
+                  <span className="font-bold text-secondary text-base font-heading">
+                    ₹{weekendRate.toLocaleString('en-IN')}/Night
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -207,6 +215,7 @@ const RoomCard = ({ room, onSelectDetails }) => {
 const Rooms = () => {
   const { rooms } = useResort();
   const [detailModal, setDetailModal] = useState(null);
+  const isWeekendToday = (new Date().getDay() === 0 || new Date().getDay() === 6);
 
   const openDetails = (room, gallery) => {
     setDetailModal({ room, gallery });
@@ -288,21 +297,32 @@ const Rooms = () => {
                   <p className="text-gray-600 text-sm leading-relaxed mt-2">{detailModal.room.description}</p>
                 </div>
 
-                <div className="bg-cream p-4 rounded-xl border border-secondary/20 grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Rate</span>
-                    <span className="text-2xl font-heading font-bold text-primary">
-                      {detailModal.room.id === 9 ? 'Hall Package' : `₹${(detailModal.room.price_weekday || detailModal.room.price).toLocaleString('en-IN')}`}
-                    </span>
-                    <span className="text-[10px] text-gray-400 block">Per Night • Tax Inclusive</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Rate</span>
-                    <span className="text-2xl font-heading font-bold text-secondary">
-                      {detailModal.room.id === 9 ? 'Hall Package' : `₹${(detailModal.room.price_weekend || detailModal.room.price).toLocaleString('en-IN')}`}
-                    </span>
-                    <span className="text-[10px] text-gray-400 block">Per Night • Tax Inclusive</span>
-                  </div>
+                <div className="bg-cream p-4 rounded-xl border border-secondary/20">
+                  {detailModal.room.id === 9 ? (
+                    <div className="text-center py-2 text-amber-900 font-bold text-sm">
+                      ⭐ Included with Nakshatra Hall 2 Booking Package (No separate charge)
+                    </div>
+                  ) : !isWeekendToday ? (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Rate (Mon–Fri)</span>
+                        <span className="text-[10px] text-gray-400 block">Per Night • Tax Inclusive</span>
+                      </div>
+                      <span className="text-2xl font-heading font-bold text-primary">
+                        ₹{(detailModal.room.price_weekday || detailModal.room.price).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Rate (Sat–Sun)</span>
+                        <span className="text-[10px] text-gray-400 block">Per Night • Tax Inclusive</span>
+                      </div>
+                      <span className="text-2xl font-heading font-bold text-secondary">
+                        ₹{(detailModal.room.price_weekend || detailModal.room.price).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">

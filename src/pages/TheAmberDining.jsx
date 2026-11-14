@@ -30,7 +30,7 @@ const TheAmberDining = () => {
         <div className="absolute inset-0">
           <img
             src={images[activeImg]}
-            alt="The Amber Dining at DK Star Resorts"
+            alt="The Grand Pavilion at DK Star Resorts"
             className="w-full h-full object-cover transition-all duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/75" />
@@ -46,7 +46,7 @@ const TheAmberDining = () => {
             initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
             className="text-5xl md:text-7xl font-heading font-bold mb-4"
           >
-            The Amber Dining
+            The Grand Pavilion
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }}
@@ -75,7 +75,7 @@ const TheAmberDining = () => {
             <div key={i} className="relative overflow-hidden group cursor-pointer" onClick={() => setActiveImg(i)}>
               <img
                 src={src}
-                alt={`The Amber Dining view ${i + 1}`}
+                alt={`The Grand Pavilion view ${i + 1}`}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
@@ -98,7 +98,7 @@ const TheAmberDining = () => {
               Culinary Elegance in a Regal Setting
             </h2>
             <p className="text-gray-600 leading-relaxed text-base md:text-lg">
-              <strong>The Amber Dining</strong> is DK Star Resorts' signature multi-cuisine dining destination — an exquisite open-air and covered pavilion designed with imported marble flooring, handcrafted rattan lighting, and lush botanical backdrops.
+              <strong>The Grand Pavilion</strong> is DK Star Resorts' signature multi-cuisine dining destination — an exquisite open-air and covered pavilion designed with imported marble flooring, handcrafted rattan lighting, and lush botanical backdrops.
             </p>
             <p className="text-gray-600 leading-relaxed text-sm md:text-base">
               Guests can enjoy gourmet breakfasts, grand banquet luncheons, and intimate starlit dinners right alongside the Wonders Swimming Pool. Every plate is crafted with utmost care, using locally sourced vegetables and authentic spices.
@@ -120,7 +120,7 @@ const TheAmberDining = () => {
           <div className="relative">
             <img
               src="/dining1.webp"
-              alt="The Amber Dining Interior"
+              alt="The Grand Pavilion Interior"
               className="w-full h-[480px] object-cover rounded-2xl shadow-2xl"
             />
             <div className="absolute -bottom-6 -right-6 bg-primary text-white p-7 rounded-xl shadow-xl hidden md:block border-l-4 border-secondary">
@@ -146,7 +146,7 @@ const TheAmberDining = () => {
                 The Gourmet Kitchen
               </h2>
               <p className="text-gray-300 text-sm md:text-base leading-relaxed">
-                Operating alongside The Amber Dining, <strong>The Gourmet Kitchen</strong> is our fully-equipped, modern food preparation facility. Designed to cater both daily resident guests and grand wedding receptions at Nakshatra Hall and Moon Hall, our master culinary brigade ensures exceptional quality, uncompromising hygiene, and rich authentic flavours.
+                Operating alongside The Grand Pavilion, <strong>The Gourmet Kitchen</strong> is our fully-equipped, modern food preparation facility. Designed to cater both daily resident guests and grand celebrations at Nakshatra Hall 1 & 2, our master culinary brigade ensures exceptional quality, uncompromising hygiene, and rich authentic flavours.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-300 pt-2">
                 <div className="flex items-center gap-2 bg-white/5 p-3 rounded-lg border border-white/10">
@@ -230,7 +230,7 @@ const TheAmberDining = () => {
           Reserve Your Table or Event Catering
         </h2>
         <p className="text-gray-500 max-w-md mx-auto mb-8 text-sm">
-          The Amber Dining welcomes all resort residents and celebration guests. For private events or table reservations, contact us directly.
+          The Grand Pavilion welcomes all resort residents and celebration guests. For private events or table reservations, contact us directly.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to="/contact" className="btn-primary flex items-center gap-2 justify-center px-8 py-3.5 text-xs font-bold uppercase tracking-wider rounded-lg">

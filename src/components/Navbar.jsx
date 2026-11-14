@@ -28,7 +28,7 @@ const Navbar = () => {
     { name: 'Home', path: '/' },
     { name: 'Rooms', path: '/rooms' },
     { name: 'Halls', path: '/function-hall' },
-    { name: 'The Amber Dining', path: '/dining' },
+    { name: 'The Grand Pavilion', path: '/dining' },
     { name: 'Wonders Pool', path: '/pool' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'My Bookings', path: '/my-bookings' },
@@ -168,9 +168,9 @@ const Navbar = () => {
                     <Phone size={14} className="text-[#C5A059]" />
                     <span className="font-semibold">+91 94894 55977</span>
                   </a>
-                  <a href="mailto:destarresorts@gmail.com" className="flex items-center gap-3 hover:text-[#4A3728] transition-colors">
+                  <a href="mailto:dkstarresorts@gmail.com" className="flex items-center gap-3 hover:text-[#4A3728] transition-colors">
                     <Mail size={14} className="text-[#C5A059]" />
-                    <span className="font-semibold">destarresorts@gmail.com</span>
+                    <span className="font-semibold">dkstarresorts@gmail.com</span>
                   </a>
                   <div className="flex items-start gap-3">
                     <MapPin size={14} className="text-[#C5A059] shrink-0 mt-0.5" />

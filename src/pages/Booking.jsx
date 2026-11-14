@@ -118,6 +118,9 @@ const Booking = () => {
     ? rooms.find(r => r.id === Number(itemId))
     : halls.find(h => h.id === itemId);
 
+  // Dynamic day-of-week detector (Mon-Fri vs Sat-Sun)
+  const isWeekendToday = (new Date().getDay() === 0 || new Date().getDay() === 6);
+
   // Calculate pricing breakdown with dynamic weekday/weekend rates
   const calculateStayBreakdown = () => {
     if (!checkIn || !checkOut || !selectedItem) return { days: 0, total: 0, nightsBreakdown: [] };
@@ -596,7 +599,7 @@ const Booking = () => {
                 <div>
                   <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">Resort Contact</p>
                   <p className="font-mono">+91 94894 55977</p>
-                  <p className="lowercase font-mono text-gray-400">destarresorts@gmail.com</p>
+                  <p className="lowercase font-mono text-gray-400">dkstarresorts@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-1.5">
@@ -688,13 +691,13 @@ const Booking = () => {
                     {itemType === 'room' ? (
                       rooms.map(r => (
                         <option key={r.id} value={r.id}>
-                          Room {String(r.id).padStart(2, '0')} – {r.name} ({r.type}) {r.id === 9 ? '• Included in Nakshatra Hall 2 Package' : `• Mon–Fri: ₹${(r.price_weekday || r.price).toLocaleString('en-IN')} | Sat–Sun: ₹${(r.price_weekend || r.price).toLocaleString('en-IN')}`}
+                          Room {String(r.id).padStart(2, '0')} – {r.name} ({r.type}) {r.id === 9 ? '• Included in Nakshatra Hall 2 Package' : (isWeekendToday ? `• Weekend Tariff (Sat–Sun): ₹${(r.price_weekend || r.price).toLocaleString('en-IN')}` : `• Weekday Tariff (Mon–Fri): ₹${(r.price_weekday || r.price).toLocaleString('en-IN')}`)}
                         </option>
                       ))
                     ) : (
                       halls.map(h => (
                         <option key={h.id} value={h.id}>
-                          {h.name} ({h.type}) • Mon–Fri: ₹{(h.price_weekday || h.price).toLocaleString('en-IN')} | Sat–Sun: ₹{(h.price_weekend || h.price).toLocaleString('en-IN')} {h.hasSeparateRoom ? ' [Includes Room 09 Suite]' : ''}
+                          {h.name} ({h.type}) • {isWeekendToday ? `Weekend Tariff (Sat–Sun): ₹${(h.price_weekend || h.price).toLocaleString('en-IN')}` : `Weekday Tariff (Mon–Fri): ₹${(h.price_weekday || h.price).toLocaleString('en-IN')}`} {h.hasSeparateRoom ? ' [Includes Room 09 Suite]' : ''}
                         </option>
                       ))
                     )}
@@ -912,7 +915,7 @@ const Booking = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="text-secondary" size={18} />
-                  <a href="mailto:destarresorts@gmail.com" className="text-sm font-semibold hover:text-secondary transition-colors">destarresorts@gmail.com</a>
+                  <a href="mailto:dkstarresorts@gmail.com" className="text-sm font-semibold hover:text-secondary transition-colors">dkstarresorts@gmail.com</a>
                 </div>
               </div>
             </div>

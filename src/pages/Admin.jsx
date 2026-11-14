@@ -878,7 +878,7 @@ const Admin = () => {
                             <span className="text-xs font-bold uppercase tracking-wider">Change Photo / Price</span>
                           </div>
                           <div className="absolute top-3 right-3 bg-primary/95 text-white font-bold px-3 py-1 rounded text-xs shadow-md backdrop-blur-sm">
-                            ₹{room.price.toLocaleString('en-IN')}/Night
+                            ₹{((new Date().getDay() === 0 || new Date().getDay() === 6) ? (room.price_weekend || room.price) : (room.price_weekday || room.price)).toLocaleString('en-IN')}/Night
                           </div>
                           <div className="absolute top-3 left-3 bg-white/90 text-primary font-bold px-2 py-0.5 rounded text-[10px] shadow-sm uppercase tracking-wider">
                             Room {room.id}
@@ -932,7 +932,7 @@ const Admin = () => {
                             <span className="text-xs font-bold uppercase tracking-wider">Change Photo / Price</span>
                           </div>
                           <div className="absolute top-3 right-3 bg-secondary text-primary font-bold px-3 py-1 rounded text-xs shadow-md">
-                            ₹{hall.price.toLocaleString('en-IN')}/Day
+                            ₹{((new Date().getDay() === 0 || new Date().getDay() === 6) ? (hall.price_weekend || hall.price) : (hall.price_weekday || hall.price)).toLocaleString('en-IN')}/Day
                           </div>
                           <div className="absolute top-3 left-3 bg-white/90 text-primary font-bold px-2 py-0.5 rounded text-[10px] shadow-sm uppercase tracking-wider">
                             {hall.type}

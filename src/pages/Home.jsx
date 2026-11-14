@@ -9,6 +9,7 @@ import { useResort } from '../context/ResortContext';
 
 const Home = () => {
   const { rooms, halls } = useResort();
+  const isWeekendToday = (new Date().getDay() === 0 || new Date().getDay() === 6);
 
   return (
     <div className="overflow-hidden bg-cream text-primary">
@@ -86,7 +87,7 @@ const Home = () => {
               A Sanctuary of Distinction & Timeless Splendour
             </h2>
             <p className="text-gray-600 leading-relaxed text-base md:text-lg">
-              Welcome to <strong>DK STAR RESORTS</strong>, where regal hospitality blends seamlessly with natural beauty. Each element of our estate has been meticulously crafted to offer guests a distinguished escape — from our curated <em>Prestige Room Collection</em> and majestic celebrations at <em>Nakshatra & Moon Halls</em>, to tranquil afternoons by the <em>Wonders Swimming Pool</em> and gourmet indulgences at <em>The Amber Dining</em>.
+              Welcome to <strong>DK STAR RESORTS</strong>, where regal hospitality blends seamlessly with natural beauty. Each element of our estate has been meticulously crafted to offer guests a distinguished escape — from our curated <em>Prestige Room Collection</em> and majestic celebrations at <em>Nakshatra Hall 1 & 2</em>, to tranquil afternoons by the <em>Wonders Swimming Pool</em> and gourmet indulgences at <em>The Grand Pavilion</em>.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-4">
@@ -105,7 +106,7 @@ const Home = () => {
                   <UtensilsCrossed size={18} />
                 </div>
                 <div>
-                  <span className="font-heading font-bold text-sm block">The Amber Dining</span>
+                  <span className="font-heading font-bold text-sm block">The Grand Pavilion</span>
                   <span className="text-[11px] text-gray-400">Multi-Cuisine Delicacies</span>
                 </div>
               </div>
@@ -190,7 +191,7 @@ const Home = () => {
                         Room 0{room.id}
                       </div>
                       <div className="absolute top-4 right-4 bg-secondary text-primary font-bold text-xs px-3 py-1.5 rounded-md shadow">
-                        {isNakshatra ? 'Hall 2 Package' : `Today: ₹${currentTodayRate.toLocaleString('en-IN')}`}
+                        {isNakshatra ? 'Hall 2 Package' : (isWeekendToday ? `Weekend: ₹${weekendRate.toLocaleString('en-IN')}` : `Weekday: ₹${weekdayRate.toLocaleString('en-IN')}`)}
                       </div>
                     </div>
 
@@ -204,20 +205,28 @@ const Home = () => {
                       </p>
 
                       {!isNakshatra && (
-                        <div className="bg-cream p-3 rounded-lg border border-secondary/25 space-y-1 text-xs">
-                          <div className="flex items-center justify-between">
-                            <span className={`font-semibold ${!isWeekendToday ? 'text-primary font-bold' : 'text-gray-600'}`}>
-                              Mon–Fri (Weekday):
-                            </span>
-                            <span className="font-bold text-primary">₹{weekdayRate.toLocaleString('en-IN')}</span>
-                          </div>
-                          <div className="flex items-center justify-between border-t border-secondary/15 pt-1">
-                            <span className={`font-semibold ${isWeekendToday ? 'text-secondary font-bold' : 'text-gray-600'}`}>
-                              Sat–Sun (Weekend):
-                            </span>
-                            <span className="font-bold text-secondary">₹{weekendRate.toLocaleString('en-IN')}</span>
-                          </div>
-                          <p className="text-[10px] text-gray-400 text-right pt-0.5">Tax Inclusive / Night</p>
+                        <div className="bg-cream p-3 rounded-lg border border-secondary/25 text-xs">
+                          {!isWeekendToday ? (
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-primary block">Weekday Tariff (Mon–Fri)</span>
+                                <span className="text-[10px] text-gray-500">Tax Inclusive / Night</span>
+                              </div>
+                              <span className="font-bold text-primary text-base font-heading">
+                                ₹{weekdayRate.toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="font-bold text-secondary block">Weekend Tariff (Sat–Sun)</span>
+                                <span className="text-[10px] text-gray-500">Tax Inclusive / Night</span>
+                              </div>
+                              <span className="font-bold text-secondary text-base font-heading">
+                                ₹{weekendRate.toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -303,17 +312,25 @@ const Home = () => {
                   <span>Central Air-Conditioning, Royal Stage Setup & Banquet Seating.</span>
                 </div>
 
-                <div className="bg-cream p-4 rounded-xl border-l-4 border-secondary grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Tariff (Mon–Fri)</span>
-                    <span className="text-xl font-heading font-bold text-primary">₹20,000</span>
-                    <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Tariff (Sat–Sun)</span>
-                    <span className="text-xl font-heading font-bold text-secondary">₹23,000</span>
-                    <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
-                  </div>
+                {/* Dynamic Tariff Box: Monday-Friday vs Saturday-Sunday */}
+                <div className="bg-cream p-4 rounded-xl border-l-4 border-secondary">
+                  {!isWeekendToday ? (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Tariff (Mon–Fri)</span>
+                        <span className="text-[10px] text-gray-400 block">Tax Inclusive • Per Day</span>
+                      </div>
+                      <span className="text-2xl font-heading font-bold text-primary">₹20,000</span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Tariff (Sat–Sun)</span>
+                        <span className="text-[10px] text-gray-400 block">Tax Inclusive • Per Day</span>
+                      </div>
+                      <span className="text-2xl font-heading font-bold text-secondary">₹23,000</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -357,17 +374,25 @@ const Home = () => {
                   <span>Includes Room 09 (Nakshatra Attached Dressing Suite) in the package.</span>
                 </div>
 
-                <div className="bg-cream p-4 rounded-xl border-l-4 border-secondary grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Tariff (Mon–Fri)</span>
-                    <span className="text-xl font-heading font-bold text-primary">₹25,000</span>
-                    <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Tariff (Sat–Sun)</span>
-                    <span className="text-xl font-heading font-bold text-secondary">₹27,000</span>
-                    <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
-                  </div>
+                {/* Dynamic Tariff Box: Monday-Friday vs Saturday-Sunday */}
+                <div className="bg-cream p-4 rounded-xl border-l-4 border-secondary">
+                  {!isWeekendToday ? (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Tariff (Mon–Fri)</span>
+                        <span className="text-[10px] text-gray-400 block">Tax Inclusive • Per Day</span>
+                      </div>
+                      <span className="text-2xl font-heading font-bold text-primary">₹25,000</span>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Tariff (Sat–Sun)</span>
+                        <span className="text-[10px] text-gray-400 block">Tax Inclusive • Per Day</span>
+                      </div>
+                      <span className="text-2xl font-heading font-bold text-secondary">₹27,000</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -439,14 +464,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 6. The Amber Dining & The Gourmet Kitchen ─────────────── */}
+      {/* ── 6. The Grand Pavilion & The Gourmet Kitchen ─────────────── */}
       <section className="section-container">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <span className="text-secondary font-bold uppercase tracking-[0.3em] text-xs">
             Culinary Splendour
           </span>
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-primary">
-            The Amber Dining & The Gourmet Kitchen
+            The Grand Pavilion & The Gourmet Kitchen
           </h2>
           <p className="text-gray-600 text-sm md:text-base">
             Honouring royal gastronomic traditions with fresh locally-sourced ingredients, exquisite culinary craft, and majestic poolside views.
@@ -455,11 +480,11 @@ const Home = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
           <div className="relative overflow-hidden rounded-2xl shadow-xl">
-            <img src="/dining1.webp" alt="The Amber Dining Restaurant" loading="lazy" className="w-full h-[400px] object-cover" />
+            <img src="/dining1.webp" alt="The Grand Pavilion Restaurant" loading="lazy" className="w-full h-[400px] object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-8">
               <div className="text-white">
                 <span className="text-secondary text-xs uppercase tracking-widest font-bold block mb-1">Signature Restaurant</span>
-                <h3 className="text-3xl font-heading font-bold">The Amber Dining</h3>
+                <h3 className="text-3xl font-heading font-bold">The Grand Pavilion</h3>
                 <p className="text-gray-200 text-xs mt-1">Multi-cuisine poolside restaurant serving breakfast, lunch, and dinner.</p>
               </div>
             </div>
@@ -471,7 +496,7 @@ const Home = () => {
             </span>
             <h3 className="text-3xl font-heading font-bold text-primary">Dine in Opulent Elegance</h3>
             <p className="text-gray-600 leading-relaxed text-sm md:text-base">
-              <strong>The Amber Dining</strong> offers a lavish open-air and covered dining pavilion overlooking the Wonders Swimming Pool. Featuring polished marble flooring, handcrafted rattan chandeliers, lush vertical gardens, and an expansive buffet setup, it transforms every meal into a royal banquet.
+              <strong>The Grand Pavilion</strong> offers a lavish open-air and covered dining pavilion overlooking the Wonders Swimming Pool. Featuring polished marble flooring, handcrafted rattan chandeliers, lush vertical gardens, and an expansive buffet setup, it transforms every meal into a royal banquet.
             </p>
             <div className="grid grid-cols-2 gap-4 text-xs font-semibold">
               <div className="flex items-center gap-2">
@@ -488,7 +513,7 @@ const Home = () => {
               </div>
             </div>
             <Link to="/dining" className="btn-primary inline-flex items-center gap-2 px-7 py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
-              Explore The Amber Dining <ArrowRight size={14} />
+              Explore The Grand Pavilion <ArrowRight size={14} />
             </Link>
           </div>
         </div>
@@ -542,7 +567,7 @@ const Home = () => {
               { src: '/outdoor1.webp', label: 'Nakshatra Lawn' },
               { src: '/indoor1.webp', label: 'Nakshatra Hall 1' },
               { src: '/pool4.webp', label: 'Wonders Pool Night' },
-              { src: '/dining1.webp', label: 'The Amber Dining' },
+              { src: '/dining1.webp', label: 'The Grand Pavilion' },
             ].map((item, i) => (
               <Link
                 key={i}
@@ -636,10 +661,10 @@ const Home = () => {
               For event inquiries, custom wedding quotes, or corporate bookings, send your requirements directly.
             </p>
             <a
-              href="mailto:destarresorts@gmail.com"
+              href="mailto:dkstarresorts@gmail.com"
               className="inline-block font-heading font-bold text-primary text-base hover:text-secondary transition-colors pt-2"
             >
-              destarresorts@gmail.com
+              dkstarresorts@gmail.com
             </a>
           </div>
         </div>

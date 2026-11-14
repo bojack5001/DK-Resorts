@@ -580,7 +580,14 @@ const Reception = () => {
               <div className="border border-gray-100 rounded-lg p-4 bg-gray-50 flex gap-4">
                 <img src={selectedCell.item.image} alt={selectedCell.item.name} className="w-24 h-20 object-cover rounded" />
                 <div className="text-xs space-y-1">
-                  <p className="font-bold text-primary">Price: ₹{selectedCell.item.price.toLocaleString('en-IN')}/{selectedCell.type === 'room' ? 'Night' : 'Day'}</p>
+                  <p className="font-bold text-primary">
+                    Price: ₹{((new Date().getDay() === 0 || new Date().getDay() === 6)
+                      ? (selectedCell.item.price_weekend || selectedCell.item.price)
+                      : (selectedCell.item.price_weekday || selectedCell.item.price)).toLocaleString('en-IN')}/{selectedCell.type === 'room' ? 'Night' : 'Day'}
+                    <span className="text-[10px] text-gray-500 font-normal ml-1.5">
+                      ({(new Date().getDay() === 0 || new Date().getDay() === 6) ? 'Weekend Rate' : 'Weekday Rate'})
+                    </span>
+                  </p>
                   <p className="text-gray-500">Capacity: {selectedCell.item.capacity} guests</p>
                   {selectedCell.item.hasSeparateRoom && (
                     <span className="inline-block bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded text-[10px]">
@@ -1109,7 +1116,7 @@ const Reception = () => {
                     <div>
                       <p className="text-primary uppercase tracking-wide font-extrabold mb-0.5">Resort Desk</p>
                       <p className="font-mono">+91 94894 55977</p>
-                      <p className="lowercase font-mono text-gray-400">destarresorts@gmail.com</p>
+                      <p className="lowercase font-mono text-gray-400">dkstarresorts@gmail.com</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-1.5">

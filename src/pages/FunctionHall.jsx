@@ -55,7 +55,7 @@ const HallCard = ({ hall, idx }) => {
             {gallery.length} Photos
           </span>
           <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-primary/10 text-primary uppercase">
-            Today: ₹{currentTodayPrice.toLocaleString('en-IN')} ({isWeekendToday ? 'Weekend' : 'Weekday'})
+            {isWeekendToday ? `Weekend Tariff: ₹${weekendPrice.toLocaleString('en-IN')}` : `Weekday Tariff: ₹${weekdayPrice.toLocaleString('en-IN')}`}
           </span>
         </div>
 
@@ -84,28 +84,33 @@ const HallCard = ({ hall, idx }) => {
           {hall.description}
         </p>
 
-        {/* Pricing & Capacity Box with Dual Dynamic Tariff */}
+        {/* Pricing & Capacity Box with Dynamic Tariff */}
         <div className="bg-cream p-6 border-l-4 border-secondary rounded-r-xl space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className={`p-3 rounded-lg ${!isWeekendToday ? 'bg-white shadow-xs border border-secondary/30' : ''}`}>
-              <span className="text-gray-500 font-bold uppercase tracking-widest text-[11px] block">
-                Weekday Tariff (Mon–Fri)
-              </span>
-              <span className="text-2xl font-bold text-primary font-heading">
+          {!isWeekendToday ? (
+            <div className="p-3.5 rounded-lg bg-white shadow-xs border border-secondary/30 flex items-center justify-between">
+              <div>
+                <span className="text-gray-500 font-bold uppercase tracking-widest text-[11px] block">
+                  Weekday Tariff (Mon–Fri)
+                </span>
+                <span className="text-[10px] text-gray-500 block">Per Day • Tax Inclusive</span>
+              </div>
+              <span className="text-3xl font-bold text-primary font-heading">
                 ₹{weekdayPrice.toLocaleString('en-IN')}
               </span>
-              <span className="text-[10px] text-gray-500 block">Per Day • Tax Inclusive</span>
             </div>
-            <div className={`p-3 rounded-lg ${isWeekendToday ? 'bg-white shadow-xs border border-secondary/30' : ''}`}>
-              <span className="text-secondary font-bold uppercase tracking-widest text-[11px] block">
-                Weekend Tariff (Sat–Sun)
-              </span>
-              <span className="text-2xl font-bold text-secondary font-heading">
+          ) : (
+            <div className="p-3.5 rounded-lg bg-white shadow-xs border border-secondary/30 flex items-center justify-between">
+              <div>
+                <span className="text-secondary font-bold uppercase tracking-widest text-[11px] block">
+                  Weekend Tariff (Sat–Sun)
+                </span>
+                <span className="text-[10px] text-gray-500 block">Per Day • Tax Inclusive</span>
+              </div>
+              <span className="text-3xl font-bold text-secondary font-heading">
                 ₹{weekendPrice.toLocaleString('en-IN')}
               </span>
-              <span className="text-[10px] text-gray-500 block">Per Day • Tax Inclusive</span>
             </div>
-          </div>
+          )}
 
           <div className="border-t border-gray-200/60 pt-3 flex justify-between items-center text-sm">
             <span className="text-gray-500 font-bold uppercase tracking-widest text-xs">

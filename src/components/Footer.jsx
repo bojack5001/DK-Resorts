@@ -17,7 +17,7 @@ const Footer = () => {
               />
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed">
-              Experience the royal side of relaxation at DK STAR RESORTS. Discover our Prestige Room Collection, grand celebration halls, Wonders Swimming Pool, and The Amber Dining.
+              Experience the royal side of relaxation at DK STAR RESORTS. Discover our Prestige Room Collection, grand celebration halls, Wonders Swimming Pool, and The Grand Pavilion.
             </p>
             <p className="text-secondary text-xs uppercase tracking-[0.25em] font-bold">
               A Stay Beyond Expectations
@@ -35,7 +35,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm text-gray-300">
               <li><Link to="/rooms" className="hover:text-white transition-colors">Prestige Rooms</Link></li>
               <li><Link to="/function-hall" className="hover:text-white transition-colors">Nakshatra Hall 1 & 2</Link></li>
-              <li><Link to="/dining" className="hover:text-white transition-colors">The Amber Dining</Link></li>
+              <li><Link to="/dining" className="hover:text-white transition-colors">The Grand Pavilion</Link></li>
               <li><Link to="/pool" className="hover:text-white transition-colors">Wonders Swimming Pool</Link></li>
               <li><Link to="/gallery" className="hover:text-white transition-colors">Resort Gallery</Link></li>
               <li><Link to="/booking" className="hover:text-white transition-colors">Book a Stay</Link></li>
@@ -75,7 +75,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="text-secondary shrink-0" size={18} />
-                <a href="mailto:destarresorts@gmail.com" className="hover:text-white transition-colors">destarresorts@gmail.com</a>
+                <a href="mailto:dkstarresorts@gmail.com" className="hover:text-white transition-colors">dkstarresorts@gmail.com</a>
               </li>
             </ul>
           </div>
