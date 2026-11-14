@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import MobileBottomBar from './components/MobileBottomBar';
 import { ResortProvider } from './context/ResortContext';
 
 // Pages
@@ -40,7 +41,7 @@ function AppContent() {
   return (
     <div className="flex flex-col min-h-screen bg-cream">
       {!isStaffPortal && <Navbar />}
-      <main className="grow">
+      <main className={`grow ${!isStaffPortal ? 'pb-16 md:pb-0' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/rooms" element={<Rooms />} />
@@ -58,6 +59,7 @@ function AppContent() {
         </Routes>
       </main>
       {!isStaffPortal && <Footer />}
+      {!isStaffPortal && <MobileBottomBar />}
     </div>
   );
 }
