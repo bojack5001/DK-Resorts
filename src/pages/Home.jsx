@@ -424,38 +424,48 @@ const Home = () => {
                 Immerse yourself in serenity at the <strong>Wonders Swimming Pool</strong>. Featuring crystal-clear temperature-controlled waters, a refreshing mushroom water fountain, and ambient underwater LED illumination, it provides the ultimate refreshing leisure experience.
               </p>
 
-              {/* Free Pool Access Policy Highlight */}
+              {/* Free Pool Access Policy & Hourly Tariff */}
               <div className="p-4 bg-emerald-50 border border-emerald-300/80 rounded-xl flex items-start gap-3.5 text-emerald-950">
                 <Sparkles size={20} className="text-emerald-600 shrink-0 mt-0.5" />
-                <div className="text-xs space-y-0.5">
+                <div className="text-xs space-y-1">
                   <span className="font-bold uppercase tracking-wider block text-emerald-900 text-xs">
                     FREE Pool Access for Room & Hall Bookings
                   </span>
                   <p className="text-emerald-800 leading-relaxed">
                     All guests staying in our <strong>Rooms</strong> or hosting celebrations at <strong>Nakshatra Halls</strong> receive <strong>100% complimentary unlimited swimming pool access</strong> throughout their stay!
                   </p>
-                  <p className="text-[11px] text-emerald-700 font-semibold pt-1">
-                    * Day visitors / non-resident guests can book session passes online or at reception.
-                  </p>
+                  <div className="pt-2 border-t border-emerald-200/70 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-emerald-950 font-bold">
+                    <span>Day Visitors: Age 6+: ₹150/hr</span>
+                    <span>·</span>
+                    <span>Age 1–5: ₹100/hr</span>
+                    <span>·</span>
+                    <span>Tax Inclusive</span>
+                  </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-1">
                 <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                  <div className="flex items-baseline justify-between mb-0.5">
+                    <span className="font-heading font-bold text-lg text-primary">₹150 <span className="text-xs font-normal text-gray-500">/ hr</span></span>
+                    <span className="text-[10px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded">Age 6+</span>
+                  </div>
+                  <span className="text-xs text-gray-500">Day Visitor Standard Rate</span>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                  <div className="flex items-baseline justify-between mb-0.5">
+                    <span className="font-heading font-bold text-lg text-secondary">₹100 <span className="text-xs font-normal text-gray-500">/ hr</span></span>
+                    <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded">Age 1–5</span>
+                  </div>
+                  <span className="text-xs text-gray-500">Kids Hourly Rate</span>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                   <span className="font-heading font-bold text-lg text-primary block">Mushroom Fountain</span>
                   <span className="text-xs text-gray-500">Interactive Splash Feature</span>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                  <span className="font-heading font-bold text-lg text-primary block">Ambient Night Glow</span>
-                  <span className="text-xs text-gray-500">Submerged LED Lighting</span>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                  <span className="font-heading font-bold text-lg text-primary block">Covered Pavilion</span>
-                  <span className="text-xs text-gray-500">Poolside Lounge Seating</span>
-                </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-                  <span className="font-heading font-bold text-lg text-emerald-800 block">FREE for Residents</span>
-                  <span className="text-xs text-gray-500">Paid slots for day visitors</span>
+                  <span className="font-heading font-bold text-lg text-emerald-800 block">100% FREE</span>
+                  <span className="text-xs text-gray-500">For Room & Hall Residents</span>
                 </div>
               </div>
 

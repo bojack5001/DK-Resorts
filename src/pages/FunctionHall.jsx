@@ -244,24 +244,6 @@ const FunctionHall = () => {
         </div>
       </section>
 
-      {/* ── Complimentary Pool Access Banner ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
-        <div className="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3.5 sm:p-4 shadow-md flex items-center justify-between gap-4 text-emerald-950 flex-wrap">
-          <div className="flex items-center gap-3">
-            <span className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-              <Waves size={18} />
-            </span>
-            <div className="text-xs sm:text-sm">
-              <strong className="text-emerald-900">All Function Hall Bookings Include 100% FREE Swimming Pool Access!</strong>
-              <span className="hidden md:inline text-emerald-800 ml-1.5">— Complimentary pool access for event attendees and host family.</span>
-            </div>
-          </div>
-          <Link to="/pool" className="text-xs font-bold text-emerald-800 hover:text-emerald-950 underline shrink-0">
-            View Pool Facilities →
-          </Link>
-        </div>
-      </div>
-
       {/* Halls Listing */}
       <section className="section-container space-y-28 py-20">
         {halls.map((hall, idx) => (

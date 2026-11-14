@@ -8,46 +8,46 @@ import {
   ArrowLeft, Printer, Star, Sparkles, ShieldCheck
 } from 'lucide-react';
 
+// ─── Hourly Pool Rates ─────────────────────────────────────────
+const POOL_RATES = {
+  KIDS: 100,  // Age 1 to 5: ₹100 per hour
+  ADULT: 150, // Age 6 & above: ₹150 per hour
+};
+
 // ─── Slot Config ─────────────────────────────────────────────
 const SLOTS = [
   {
     id: 'morning',
-    label: 'Morning Lap',
+    label: 'Morning Session',
     time: '06:00 AM – 10:00 AM',
-    duration: '4 hrs',
-    price: 400,
     icon: Sun,
     color: 'from-amber-400 to-orange-500',
     bg: 'bg-amber-50',
     border: 'border-amber-300',
     desc: 'Start your day with a refreshing swim as the sun rises over the hills.',
-    perks: ['Lifeguard on duty', 'Towels included', 'Morning snack bar open'],
+    perks: ['Lifeguard on duty', 'Fresh towels provided', 'Morning sunshine deck'],
   },
   {
     id: 'afternoon',
     label: 'Afternoon Splash',
     time: '03:00 PM – 06:00 PM',
-    duration: '3 hrs',
-    price: 350,
     icon: Sunset,
     color: 'from-blue-400 to-cyan-500',
     bg: 'bg-blue-50',
     border: 'border-blue-300',
-    desc: 'Cool off from the afternoon heat in our temperature-controlled infinity pool.',
-    perks: ['Poolside service', 'Inflatable floats available', 'Shaded loungers'],
+    desc: 'Cool off from the afternoon heat in our crystal leisure pool with mushroom fountain.',
+    perks: ['Mushroom fountain active', 'Inflatable floats available', 'Shaded loungers'],
   },
   {
     id: 'evening',
     label: 'Evening Glow',
     time: '07:00 PM – 09:00 PM',
-    duration: '2 hrs',
-    price: 500,
     icon: Moon,
     color: 'from-indigo-500 to-purple-600',
     bg: 'bg-indigo-50',
     border: 'border-indigo-300',
-    desc: 'A magical twilight swim under ambient lighting with panoramic hill views.',
-    perks: ['Ambient lighting', 'Poolside beverages', 'Exclusive & serene'],
+    desc: 'A magical twilight swim under ambient underwater LED lighting.',
+    perks: ['Submerged ambient lighting', 'Poolside beverages', 'Exclusive & serene'],
   },
 ];
 
@@ -72,10 +72,12 @@ const fmtCurrency = (v) =>
 
 // ─── Main Component ───────────────────────────────────────────
 const Pool = () => {
-  const [step, setStep] = useState(1); // 1=slot, 2=form, 3=confirmed
+  const [step, setStep] = useState(1); // 1=slot & guests, 2=form, 3=confirmed
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookingDate, setBookingDate] = useState('');
-  const [guests, setGuests] = useState(1);
+  const [hours, setHours] = useState(1); // Duration in hours (1-5 hrs)
+  const [adults, setAdults] = useState(1); // Age 6 & above: ₹150/hr
+  const [kids, setKids] = useState(0); // Age 1 to 5: ₹100/hr
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
@@ -84,15 +86,17 @@ const Pool = () => {
   const [confirmed, setConfirmed] = useState(null);
 
   const slot = SLOTS.find(s => s.id === selectedSlot);
-  const subtotal = slot ? slot.price * guests : 0;
-  const gst = Math.round(subtotal * 0.18);
-  const total = subtotal + gst;
+  const totalGuests = adults + kids;
+  const hourlyRate = (adults * POOL_RATES.ADULT) + (kids * POOL_RATES.KIDS);
+  const total = hourlyRate * hours; // All prices inclusive of taxes
 
   // ── Step 1 → Step 2 ──────────────────────────────────────
   const proceedToForm = () => {
-    if (!selectedSlot) { setError('Please select a time slot.'); return; }
+    if (!selectedSlot) { setError('Please select a session window.'); return; }
     if (!bookingDate)  { setError('Please select a date.'); return; }
     if (bookingDate < today()) { setError('Date cannot be in the past.'); return; }
+    if (totalGuests < 1) { setError('Please select at least 1 guest (Age 6+ or Age 1-5).'); return; }
+    if (hours < 1) { setError('Please select a valid duration (minimum 1 hour).'); return; }
     setError('');
     setStep(2);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -112,11 +116,15 @@ const Pool = () => {
         id,
         booking_date: bookingDate,
         slot:         selectedSlot,
+        duration_hrs: hours,
+        adults_count: adults,
+        kids_count:   kids,
+        guests:       totalGuests,
         guest_name:   guestName,
         guest_email:  guestEmail,
         guest_phone:  guestPhone,
-        guests:       Number(guests),
         amount:       total,
+        rate_summary: `${adults} Age 6+ (@₹150/hr), ${kids} Age 1-5 (@₹100/hr) for ${hours} hr(s)`,
         status:       'Confirmed',
         created_at:   new Date().toISOString(),
       };
@@ -124,7 +132,7 @@ const Pool = () => {
       if (supabase) {
         const { error: sbError } = await supabase.from('pool_bookings').insert(booking);
         if (sbError) {
-          console.warn('[Supabase] pool_bookings insert failed (did you run the SQL?), falling back to localStorage:', sbError.message);
+          console.warn('[Supabase] pool_bookings insert failed, falling back to localStorage:', sbError.message);
         }
       }
 
@@ -133,7 +141,15 @@ const Pool = () => {
       cached.push(booking);
       localStorage.setItem('dk_pool_bookings', JSON.stringify(cached));
 
-      setConfirmed({ ...booking, slotLabel: slot.label, slotTime: slot.time });
+      setConfirmed({
+        ...booking,
+        slotLabel: slot.label,
+        slotTime: slot.time,
+        hours,
+        adults,
+        kids,
+        total,
+      });
       setStep(3);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
@@ -168,13 +184,13 @@ const Pool = () => {
             >
               <CheckCircle size={36} className="text-white" />
             </motion.div>
-            <h1 className="text-3xl font-heading font-bold text-white mb-1">Booking Confirmed!</h1>
-            <p className="text-secondary font-semibold tracking-widest uppercase text-xs">DK Star Resorts — Crystal Infinity Pool</p>
+            <h1 className="text-3xl font-heading font-bold text-white mb-1">Pool Ticket Confirmed!</h1>
+            <p className="text-secondary font-semibold tracking-widest uppercase text-xs">DK Star Resorts — Wonders Swimming Pool</p>
           </div>
 
           {/* Booking ID banner */}
           <div className="bg-secondary/10 border-b border-secondary/20 px-8 py-4 flex justify-between items-center">
-            <span className="text-xs uppercase tracking-widest text-gray-500 font-bold">Booking ID</span>
+            <span className="text-xs uppercase tracking-widest text-gray-500 font-bold">Ticket ID</span>
             <span className="font-heading font-bold text-primary text-lg">{conf.id}</span>
           </div>
 
@@ -186,40 +202,50 @@ const Pool = () => {
                 <p className="font-semibold text-primary">{conf.guest_name}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Email</p>
-                <p className="font-semibold text-primary text-sm">{conf.guest_email}</p>
+                <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Phone</p>
+                <p className="font-semibold text-primary">{conf.guest_phone || '—'}</p>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Date</p>
                 <p className="font-semibold text-primary">{fmtDate(conf.booking_date)}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Time Slot</p>
+                <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Session</p>
                 <p className="font-semibold text-primary">{conf.slotLabel}</p>
                 <p className="text-xs text-gray-400">{conf.slotTime}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Guests</p>
-                <p className="font-semibold text-primary">{conf.guests} {conf.guests === 1 ? 'Person' : 'Persons'}</p>
+                <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Duration</p>
+                <p className="font-semibold text-primary">{conf.duration_hrs || conf.hours} Hour{(conf.duration_hrs || conf.hours) > 1 ? 's' : ''}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Phone</p>
-                <p className="font-semibold text-primary">{conf.guest_phone || '—'}</p>
+                <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">Total Guests</p>
+                <p className="font-semibold text-primary">{conf.guests} Person{conf.guests > 1 ? 's' : ''}</p>
+                <p className="text-xs text-gray-400">
+                  {conf.adults_count || conf.adults} Age 6+ · {conf.kids_count || conf.kids} Age 1-5
+                </p>
               </div>
             </div>
 
             <div className="border-t border-gray-100 pt-4 space-y-2">
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>Pool Entry × {conf.guests}</span>
-                <span>₹{fmtCurrency(conf.amount / 1.18 * conf.guests / conf.guests)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-gray-400">
-                <span>GST (18%)</span>
-                <span>₹{fmtCurrency(conf.amount - Math.round(conf.amount / 1.18))}</span>
-              </div>
+              {(conf.adults_count || conf.adults) > 0 && (
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Age 6 & Above ({(conf.adults_count || conf.adults)} × ₹150/hr × {(conf.duration_hrs || conf.hours)} hrs)</span>
+                  <span className="font-semibold text-primary">₹{fmtCurrency((conf.adults_count || conf.adults) * POOL_RATES.ADULT * (conf.duration_hrs || conf.hours))}</span>
+                </div>
+              )}
+              {(conf.kids_count || conf.kids) > 0 && (
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Age 1 to 5 Years ({(conf.kids_count || conf.kids)} × ₹100/hr × {(conf.duration_hrs || conf.hours)} hrs)</span>
+                  <span className="font-semibold text-primary">₹{fmtCurrency((conf.kids_count || conf.kids) * POOL_RATES.KIDS * (conf.duration_hrs || conf.hours))}</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-2">
-                <span className="font-heading text-primary">Total Paid</span>
-                <span className="font-heading text-secondary">₹{fmtCurrency(conf.amount)}</span>
+                <div>
+                  <span className="font-heading text-primary block">Total Paid</span>
+                  <span className="text-[11px] font-normal text-emerald-700">Tax Inclusive</span>
+                </div>
+                <span className="font-heading text-secondary text-2xl">₹{fmtCurrency(conf.amount)}</span>
               </div>
             </div>
           </div>
@@ -227,7 +253,7 @@ const Pool = () => {
           {/* Footer */}
           <div className="bg-gray-50 px-8 py-5 border-t border-gray-100">
             <p className="text-center text-xs text-gray-400 mb-4">
-              Please show this confirmation at the pool entrance. Arrive 10 minutes before your slot.
+              Please present this confirmation ticket at the pool entrance desk. Free access is always active for in-house room & hall guests.
             </p>
             <div className="flex gap-3">
               <button
@@ -237,7 +263,18 @@ const Pool = () => {
                 <Printer size={14} /> Print Ticket
               </button>
               <button
-                onClick={() => { setStep(1); setSelectedSlot(null); setBookingDate(''); setGuests(1); setGuestName(''); setGuestEmail(''); setGuestPhone(''); setConfirmed(null); }}
+                onClick={() => {
+                  setStep(1);
+                  setSelectedSlot(null);
+                  setBookingDate('');
+                  setHours(1);
+                  setAdults(1);
+                  setKids(0);
+                  setGuestName('');
+                  setGuestEmail('');
+                  setGuestPhone('');
+                  setConfirmed(null);
+                }}
                 className="flex-1 btn-primary py-3 text-xs"
               >
                 Book Another Slot
@@ -369,12 +406,12 @@ const Pool = () => {
                 </div>
 
                 <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
-                  <h2 className="text-3xl font-heading font-bold text-primary">Day Visitor Pool Slots</h2>
-                  <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Pay-Per-Entry For Non-Residents</span>
+                  <h2 className="text-3xl font-heading font-bold text-primary">Day Visitor Pool Tickets</h2>
+                  <span className="text-xs text-secondary font-bold uppercase tracking-wider">Hourly Pay-Per-Use Tariff</span>
                 </div>
-                <p className="text-gray-500 mb-8 text-sm">Select a time slot and date to purchase pool entry for visitors without a room or hall reservation.</p>
+                <p className="text-gray-500 mb-8 text-sm">Select date, hours, guest age category, and your preferred session window. All prices are inclusive of taxes.</p>
 
-                {/* Date picker */}
+                {/* Date Picker */}
                 <div className="mb-8">
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
                     <Calendar size={12} className="inline mr-1" /> Select Date
@@ -388,29 +425,100 @@ const Pool = () => {
                   />
                 </div>
 
-                {/* Guests */}
+                {/* Duration in Hours */}
                 <div className="mb-8">
-                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-                    <Users size={12} className="inline mr-1" /> Number of Guests
-                  </label>
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setGuests(g => Math.max(1, g - 1))}
-                      className="w-10 h-10 border-2 border-gray-200 rounded-full flex items-center justify-center text-primary font-bold hover:border-secondary transition-colors text-lg"
-                    >−</button>
-                    <span className="text-2xl font-heading font-bold text-primary w-8 text-center">{guests}</span>
-                    <button
-                      type="button"
-                      onClick={() => setGuests(g => Math.min(20, g + 1))}
-                      className="w-10 h-10 border-2 border-gray-200 rounded-full flex items-center justify-center text-primary font-bold hover:border-secondary transition-colors text-lg"
-                    >+</button>
-                    <span className="text-xs text-gray-400">Max 20 guests per booking</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5">
+                      <Clock size={13} className="text-secondary" /> Duration (Hours)
+                    </label>
+                    <span className="text-xs font-bold text-secondary">{hours} Hour{hours > 1 ? 's' : ''} Selected</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                    {[1, 2, 3, 4, 5].map((hr) => (
+                      <button
+                        key={hr}
+                        type="button"
+                        onClick={() => setHours(hr)}
+                        className={`py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border-2 text-center cursor-pointer ${
+                          hours === hr
+                            ? 'bg-primary text-white border-primary shadow-md'
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-secondary hover:bg-cream'
+                        }`}
+                      >
+                        {hr} {hr === 1 ? 'Hour' : 'Hours'}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {/* Slot cards */}
+                {/* Guest Counts by Age Group */}
+                <div className="mb-8 space-y-3">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
+                    <Users size={12} className="inline mr-1" /> Select Guests by Age Category
+                  </label>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Age 6 & Above (₹150/hr) */}
+                    <div className="p-4 bg-white border-2 border-gray-200 rounded-xl flex items-center justify-between shadow-xs">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-heading font-bold text-primary text-base">Age 6 & Above</span>
+                          <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded">Standard</span>
+                        </div>
+                        <p className="text-secondary font-bold text-xs mt-0.5">₹150 / hr per person</p>
+                        <span className="text-[11px] text-gray-400">Adults and older children</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => setAdults(a => Math.max(0, a - 1))}
+                          className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-primary font-bold hover:border-secondary hover:bg-cream transition-colors text-base"
+                        >−</button>
+                        <span className="text-xl font-heading font-bold text-primary w-6 text-center">{adults}</span>
+                        <button
+                          type="button"
+                          onClick={() => setAdults(a => Math.min(25, a + 1))}
+                          className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-primary font-bold hover:border-secondary hover:bg-cream transition-colors text-base"
+                        >+</button>
+                      </div>
+                    </div>
+
+                    {/* Age 1 to 5 (₹100/hr) */}
+                    <div className="p-4 bg-white border-2 border-gray-200 rounded-xl flex items-center justify-between shadow-xs">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-heading font-bold text-primary text-base">Age 1 to 5 Years</span>
+                          <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">Kids</span>
+                        </div>
+                        <p className="text-secondary font-bold text-xs mt-0.5">₹100 / hr per child</p>
+                        <span className="text-[11px] text-gray-400">Toddlers & young children</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => setKids(k => Math.max(0, k - 1))}
+                          className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-primary font-bold hover:border-secondary hover:bg-cream transition-colors text-base"
+                        >−</button>
+                        <span className="text-xl font-heading font-bold text-primary w-6 text-center">{kids}</span>
+                        <button
+                          type="button"
+                          onClick={() => setKids(k => Math.min(20, k + 1))}
+                          className="w-9 h-9 border border-gray-200 rounded-full flex items-center justify-center text-primary font-bold hover:border-secondary hover:bg-cream transition-colors text-base"
+                        >+</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-gray-500 flex justify-between px-1">
+                    <span>Total pool swimmers: <strong>{totalGuests}</strong> ({adults} Age 6+, {kids} Age 1-5)</span>
+                    <span className="text-emerald-700 font-semibold">* Children under 12 require adult supervision</span>
+                  </div>
+                </div>
+
+                {/* Session Windows */}
                 <div className="space-y-4 mb-8">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
+                    <Clock size={12} className="inline mr-1" /> Select Session Window
+                  </label>
                   {SLOTS.map((s) => {
                     const Icon = s.icon;
                     const chosen = selectedSlot === s.id;
@@ -421,7 +529,11 @@ const Pool = () => {
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
                         onClick={() => setSelectedSlot(s.id)}
-                        className={`w-full text-left p-6 border-2 rounded-xl transition-all duration-200 ${chosen ? `${s.border} bg-white shadow-lg` : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'}`}
+                        className={`w-full text-left p-6 border-2 rounded-xl transition-all duration-200 cursor-pointer ${
+                          chosen
+                            ? `${s.border} bg-white shadow-lg ring-2 ring-secondary/20`
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                        }`}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-4">
@@ -431,7 +543,9 @@ const Pool = () => {
                             <div>
                               <div className="flex items-center gap-2 mb-1">
                                 <h3 className="font-heading font-bold text-primary text-lg">{s.label}</h3>
-                                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{s.duration}</span>
+                                <span className="text-[10px] bg-secondary/15 text-secondary font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  Hourly Passes
+                                </span>
                               </div>
                               <p className="text-secondary font-bold text-sm mb-2 flex items-center gap-1">
                                 <Clock size={12} /> {s.time}
@@ -447,8 +561,10 @@ const Pool = () => {
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <div className="text-2xl font-heading font-bold text-primary">₹{s.price}</div>
-                            <div className="text-xs text-gray-400">per person</div>
+                            <div className="text-[11px] uppercase font-bold text-gray-400 tracking-wider">Tariff</div>
+                            <div className="text-base font-heading font-bold text-primary">₹150 <span className="text-[10px] font-normal text-gray-500">(Age 6+)</span></div>
+                            <div className="text-base font-heading font-bold text-secondary">₹100 <span className="text-[10px] font-normal text-gray-500">(Age 1-5)</span></div>
+                            <div className="text-[10px] text-gray-400 mt-1">per hour / tax incl.</div>
                             {chosen && (
                               <div className="mt-2 w-6 h-6 rounded-full bg-secondary flex items-center justify-center ml-auto">
                                 <CheckCircle size={14} className="text-white" />
@@ -465,7 +581,7 @@ const Pool = () => {
                   <p className="text-red-500 text-sm mb-4 bg-red-50 border border-red-200 px-4 py-3 rounded-lg">{error}</p>
                 )}
 
-                <button onClick={proceedToForm} className="w-full btn-primary py-5 text-base shadow-lg shadow-primary/20">
+                <button onClick={proceedToForm} className="w-full btn-primary py-5 text-base shadow-lg shadow-primary/20 cursor-pointer">
                   Continue to Details →
                 </button>
               </motion.div>
@@ -479,11 +595,27 @@ const Pool = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <button onClick={handleBack} className="flex items-center gap-2 text-sm text-gray-500 hover:text-primary mb-6 transition-colors">
-                  <ArrowLeft size={16} /> Back to slot selection
+                <button onClick={handleBack} className="flex items-center gap-2 text-sm text-gray-500 hover:text-primary mb-6 transition-colors cursor-pointer">
+                  <ArrowLeft size={16} /> Back to slot & guest selection
                 </button>
                 <h2 className="text-3xl font-heading font-bold text-primary mb-2">Your Details</h2>
-                <p className="text-gray-500 mb-8 text-sm">Almost there! Fill in your details to confirm the booking.</p>
+                <p className="text-gray-500 mb-6 text-sm">Almost there! Fill in your details to confirm your swimming pool reservation.</p>
+
+                {/* Chosen Summary Card */}
+                <div className="p-4 bg-cream rounded-xl border border-secondary/30 mb-8 space-y-2 text-xs">
+                  <div className="flex justify-between items-center text-primary font-semibold">
+                    <span>{slot?.label} ({slot?.time})</span>
+                    <span>{fmtDate(bookingDate)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-gray-600">
+                    <span>Duration: <strong>{hours} Hour{hours > 1 ? 's' : ''}</strong></span>
+                    <span>Guests: <strong>{totalGuests}</strong> ({adults} Age 6+, {kids} Age 1-5)</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-secondary/20 font-bold text-primary text-sm">
+                    <span>Total Amount (Tax Incl.):</span>
+                    <span className="text-secondary font-heading text-base">₹{fmtCurrency(total)}</span>
+                  </div>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -511,23 +643,23 @@ const Pool = () => {
                     </div>
                     <div className="space-y-1">
                       <label className="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1">
-                        <Phone size={11} /> Phone
+                        <Phone size={11} /> Phone *
                       </label>
                       <input
-                        type="tel"
+                        type="tel" required
                         value={guestPhone} onChange={e => setGuestPhone(e.target.value)}
-                        placeholder="+91 XXXXX XXXXX"
+                        placeholder="+91 94894 55977"
                         className="w-full border-b-2 border-gray-200 focus:border-secondary outline-none py-3 bg-transparent text-primary"
                       />
                     </div>
                     <div className="space-y-1">
                       <label className="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1">
-                        <Users size={11} /> Guests
+                        <Users size={11} /> Duration & Guests
                       </label>
                       <input
-                        type="number" min="1" max="20" readOnly
-                        value={guests}
-                        className="w-full border-b-2 border-gray-100 outline-none py-3 bg-transparent text-primary font-semibold cursor-default"
+                        type="text" readOnly
+                        value={`${hours} hr(s) · ${totalGuests} guests (${adults} Age 6+, ${kids} Age 1-5)`}
+                        className="w-full border-b-2 border-gray-100 outline-none py-3 bg-transparent text-primary font-semibold text-xs cursor-default"
                       />
                     </div>
                   </div>
@@ -539,12 +671,12 @@ const Pool = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full btn-primary py-5 text-base shadow-lg shadow-primary/20 disabled:opacity-60"
+                    className="w-full btn-primary py-5 text-base shadow-lg shadow-primary/20 disabled:opacity-60 cursor-pointer"
                   >
-                    {isSubmitting ? 'Confirming Booking…' : 'Confirm Pool Booking'}
+                    {isSubmitting ? 'Confirming Ticket…' : `Pay ₹${fmtCurrency(total)} & Confirm Ticket`}
                   </button>
                   <p className="text-center text-[10px] text-gray-400 uppercase tracking-[0.2em]">
-                    Secure booking · Instant confirmation
+                    All taxes inclusive · Instant confirmation
                   </p>
                 </form>
               </motion.div>
@@ -554,6 +686,39 @@ const Pool = () => {
 
         {/* ── Right: Booking Summary Sidebar ───────────────── */}
         <div className="space-y-6">
+          {/* Official Rate Card */}
+          <div className="bg-white border-2 border-secondary/30 rounded-xl p-5 shadow-sm space-y-3">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+              <span className="font-heading font-bold text-sm text-primary uppercase tracking-wider">
+                Official Pool Tariff
+              </span>
+              <span className="text-[10px] bg-secondary/15 text-secondary font-bold px-2 py-0.5 rounded">
+                Hourly Rate
+              </span>
+            </div>
+            <div className="space-y-2.5 text-xs">
+              <div className="flex justify-between items-center py-1 border-b border-gray-100">
+                <div>
+                  <span className="font-bold text-primary block">Age 6 & Above</span>
+                  <span className="text-[11px] text-gray-400">Adults & Older Children</span>
+                </div>
+                <span className="font-heading font-bold text-primary text-sm">₹150 / hr</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-gray-100">
+                <div>
+                  <span className="font-bold text-primary block">Age 1 to 5 Years</span>
+                  <span className="text-[11px] text-gray-400">Toddlers & Young Kids</span>
+                </div>
+                <span className="font-heading font-bold text-secondary text-sm">₹100 / hr</span>
+              </div>
+              <div className="flex justify-between items-center py-1.5 bg-emerald-50 px-2.5 rounded-lg text-emerald-900 border border-emerald-200">
+                <span className="font-bold">Room & Hall Guests</span>
+                <span className="font-bold text-emerald-700 uppercase tracking-wider text-[11px]">100% FREE</span>
+              </div>
+              <p className="text-[10.5px] text-gray-400 text-center pt-1">* All rates are strictly per hour & inclusive of taxes.</p>
+            </div>
+          </div>
+
           {/* Room / Hall In-house Guest Callout */}
           <div className="bg-[#4A3728] text-white rounded-xl p-5 border-l-4 border-secondary space-y-2 shadow-md">
             <div className="flex items-center gap-2 text-secondary font-bold text-[11px] uppercase tracking-wider">
@@ -562,19 +727,20 @@ const Pool = () => {
             </div>
             <h4 className="font-heading font-bold text-base text-white">Booked a Room or Hall?</h4>
             <p className="text-xs text-gray-200 leading-relaxed">
-              You do <strong>not</strong> need to pay or buy pool tickets! Swimming pool access is <strong>100% complimentary</strong> for all guests with room or hall reservations.
+              You do <strong>not</strong> need to pay or purchase tickets! Swimming pool entry is <strong>100% complimentary</strong> for all guests with room or hall reservations throughout their stay.
             </p>
             <div className="pt-2 border-t border-white/10 flex items-center justify-between">
-              <span className="text-[10px] text-gray-300">Show room key at deck</span>
+              <span className="text-[10px] text-gray-300">Show room key at pool deck</span>
               <Link to="/booking" className="text-xs font-bold text-secondary hover:text-white transition-colors underline">
                 Reserve Room / Hall →
               </Link>
             </div>
           </div>
 
+          {/* Ticket Summary */}
           <div className="bg-white border border-gray-100 shadow-lg rounded-xl overflow-hidden sticky top-28">
             <div className="bg-primary px-6 py-4">
-              <h3 className="text-white font-heading font-bold text-lg">Day Visitor Ticket Summary</h3>
+              <h3 className="text-white font-heading font-bold text-lg">Ticket Summary</h3>
             </div>
             <div className="p-6 space-y-4">
               {selectedSlot && slot ? (
@@ -593,27 +759,39 @@ const Pool = () => {
                       <span className="font-semibold text-primary">{fmtDate(bookingDate)}</span>
                     </div>
                   )}
+
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Guests</span>
-                    <span className="font-semibold text-primary">{guests} × ₹{slot.price}</span>
+                    <span className="text-gray-500">Duration</span>
+                    <span className="font-semibold text-primary">{hours} Hour{hours > 1 ? 's' : ''}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-400">
-                    <span>Subtotal</span>
-                    <span>₹{fmtCurrency(subtotal)}</span>
+
+                  <div className="space-y-1.5 border-t border-gray-100 pt-2 text-xs">
+                    {adults > 0 && (
+                      <div className="flex justify-between text-gray-600">
+                        <span>{adults} × Age 6+ (@ ₹150/hr × {hours} hr)</span>
+                        <span className="font-semibold text-primary">₹{fmtCurrency(adults * POOL_RATES.ADULT * hours)}</span>
+                      </div>
+                    )}
+                    {kids > 0 && (
+                      <div className="flex justify-between text-gray-600">
+                        <span>{kids} × Age 1-5 (@ ₹100/hr × {hours} hr)</span>
+                        <span className="font-semibold text-primary">₹{fmtCurrency(kids * POOL_RATES.KIDS * hours)}</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex justify-between text-sm text-gray-400">
-                    <span>GST (18%)</span>
-                    <span>₹{fmtCurrency(gst)}</span>
-                  </div>
-                  <div className="border-t border-gray-100 pt-3 flex justify-between font-bold">
-                    <span className="font-heading text-primary">Total</span>
-                    <span className="font-heading text-secondary text-xl">₹{fmtCurrency(total)}</span>
+
+                  <div className="border-t border-gray-100 pt-3 flex justify-between items-baseline font-bold">
+                    <div>
+                      <span className="font-heading text-primary block">Total Payable</span>
+                      <span className="text-[10px] text-emerald-700 font-normal">All Taxes Inclusive</span>
+                    </div>
+                    <span className="font-heading text-secondary text-2xl">₹{fmtCurrency(total)}</span>
                   </div>
                 </>
               ) : (
                 <div className="text-center py-6 text-gray-400">
                   <Waves size={32} className="mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">Select a slot to see pricing</p>
+                  <p className="text-sm">Select a session window to calculate tariff</p>
                 </div>
               )}
             </div>
