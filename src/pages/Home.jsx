@@ -164,6 +164,14 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {rooms.slice(0, 9).map((room) => {
               const isNakshatra = room.id === 9 || room.isSunHallPackage || room.isNakshatraPackage;
+              const weekdayRate = room.price_weekday || room.price;
+              const weekendRate = room.price_weekend || room.price;
+
+              // Real-time automatic dynamic day detector
+              const todayDay = new Date().getDay(); // 0: Sun, 6: Sat
+              const isWeekendToday = (todayDay === 0 || todayDay === 6);
+              const currentTodayRate = isWeekendToday ? weekendRate : weekdayRate;
+
               return (
                 <div
                   key={room.id}
@@ -172,15 +180,17 @@ const Home = () => {
                   <div>
                     <div className="relative h-64 overflow-hidden bg-gray-100">
                       <img
-                        src={room.image}
+                        src={room.image.replace('.png', '.webp')}
                         alt={`${room.name} at DK Star Resorts`}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                       <div className="absolute top-4 left-4 bg-primary/90 text-secondary text-[11px] font-bold px-3 py-1 rounded-md uppercase tracking-wider backdrop-blur-sm">
                         Room 0{room.id}
                       </div>
                       <div className="absolute top-4 right-4 bg-secondary text-primary font-bold text-xs px-3 py-1.5 rounded-md shadow">
-                        {isNakshatra ? 'Hall Package' : `₹${(room.price_weekday || room.price).toLocaleString('en-IN')}/Night`}
+                        {isNakshatra ? 'Hall 2 Package' : `Today: ₹${currentTodayRate.toLocaleString('en-IN')}`}
                       </div>
                     </div>
 
@@ -194,23 +204,26 @@ const Home = () => {
                       </p>
 
                       {!isNakshatra && (
-                        <div className="flex items-center gap-3 text-xs bg-cream p-3 rounded-lg border border-secondary/20">
-                          <div>
-                            <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Weekday</span>
-                            <span className="font-bold text-primary">₹{(room.price_weekday || room.price).toLocaleString('en-IN')}</span>
+                        <div className="bg-cream p-3 rounded-lg border border-secondary/25 space-y-1 text-xs">
+                          <div className="flex items-center justify-between">
+                            <span className={`font-semibold ${!isWeekendToday ? 'text-primary font-bold' : 'text-gray-600'}`}>
+                              Mon–Fri (Weekday):
+                            </span>
+                            <span className="font-bold text-primary">₹{weekdayRate.toLocaleString('en-IN')}</span>
                           </div>
-                          <div className="w-px h-6 bg-gray-300"></div>
-                          <div>
-                            <span className="text-[10px] text-secondary uppercase tracking-wider font-bold block">Weekend</span>
-                            <span className="font-bold text-secondary">₹{(room.price_weekend || room.price).toLocaleString('en-IN')}</span>
+                          <div className="flex items-center justify-between border-t border-secondary/15 pt-1">
+                            <span className={`font-semibold ${isWeekendToday ? 'text-secondary font-bold' : 'text-gray-600'}`}>
+                              Sat–Sun (Weekend):
+                            </span>
+                            <span className="font-bold text-secondary">₹{weekendRate.toLocaleString('en-IN')}</span>
                           </div>
-                          <span className="ml-auto text-[10px] text-gray-400 italic">Tax Inclusive</span>
+                          <p className="text-[10px] text-gray-400 text-right pt-0.5">Tax Inclusive / Night</p>
                         </div>
                       )}
 
                       {isNakshatra && (
                         <div className="text-xs bg-amber-50 border border-amber-300 text-amber-900 px-3 py-2.5 rounded-lg font-medium">
-                          ⭐ Included with the Nakshatra Hall package (No separate charge).
+                          ⭐ Included with Nakshatra Hall 2 package (No separate charge).
                         </div>
                       )}
                     </div>
@@ -246,95 +259,43 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 4. Celebration Halls – Nakshatra & Moon ────────────────── */}
+      {/* ── 4. Celebration Halls – Nakshatra Hall 1 & Nakshatra Hall 2 ── */}
       <section className="section-container">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <span className="text-secondary font-bold uppercase tracking-[0.3em] text-xs">
             Grand Venues & Royal Celebrations
           </span>
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-primary">
-            Nakshatra Hall & Moon Hall
+            Nakshatra Hall 1 & Nakshatra Hall 2
           </h2>
           <p className="text-gray-600 text-sm md:text-base">
-            From majestic outdoor galas under starlit skies to regal climate-controlled banquets, our celebration spaces host up to 200 distinguished guests.
+            From climate-controlled luxury indoor banquets to expansive starlit open-air celebration lawns, our grand venues cater to celebrations up to 200 distinguished guests.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* Nakshatra Hall */}
+          {/* Nakshatra Hall 1 (Indoor Hall) */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-100 flex flex-col justify-between">
             <div>
               <div className="relative h-72 overflow-hidden">
                 <img
-                  src="/outdoor1.png"
-                  alt="Nakshatra Hall - Outdoor Party Lawn"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  src="/indoor1.webp"
+                  alt="Nakshatra Hall 1 - Indoor Banquet Hall"
+                  loading="lazy"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-4 left-4 bg-secondary text-primary font-bold text-xs uppercase tracking-wider px-3 py-1.5 rounded-md">
-                  Hall 01 • Outdoor Party Lawn
+                  Hall 01 • Indoor Banquet Hall
                 </div>
                 <div className="absolute top-4 right-4 bg-primary/90 text-white font-bold text-xs px-3 py-1.5 rounded-md">
-                  Capacity: 200 Guests
+                  Capacity: Up to 100 Guests
                 </div>
               </div>
 
               <div className="p-8 space-y-4">
-                <h3 className="text-3xl font-heading font-bold text-primary">Nakshatra Hall</h3>
+                <h3 className="text-3xl font-heading font-bold text-primary">Nakshatra Hall 1</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  An expansive outdoor celebration lawn framed by lush palms and radiant evening illuminations. Perfect for weddings, receptions, and corporate galas.
-                </p>
-
-                <div className="p-3 bg-amber-50 border border-amber-300 rounded-lg text-amber-900 text-xs font-semibold flex items-center gap-2">
-                  <Sparkles size={16} className="text-secondary shrink-0" />
-                  <span>Includes Room 09 (Nakshatra Attached Dressing Suite) in the package.</span>
-                </div>
-
-                <div className="bg-cream p-4 rounded-xl border-l-4 border-secondary grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Tariff</span>
-                    <span className="text-xl font-heading font-bold text-primary">₹15,000</span>
-                    <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Tariff</span>
-                    <span className="text-xl font-heading font-bold text-secondary">₹18,000</span>
-                    <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-8 pt-0 flex gap-4">
-              <Link to="/booking?type=hall&id=sun-hall" className="flex-1 btn-primary text-center py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
-                Book Nakshatra Hall
-              </Link>
-              <Link to="/function-hall" className="btn-outline text-center py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
-                View Gallery
-              </Link>
-            </div>
-          </div>
-
-          {/* Moon Hall */}
-          <div className="bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-100 flex flex-col justify-between">
-            <div>
-              <div className="relative h-72 overflow-hidden">
-                <img
-                  src="/indoor1.png"
-                  alt="Moon Hall - Grand Indoor Banquet Hall"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute top-4 left-4 bg-secondary text-primary font-bold text-xs uppercase tracking-wider px-3 py-1.5 rounded-md">
-                  Hall 02 • Indoor Banquet Hall
-                </div>
-                <div className="absolute top-4 right-4 bg-primary/90 text-white font-bold text-xs px-3 py-1.5 rounded-md">
-                  Capacity: 100 Guests
-                </div>
-              </div>
-
-              <div className="p-8 space-y-4">
-                <h3 className="text-3xl font-heading font-bold text-primary">Moon Hall</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  A climate-controlled indoor banquet hall featuring marble appointments, crystal chandeliers, acoustic audio, and projector screen for birthdays, engagements, and private banquets.
+                  A climate-controlled luxury indoor banquet hall featuring marble appointments, crystal chandeliers, acoustic audio, and projector screen for birthdays, engagements, and private banquets.
                 </p>
 
                 <div className="p-3 bg-primary/5 border border-primary/10 rounded-lg text-primary text-xs font-semibold flex items-center gap-2">
@@ -344,12 +305,12 @@ const Home = () => {
 
                 <div className="bg-cream p-4 rounded-xl border-l-4 border-secondary grid grid-cols-2 gap-4">
                   <div>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Tariff</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Tariff (Mon–Fri)</span>
                     <span className="text-xl font-heading font-bold text-primary">₹20,000</span>
                     <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Tariff</span>
+                    <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Tariff (Sat–Sun)</span>
                     <span className="text-xl font-heading font-bold text-secondary">₹23,000</span>
                     <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
                   </div>
@@ -359,7 +320,61 @@ const Home = () => {
 
             <div className="p-8 pt-0 flex gap-4">
               <Link to="/booking?type=hall&id=moon-hall" className="flex-1 btn-primary text-center py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
-                Book Moon Hall
+                Book Nakshatra Hall 1
+              </Link>
+              <Link to="/function-hall" className="btn-outline text-center py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
+                View Gallery
+              </Link>
+            </div>
+          </div>
+
+          {/* Nakshatra Hall 2 (Outdoor Hall) */}
+          <div className="bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-100 flex flex-col justify-between">
+            <div>
+              <div className="relative h-72 overflow-hidden">
+                <img
+                  src="/outdoor1.webp"
+                  alt="Nakshatra Hall 2 - Outdoor Celebration Lawn"
+                  loading="lazy"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-4 left-4 bg-secondary text-primary font-bold text-xs uppercase tracking-wider px-3 py-1.5 rounded-md">
+                  Hall 02 • Outdoor Celebration Lawn
+                </div>
+                <div className="absolute top-4 right-4 bg-primary/90 text-white font-bold text-xs px-3 py-1.5 rounded-md">
+                  Capacity: Up to 200 Guests
+                </div>
+              </div>
+
+              <div className="p-8 space-y-4">
+                <h3 className="text-3xl font-heading font-bold text-primary">Nakshatra Hall 2</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  An expansive outdoor celebration lawn framed by lush palms and radiant evening illuminations. Perfect for grand weddings, receptions, and birthday celebrations.
+                </p>
+
+                <div className="p-3 bg-amber-50 border border-amber-300 rounded-lg text-amber-900 text-xs font-semibold flex items-center gap-2">
+                  <Sparkles size={16} className="text-secondary shrink-0" />
+                  <span>Includes Room 09 (Nakshatra Attached Dressing Suite) in the package.</span>
+                </div>
+
+                <div className="bg-cream p-4 rounded-xl border-l-4 border-secondary grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold block">Weekday Tariff (Mon–Fri)</span>
+                    <span className="text-xl font-heading font-bold text-primary">₹25,000</span>
+                    <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-secondary uppercase tracking-widest font-bold block">Weekend Tariff (Sat–Sun)</span>
+                    <span className="text-xl font-heading font-bold text-secondary">₹27,000</span>
+                    <span className="text-[10px] text-gray-400 block">Tax Inclusive</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8 pt-0 flex gap-4">
+              <Link to="/booking?type=hall&id=sun-hall" className="flex-1 btn-primary text-center py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
+                Book Nakshatra Hall 2
               </Link>
               <Link to="/function-hall" className="btn-outline text-center py-3 text-xs font-bold uppercase tracking-wider rounded-lg">
                 View Gallery
@@ -412,12 +427,12 @@ const Home = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <img src="/pool1.png" alt="Wonders Swimming Pool Day View" className="w-full h-56 object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-500" />
-                <img src="/pool3.png" alt="Wonders Pool Fountain and Deck" className="w-full h-44 object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-500" />
+                <img src="/pool1.webp" alt="Wonders Swimming Pool Day View" loading="lazy" className="w-full h-56 object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-300" />
+                <img src="/pool3.webp" alt="Wonders Pool Fountain and Deck" loading="lazy" className="w-full h-44 object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-300" />
               </div>
               <div className="space-y-4 pt-6">
-                <img src="/pool2.png" alt="Wonders Pool Deck Ambience" className="w-full h-44 object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-500" />
-                <img src="/pool4.png" alt="Wonders Pool Illuminated Night Glow" className="w-full h-56 object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-500" />
+                <img src="/pool2.webp" alt="Wonders Pool Deck Ambience" loading="lazy" className="w-full h-44 object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-300" />
+                <img src="/pool4.webp" alt="Wonders Pool Illuminated Night Glow" loading="lazy" className="w-full h-56 object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-300" />
               </div>
             </div>
           </div>
@@ -440,7 +455,7 @@ const Home = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
           <div className="relative overflow-hidden rounded-2xl shadow-xl">
-            <img src="/dining1.png" alt="The Amber Dining Restaurant" className="w-full h-[400px] object-cover" />
+            <img src="/dining1.webp" alt="The Amber Dining Restaurant" loading="lazy" className="w-full h-[400px] object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-8">
               <div className="text-white">
                 <span className="text-secondary text-xs uppercase tracking-widest font-bold block mb-1">Signature Restaurant</span>
@@ -498,7 +513,7 @@ const Home = () => {
             </div>
 
             <div className="relative overflow-hidden rounded-xl shadow-lg border border-secondary/30">
-              <img src="/dining2.png" alt="The Gourmet Kitchen & Banquet Dining" className="w-full h-72 object-cover" />
+              <img src="/dining2.webp" alt="The Gourmet Kitchen & Banquet Dining" loading="lazy" className="w-full h-72 object-cover" />
               <div className="absolute inset-0 bg-black/30"></div>
             </div>
           </div>
@@ -522,12 +537,12 @@ const Home = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { src: '/mercury1.png', label: 'Elite Bedroom' },
-              { src: '/venus1.png', label: 'Signature Suite' },
-              { src: '/outdoor1.png', label: 'Nakshatra Lawn' },
-              { src: '/indoor1.png', label: 'Moon Banquet Hall' },
-              { src: '/pool4.png', label: 'Wonders Pool Night' },
-              { src: '/dining1.png', label: 'The Amber Dining' },
+              { src: '/mercury1.webp', label: 'Elite Bedroom' },
+              { src: '/venus1.webp', label: 'Signature Suite' },
+              { src: '/outdoor1.webp', label: 'Nakshatra Lawn' },
+              { src: '/indoor1.webp', label: 'Nakshatra Hall 1' },
+              { src: '/pool4.webp', label: 'Wonders Pool Night' },
+              { src: '/dining1.webp', label: 'The Amber Dining' },
             ].map((item, i) => (
               <Link
                 key={i}

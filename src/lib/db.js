@@ -13,73 +13,73 @@ const INITIAL_ROOMS = [
     id: 1, name: 'Elite', type: 'Standard Room',
     price: 2499, price_weekday: 2499, price_weekend: 2999, capacity: 2,
     description: 'One bed, one attached bathroom. A refined standard room offering quiet sophistication, bespoke comfort, and plush amenities.',
-    image: '/mercury1.png',
-    images: ['/mercury1.png', '/mercury2.png', '/mercury3.png', '/mercury4.png'],
+    image: '/mercury1.webp',
+    images: ['/mercury1.webp', '/mercury2.webp', '/mercury3.webp', '/mercury4.webp'],
     amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
   },
   {
     id: 2, name: 'Signature', type: 'Family Room',
     price: 3999, price_weekday: 3999, price_weekend: 3499, capacity: 4,
     description: 'Two bedrooms, two beds, one bathroom, and an additional inside room. Specially crafted for distinguished family retreats.',
-    image: '/venus1.png',
-    images: ['/venus1.png', '/venus2.png', '/venus3.png', '/venus4.png', '/venus5.png'],
+    image: '/venus1.webp',
+    images: ['/venus1.webp', '/venus2.webp', '/venus3.webp', '/venus4.webp', '/venus5.webp'],
     amenities: ['WiFi', 'AC', 'TV', 'Two Bedrooms', 'Extra Room']
   },
   {
     id: 3, name: 'Crown', type: 'Master Family Suite',
     price: 3499, price_weekday: 3499, price_weekend: 3999, capacity: 4,
     description: 'Master bedroom with attached additional bedroom and two beds. An opulent suite designed for unforgettable family stays.',
-    image: '/jupiter1.png',
-    images: ['/jupiter1.png', '/jupiter2.png', '/jupiter3.png', '/jupiter4.png', '/jupiter5.png'],
+    image: '/jupiter1.webp',
+    images: ['/jupiter1.webp', '/jupiter2.webp', '/jupiter3.webp', '/jupiter4.webp', '/jupiter5.webp'],
     amenities: ['WiFi', 'AC', 'Smart TV', 'Master Suite', 'Two Beds']
   },
   {
     id: 4, name: 'Legacy', type: 'Balcony View Room',
     price: 2999, price_weekday: 2999, price_weekend: 3499, capacity: 2,
     description: 'One bedroom with private balcony view. Panoramic scenic perspectives paired with royal tranquility.',
-    image: '/earth1.png',
-    images: ['/earth1.png', '/earth2.png', '/earth3.png', '/earth4.png'],
+    image: '/earth1.webp',
+    images: ['/earth1.webp', '/earth2.webp', '/earth3.webp', '/earth4.webp'],
     amenities: ['WiFi', 'AC', 'TV', 'Private Balcony', 'Scenic View']
   },
   {
     id: 5, name: 'Majestic', type: 'Standard Room',
     price: 2499, price_weekday: 2499, price_weekend: 2999, capacity: 2,
     description: 'One bed, one attached bathroom. Beautifully proportioned with bespoke woodwork and serene ambiance.',
-    image: '/mars1.png',
-    images: ['/mars1.png', '/mars2.png', '/mars3.png'],
+    image: '/mars1.webp',
+    images: ['/mars1.webp', '/mars2.webp', '/mars3.webp'],
     amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
   },
   {
     id: 6, name: 'Grande', type: 'Standard Room',
     price: 2499, price_weekday: 2499, price_weekend: 2999, capacity: 2,
     description: 'One bed, one attached bathroom. Modern luxury appointments delivering an exceptional restful stay.',
-    image: '/saturn1.png',
-    images: ['/saturn1.png', '/saturn2.png', '/saturn3.png'],
+    image: '/saturn1.webp',
+    images: ['/saturn1.webp', '/saturn2.webp', '/saturn3.webp'],
     amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
   },
   {
     id: 7, name: 'Imperial', type: 'Standard Room',
     price: 2499, price_weekday: 2499, price_weekend: 2999, capacity: 2,
     description: 'One bed, one attached bathroom. Serene, tasteful decor offering peaceful seclusion and refined luxury.',
-    image: '/uranus1.png',
-    images: ['/uranus1.png', '/uranus2.png'],
+    image: '/uranus1.webp',
+    images: ['/uranus1.webp', '/uranus2.webp'],
     amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
   },
   {
     id: 8, name: 'Supreme', type: 'Standard Room',
     price: 2499, price_weekday: 2499, price_weekend: 2999, capacity: 2,
     description: 'One bed, one attached bathroom. Distinctive character, elegant craftsmanship, and complete comfort.',
-    image: '/neptune1.png',
-    images: ['/neptune1.png', '/neptune2.png', '/neptune3.png'],
+    image: '/neptune1.webp',
+    images: ['/neptune1.webp', '/neptune2.webp', '/neptune3.webp'],
     amenities: ['WiFi', 'AC', 'TV', 'Attached Bathroom']
   },
   {
     id: 9, name: 'Nakshatra', type: 'Hall Attached Room',
     price: 0, price_weekday: 0, price_weekend: 0, capacity: 2,
-    description: 'Attached private dressing suite included with the Nakshatra Hall package. Not charged separately when Nakshatra Hall is booked.',
-    image: '/nakshatra1.jpg',
-    images: ['/nakshatra1.jpg', '/nakshatra2.jpg'],
-    amenities: ['WiFi', 'AC', 'Included with Nakshatra Hall Package'],
+    description: 'Attached private dressing suite included with the Nakshatra Hall 2 package. Not charged separately when Nakshatra Hall 2 is booked.',
+    image: '/nakshatra1.webp',
+    images: ['/nakshatra1.webp', '/nakshatra2.webp'],
+    amenities: ['WiFi', 'AC', 'Included with Nakshatra Hall 2 Package'],
     isSunHallPackage: true,
     isNakshatraPackage: true
   },
@@ -87,18 +87,38 @@ const INITIAL_ROOMS = [
 
 const INITIAL_HALLS = [
   {
+    id: 'moon-hall',
+    name: 'Nakshatra Hall 1',
+    type: 'Indoor Party Hall',
+    price: 20000,
+    price_weekday: 20000,
+    price_weekend: 23000,
+    capacity: 100,
+    hasSeparateRoom: false,
+    description: 'Climate-controlled indoor banquet hall with acoustic panelling, royal chandeliers, and AV system for celebrations, birthdays, engagements, and corporate meetings.',
+    image: '/indoor1.webp',
+    images: ['/indoor1.webp', '/indoor2.webp', '/indoor3.webp', '/indoor4.webp', '/indoor5.webp'],
+    amenities: [
+      'Central AC',
+      'Acoustic Audio & DJ System',
+      'AV Projector & Screen',
+      'Banquet Seating',
+      'Private Restrooms'
+    ]
+  },
+  {
     id: 'sun-hall',
-    name: 'Nakshatra Hall',
+    name: 'Nakshatra Hall 2',
     type: 'Outdoor Party Hall',
-    price: 15000,
-    price_weekday: 15000,
-    price_weekend: 18000,
+    price: 25000,
+    price_weekday: 25000,
+    price_weekend: 27000,
     capacity: 200,
     hasSeparateRoom: true,
-    separateRoomNote: 'Includes Nakshatra Attached Room',
-    description: 'Expansive open-air royal celebration venue and lush lawn for grand weddings, receptions, birthday celebrations, and corporate galas. Includes the Nakshatra attached dressing suite.',
-    image: '/outdoor1.png',
-    images: ['/outdoor1.png', '/outdoor2.png', '/outdoor3.png', '/outdoor4.png'],
+    separateRoomNote: 'Includes Nakshatra Attached Room (Room 09)',
+    description: 'Expansive open-air royal celebration lawn for grand weddings, receptions, and birthday galas. Includes the Nakshatra attached dressing suite (Room 09).',
+    image: '/outdoor1.webp',
+    images: ['/outdoor1.webp', '/outdoor2.webp', '/outdoor3.webp', '/outdoor4.webp'],
     amenities: [
       'Outdoor Celebration Lawn',
       'Nakshatra Suite Included',
@@ -107,26 +127,6 @@ const INITIAL_HALLS = [
       'Surround Sound & DJ Ready',
       'Royal Event Lighting',
       'Valet Parking'
-    ]
-  },
-  {
-    id: 'moon-hall',
-    name: 'Moon Hall',
-    type: 'Indoor Party Hall',
-    price: 20000,
-    price_weekday: 20000,
-    price_weekend: 23000,
-    capacity: 100,
-    hasSeparateRoom: false,
-    description: 'Climate-controlled indoor banquet hall with acoustic panelling, royal chandeliers, and AV system for intimate celebrations, engagements, and corporate meetings.',
-    image: '/indoor1.png',
-    images: ['/indoor1.png', '/indoor2.png', '/indoor3.png', '/indoor4.png', '/indoor5.png'],
-    amenities: [
-      'Central AC',
-      'Acoustic Audio & DJ System',
-      'AV Projector & Screen',
-      'Banquet Seating',
-      'Private Restrooms'
     ]
   },
 ];
@@ -183,7 +183,7 @@ export const getPriceForDate = (item, dateStr) => {
 };
 
 // ─── Inventory Version Sync ──────────────────────────────────────────────────
-const CURRENT_INVENTORY_VERSION = 'v5_royal_luxury_collection';
+const CURRENT_INVENTORY_VERSION = 'v7_nakshatra_halls_pricing';
 
 const syncInventoryIfNeeded = () => {
   const version = ls('dk_inventory_version');
@@ -281,14 +281,21 @@ export const getDBHalls = async () => {
   if (supabase) {
     const { data, error } = await supabase.from('halls').select('*');
     if (!error && data?.length) {
-      return data.map(h => {
+      const hallsList = data.map(h => {
         const seed = INITIAL_HALLS.find(s => s.id === h.id);
         return {
           ...h,
+          name: seed?.name || h.name,
+          type: seed?.type || h.type,
+          price: seed?.price || h.price,
           price_weekday: h.price_weekday ?? seed?.price_weekday ?? h.price,
           price_weekend: h.price_weekend ?? seed?.price_weekend ?? h.price,
+          hasSeparateRoom: seed?.hasSeparateRoom ?? h.hasSeparateRoom,
+          separateRoomNote: seed?.separateRoomNote ?? h.separateRoomNote,
         };
       });
+      // Nakshatra Hall 1 (Indoor) first, then Nakshatra Hall 2 (Outdoor)
+      return hallsList.sort((a, b) => (a.id === 'moon-hall' ? -1 : 1));
     }
   }
   const cached = ls('dk_halls');

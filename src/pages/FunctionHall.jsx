@@ -5,13 +5,21 @@ import { Link } from 'react-router-dom';
 import { useResort } from '../context/ResortContext';
 
 const HALL_GALLERIES = {
-  'sun-hall': ['/outdoor1.png', '/outdoor2.png', '/outdoor3.png', '/outdoor4.png'],
-  'moon-hall': ['/indoor1.png', '/indoor2.png', '/indoor3.png', '/indoor4.png', '/indoor5.png'],
+  'moon-hall': ['/indoor1.webp', '/indoor2.webp', '/indoor3.webp', '/indoor4.webp', '/indoor5.webp'],
+  'sun-hall': ['/outdoor1.webp', '/outdoor2.webp', '/outdoor3.webp', '/outdoor4.webp'],
 };
 
 const HallCard = ({ hall, idx }) => {
   const gallery = HALL_GALLERIES[hall.id] || [hall.image];
   const [activeIdx, setActiveIdx] = useState(0);
+
+  // Preload all venue photos into memory so transitions are instant
+  React.useEffect(() => {
+    gallery.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, [gallery]);
 
   const prev = (e) => {
     e.preventDefault();
@@ -25,6 +33,11 @@ const HallCard = ({ hall, idx }) => {
 
   const weekdayPrice = hall.price_weekday || hall.price;
   const weekendPrice = hall.price_weekend || hall.price;
+
+  // Real-time automatic dynamic day detector
+  const todayDay = new Date().getDay(); // 0 is Sun, 6 is Sat
+  const isWeekendToday = (todayDay === 0 || todayDay === 6);
+  const currentTodayPrice = isWeekendToday ? weekendPrice : weekdayPrice;
 
   return (
     <div
@@ -41,12 +54,15 @@ const HallCard = ({ hall, idx }) => {
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
             {gallery.length} Photos
           </span>
+          <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-primary/10 text-primary uppercase">
+            Today: ₹{currentTodayPrice.toLocaleString('en-IN')} ({isWeekendToday ? 'Weekend' : 'Weekday'})
+          </span>
         </div>
 
         <div>
           <h2 className="text-4xl md:text-5xl font-heading font-bold text-primary">{hall.name}</h2>
           <p className="text-secondary text-xs uppercase tracking-[0.3em] font-bold mt-1">
-            {hall.id === 'sun-hall' ? 'Grand Outdoor Celebrations' : 'Climate-Controlled Luxury Banquets'}
+            {hall.id === 'sun-hall' ? 'Grand Outdoor Celebrations (Up to 200 Guests)' : 'Climate-Controlled Luxury Banquets (Up to 100 Guests)'}
           </p>
         </div>
 
@@ -58,7 +74,7 @@ const HallCard = ({ hall, idx }) => {
                 Nakshatra Attached Suite Included
               </p>
               <p className="text-xs text-amber-700 mt-0.5">
-                Includes private dressing/bridal suite (Room 09 – Nakshatra) at no additional charge when booking Nakshatra Hall.
+                Includes private dressing/bridal suite (Room 09 – Nakshatra) at no additional charge when booking Nakshatra Hall 2.
               </p>
             </div>
           </div>
@@ -68,11 +84,11 @@ const HallCard = ({ hall, idx }) => {
           {hall.description}
         </p>
 
-        {/* Pricing & Capacity Box */}
+        {/* Pricing & Capacity Box with Dual Dynamic Tariff */}
         <div className="bg-cream p-6 border-l-4 border-secondary rounded-r-xl space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <span className="text-gray-400 font-bold uppercase tracking-widest text-[11px] block">
+            <div className={`p-3 rounded-lg ${!isWeekendToday ? 'bg-white shadow-xs border border-secondary/30' : ''}`}>
+              <span className="text-gray-500 font-bold uppercase tracking-widest text-[11px] block">
                 Weekday Tariff (Mon–Fri)
               </span>
               <span className="text-2xl font-bold text-primary font-heading">
@@ -80,7 +96,7 @@ const HallCard = ({ hall, idx }) => {
               </span>
               <span className="text-[10px] text-gray-500 block">Per Day • Tax Inclusive</span>
             </div>
-            <div>
+            <div className={`p-3 rounded-lg ${isWeekendToday ? 'bg-white shadow-xs border border-secondary/30' : ''}`}>
               <span className="text-secondary font-bold uppercase tracking-widest text-[11px] block">
                 Weekend Tariff (Sat–Sun)
               </span>
@@ -194,8 +210,8 @@ const FunctionHall = () => {
       {/* Hero Header */}
       <section className="relative h-[65vh] min-h-[480px] flex items-center justify-center overflow-hidden">
         <img
-          src="/outdoor1.png"
-          alt="Nakshatra Hall & Moon Hall Venues"
+          src="/outdoor1.webp"
+          alt="Nakshatra Hall 1 & Nakshatra Hall 2 Venues"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-primary/80"></div>
@@ -210,9 +226,9 @@ const FunctionHall = () => {
           <motion.h1
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-5xl md:text-7xl font-heading font-bold mb-4"
+            className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold mb-4"
           >
-            Nakshatra & Moon Halls
+            Nakshatra Hall 1 & Nakshatra Hall 2
           </motion.h1>
           <p className="text-gray-200 text-sm md:text-lg max-w-2xl mx-auto">
             From open-air celebrations under the night sky to climate-controlled grand indoor banquets — create timeless memories at DK Star Resorts.
@@ -263,8 +279,8 @@ const FunctionHall = () => {
                 <select className="w-full border-b border-gray-300 focus:border-secondary outline-none py-2 bg-transparent transition-colors text-sm">
                   {halls.map((hall) => (
                     <option key={hall.id} value={hall.id}>
-                      {hall.name} ({hall.type}) • Up to {hall.capacity} Guests
-                      {hall.hasSeparateRoom ? ' [Includes Nakshatra Attached Suite]' : ''}
+                      {hall.name} ({hall.type}) • Up to {hall.capacity} Guests • Weekday ₹{(hall.price_weekday || hall.price).toLocaleString('en-IN')} / Weekend ₹{(hall.price_weekend || hall.price).toLocaleString('en-IN')}
+                      {hall.hasSeparateRoom ? ' [Includes Room 09 Nakshatra Suite]' : ''}
                     </option>
                   ))}
                 </select>

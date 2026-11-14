@@ -257,7 +257,7 @@ const Pool = () => {
       {/* ── Hero ───────────────────────────────────────────── */}
       <section className="relative h-[70vh] min-h-[500px] overflow-hidden flex items-center justify-center">
         <img
-          src="/pool4.png"
+          src="/pool4.webp"
           alt="Wonders Swimming Pool at DK Star Resorts"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -606,10 +606,10 @@ const Pool = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { src: '/pool1.png', caption: 'Daylight Pool Deck & Water Umbrella' },
-              { src: '/pool2.png', caption: 'Sunset Ambience & Pool Deck' },
-              { src: '/pool3.png', caption: 'Fountain Splash & Dining Pavilion' },
-              { src: '/pool4.png', caption: 'Night Swimming & Underwater LED Glow' },
+              { src: '/pool1.webp', caption: 'Daylight Pool Deck & Water Umbrella' },
+              { src: '/pool2.webp', caption: 'Sunset Ambience & Pool Deck' },
+              { src: '/pool3.webp', caption: 'Fountain Splash & Dining Pavilion' },
+              { src: '/pool4.webp', caption: 'Night Swimming & Underwater LED Glow' },
             ].map((p, idx) => (
               <motion.div
                 key={idx}

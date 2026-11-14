@@ -835,7 +835,7 @@ const Admin = () => {
                 <div>
                   <h1 className="text-3xl font-heading font-bold text-primary">Accommodation & Venues</h1>
                   <p className="text-gray-500 text-sm mt-1">
-                    Update prices, upload new photos, and edit guest capacity for all 8 rooms and 2 party halls live.
+                    Update prices, upload new photos, and edit guest capacity for all 9 rooms and 2 party halls live.
                   </p>
                 </div>
               </div>

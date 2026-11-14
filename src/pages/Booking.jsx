@@ -688,13 +688,13 @@ const Booking = () => {
                     {itemType === 'room' ? (
                       rooms.map(r => (
                         <option key={r.id} value={r.id}>
-                          Room {String(r.id).padStart(2, '0')} – {r.name} ({r.type}) {r.id === 9 ? '• Included in Nakshatra Hall Package' : `• ₹${(r.price_weekday || r.price).toLocaleString('en-IN')} (WD) / ₹${(r.price_weekend || r.price).toLocaleString('en-IN')} (WE)`}
+                          Room {String(r.id).padStart(2, '0')} – {r.name} ({r.type}) {r.id === 9 ? '• Included in Nakshatra Hall 2 Package' : `• Mon–Fri: ₹${(r.price_weekday || r.price).toLocaleString('en-IN')} | Sat–Sun: ₹${(r.price_weekend || r.price).toLocaleString('en-IN')}`}
                         </option>
                       ))
                     ) : (
                       halls.map(h => (
                         <option key={h.id} value={h.id}>
-                          {h.name} ({h.type}) • ₹{(h.price_weekday || h.price).toLocaleString('en-IN')} (WD) / ₹{(h.price_weekend || h.price).toLocaleString('en-IN')} (WE) {h.hasSeparateRoom ? ' [Includes Nakshatra Room]' : ''}
+                          {h.name} ({h.type}) • Mon–Fri: ₹{(h.price_weekday || h.price).toLocaleString('en-IN')} | Sat–Sun: ₹{(h.price_weekend || h.price).toLocaleString('en-IN')} {h.hasSeparateRoom ? ' [Includes Room 09 Suite]' : ''}
                         </option>
                       ))
                     )}
@@ -784,35 +784,69 @@ const Booking = () => {
                 </div>
               </div>
 
-              {/* Real-time Pricing Summary */}
-              {days > 0 && selectedItem && (
-                <div className="bg-cream p-6 border-l-4 border-secondary space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">
-                    Cost Summary (All Taxes Included)
-                  </h4>
-                  <div className="space-y-1.5 text-sm">
-                    <div className="flex justify-between">
-                      <span>{selectedItem.name} ({days} {itemType === 'room' ? 'Nights' : 'Days'})</span>
-                      <span className="font-semibold text-primary">₹{total.toLocaleString('en-IN')}</span>
-                    </div>
-                    {total > 0 && (
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>Includes GST (18%)</span>
-                        <span>₹{gst.toLocaleString('en-IN')}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between border-t border-gray-200 pt-2 text-base font-bold">
-                      <span className="text-primary font-heading">Total Payable</span>
-                      <span className="text-secondary font-heading">
-                        {total === 0 ? 'Complimentary / Included with Hall' : `₹${total.toLocaleString('en-IN')}`}
+              {/* Real-time Pricing Summary with Automatic Weekday/Weekend Breakdown */}
+              {days > 0 && selectedItem && (() => {
+                const weekdayNights = stayBreakdown.nightsBreakdown.filter(n => !n.isWeekend);
+                const weekendNights = stayBreakdown.nightsBreakdown.filter(n => n.isWeekend);
+                const isComplimentary = total === 0;
+
+                return (
+                  <div className="bg-cream p-6 border-l-4 border-secondary space-y-3 rounded-r-xl">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-primary">
+                        Stay Cost Summary ({days} {itemType === 'room' ? (days === 1 ? 'Night' : 'Nights') : (days === 1 ? 'Day' : 'Days')})
+                      </h4>
+                      <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                        All Taxes Included
                       </span>
                     </div>
-                    <p className="text-[11px] text-gray-400 italic">
-                      * Dynamic Weekday (Mon–Fri) & Weekend (Sat–Sun) tariffs automatically applied. Inclusive of all applicable taxes.
-                    </p>
+
+                    <div className="space-y-2 text-sm pt-1 border-t border-secondary/20">
+                      {/* Weekday breakdown */}
+                      {weekdayNights.length > 0 && (
+                        <div className="flex justify-between items-center text-xs text-primary">
+                          <span>
+                            {weekdayNights.length} Weekday {itemType === 'room' ? (weekdayNights.length === 1 ? 'Night' : 'Nights') : (weekdayNights.length === 1 ? 'Day' : 'Days')} (Mon–Fri @ ₹{(selectedItem.price_weekday ?? selectedItem.price).toLocaleString('en-IN')})
+                          </span>
+                          <span className="font-semibold">
+                            ₹{(weekdayNights.length * (selectedItem.price_weekday ?? selectedItem.price)).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Weekend breakdown */}
+                      {weekendNights.length > 0 && (
+                        <div className="flex justify-between items-center text-xs text-secondary font-medium">
+                          <span>
+                            {weekendNights.length} Weekend {itemType === 'room' ? (weekendNights.length === 1 ? 'Night' : 'Nights') : (weekendNights.length === 1 ? 'Day' : 'Days')} (Sat–Sun @ ₹{(selectedItem.price_weekend ?? selectedItem.price).toLocaleString('en-IN')})
+                          </span>
+                          <span className="font-bold">
+                            ₹{(weekendNights.length * (selectedItem.price_weekend ?? selectedItem.price)).toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                      )}
+
+                      {total > 0 && (
+                        <div className="flex justify-between text-[11px] text-gray-500 pt-1">
+                          <span>Includes GST (18%)</span>
+                          <span>₹{gst.toLocaleString('en-IN')}</span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between border-t border-gray-200/80 pt-2 text-base font-bold">
+                        <span className="text-primary font-heading">Total Amount</span>
+                        <span className="text-secondary font-heading text-lg">
+                          {isComplimentary ? 'Complimentary / Included with Hall' : `₹${total.toLocaleString('en-IN')}`}
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-gray-400 italic pt-1">
+                        * Automatic calculation: Mon–Fri weekday tariff + Sat–Sun weekend tariff. Inclusive of all applicable taxes.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               <div className="pt-6">
                 <button

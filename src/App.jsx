@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MobileBottomBar from './components/MobileBottomBar';
+import ScrollToTop from './components/ScrollToTop';
 import { ResortProvider } from './context/ResortContext';
 
 // Pages
@@ -27,6 +28,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ResortProvider>
         <Router>
+          <ScrollToTop />
           <AppContent />
         </Router>
       </ResortProvider>

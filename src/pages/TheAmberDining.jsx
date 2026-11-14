@@ -21,7 +21,7 @@ const TIMINGS = [
 
 const TheAmberDining = () => {
   const [activeImg, setActiveImg] = useState(0);
-  const images = ['/dining1.png', '/dining2.png'];
+  const images = ['/dining1.webp', '/dining2.webp'];
 
   return (
     <div className="overflow-hidden bg-cream pt-20">
@@ -119,7 +119,7 @@ const TheAmberDining = () => {
           </div>
           <div className="relative">
             <img
-              src="/dining1.png"
+              src="/dining1.webp"
               alt="The Amber Dining Interior"
               className="w-full h-[480px] object-cover rounded-2xl shadow-2xl"
             />
@@ -170,7 +170,7 @@ const TheAmberDining = () => {
 
             <div className="relative overflow-hidden rounded-2xl shadow-2xl border border-secondary/30">
               <img
-                src="/dining2.png"
+                src="/dining2.webp"
                 alt="The Gourmet Kitchen & Banquet Arrangement"
                 className="w-full h-[360px] object-cover"
               />

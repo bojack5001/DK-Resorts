@@ -4,22 +4,30 @@ import { Users, Wifi, Wind, ArrowRight, ChevronLeft, ChevronRight, Star, Sparkle
 import { Link } from 'react-router-dom';
 import { useResort } from '../context/ResortContext';
 
-// Room-specific image galleries (genuine resort photography)
+// Room-specific image galleries (ultra-fast optimized WebP)
 const ROOM_GALLERIES = {
-  1: ['/mercury1.png', '/mercury2.png', '/mercury3.png', '/mercury4.png'],                          // Room 01: ELITE
-  2: ['/venus1.png', '/venus2.png', '/venus3.png', '/venus4.png', '/venus5.png'],                   // Room 02: SIGNATURE
-  3: ['/jupiter1.png', '/jupiter2.png', '/jupiter3.png', '/jupiter4.png', '/jupiter5.png'],         // Room 03: CROWN
-  4: ['/earth1.png', '/earth2.png', '/earth3.png', '/earth4.png'],                                 // Room 04: LEGACY
-  5: ['/mars1.png', '/mars2.png', '/mars3.png'],                                                    // Room 05: MAJESTIC
-  6: ['/saturn1.png', '/saturn2.png', '/saturn3.png'],                                             // Room 06: GRANDE
-  7: ['/uranus1.png', '/uranus2.png'],                                                             // Room 07: IMPERIAL
-  8: ['/neptune1.png', '/neptune2.png', '/neptune3.png'],                                          // Room 08: SUPREME
-  9: ['/nakshatra1.jpg', '/nakshatra2.jpg'],                                                               // Room 09: NAKSHATRA
+  1: ['/mercury1.webp', '/mercury2.webp', '/mercury3.webp', '/mercury4.webp'],                          // Room 01: ELITE
+  2: ['/venus1.webp', '/venus2.webp', '/venus3.webp', '/venus4.webp', '/venus5.webp'],                   // Room 02: SIGNATURE
+  3: ['/jupiter1.webp', '/jupiter2.webp', '/jupiter3.webp', '/jupiter4.webp', '/jupiter5.webp'],         // Room 03: CROWN
+  4: ['/earth1.webp', '/earth2.webp', '/earth3.webp', '/earth4.webp'],                                 // Room 04: LEGACY
+  5: ['/mars1.webp', '/mars2.webp', '/mars3.webp'],                                                    // Room 05: MAJESTIC
+  6: ['/saturn1.webp', '/saturn2.webp', '/saturn3.webp'],                                             // Room 06: GRANDE
+  7: ['/uranus1.webp', '/uranus2.webp'],                                                             // Room 07: IMPERIAL
+  8: ['/neptune1.webp', '/neptune2.webp', '/neptune3.webp'],                                          // Room 08: SUPREME
+  9: ['/nakshatra1.webp', '/nakshatra2.webp'],                                                         // Room 09: NAKSHATRA
 };
 
 const RoomCard = ({ room, onSelectDetails }) => {
   const gallery = ROOM_GALLERIES[room.id] || [room.image];
   const [imgIdx, setImgIdx] = useState(0);
+
+  // Preload all gallery images into browser cache so switching is 100% instantaneous
+  React.useEffect(() => {
+    gallery.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, [gallery]);
 
   const prev = (e) => { e.preventDefault(); e.stopPropagation(); setImgIdx(i => (i - 1 + gallery.length) % gallery.length); };
   const next = (e) => { e.preventDefault(); e.stopPropagation(); setImgIdx(i => (i + 1) % gallery.length); };
@@ -28,12 +36,17 @@ const RoomCard = ({ room, onSelectDetails }) => {
   const weekdayRate = room.price_weekday || room.price;
   const weekendRate = room.price_weekend || room.price;
 
+  // Real-time automatic dynamic day detector
+  const todayDay = new Date().getDay(); // 0 is Sun, 6 is Sat
+  const isWeekendToday = (todayDay === 0 || todayDay === 6);
+  const currentTodayRate = isWeekendToday ? weekendRate : weekdayRate;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="group bg-white overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border border-gray-100 rounded-xl flex flex-col justify-between"
+      className="group bg-white overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 rounded-xl flex flex-col justify-between"
     >
       <div>
         {/* Photo with gallery nav */}
@@ -41,7 +54,9 @@ const RoomCard = ({ room, onSelectDetails }) => {
           <img
             src={gallery[imgIdx]}
             alt={`Room 0${room.id} - ${room.name} at DK Star Resorts`}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
 
           {/* Top badges */}
@@ -51,8 +66,8 @@ const RoomCard = ({ room, onSelectDetails }) => {
 
           <div className="absolute top-4 right-4 bg-secondary text-primary px-3 py-1.5 text-xs font-extrabold rounded shadow">
             {isNakshatraPackage
-              ? 'Nakshatra Hall Package'
-              : `₹${weekdayRate.toLocaleString('en-IN')}/Night`}
+              ? 'Nakshatra Hall 2 Package'
+              : `Today: ₹${currentTodayRate.toLocaleString('en-IN')}`}
           </div>
 
           {/* Gallery navigation arrows */}
@@ -61,14 +76,14 @@ const RoomCard = ({ room, onSelectDetails }) => {
               <button
                 onClick={prev}
                 aria-label="Previous photo"
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white p-2 rounded-full transition-all opacity-80 group-hover:opacity-100"
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white p-2 rounded-full transition-all opacity-80 group-hover:opacity-100 cursor-pointer"
               >
                 <ChevronLeft size={16} />
               </button>
               <button
                 onClick={next}
                 aria-label="Next photo"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white p-2 rounded-full transition-all opacity-80 group-hover:opacity-100"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white p-2 rounded-full transition-all opacity-80 group-hover:opacity-100 cursor-pointer"
               >
                 <ChevronRight size={16} />
               </button>
@@ -79,7 +94,7 @@ const RoomCard = ({ room, onSelectDetails }) => {
                   <button
                     key={i}
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); setImgIdx(i); }}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${i === imgIdx ? 'w-5 bg-secondary' : 'w-1.5 bg-white/60'}`}
+                    className={`h-1.5 rounded-full transition-all duration-150 cursor-pointer ${i === imgIdx ? 'w-5 bg-secondary' : 'w-1.5 bg-white/60'}`}
                   />
                 ))}
               </div>
@@ -95,8 +110,13 @@ const RoomCard = ({ room, onSelectDetails }) => {
             </div>
             {!isNakshatraPackage && (
               <div className="text-right">
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Weekday</span>
-                <span className="font-bold text-primary font-heading text-lg">₹{weekdayRate.toLocaleString('en-IN')}</span>
+                <span className="text-[10px] text-gray-500 uppercase tracking-wider block font-bold">
+                  {isWeekendToday ? 'Weekend Rate' : 'Weekday Rate'}
+                </span>
+                <span className="font-bold text-primary font-heading text-lg">
+                  ₹{currentTodayRate.toLocaleString('en-IN')}
+                </span>
+                <span className="text-[10px] text-secondary font-semibold block">Today's Tariff</span>
               </div>
             )}
           </div>
@@ -105,20 +125,29 @@ const RoomCard = ({ room, onSelectDetails }) => {
             {room.description}
           </p>
 
-          {/* Weekend rate pill */}
+          {/* Dual Dynamic Tariff Box: Monday-Friday vs Saturday-Sunday */}
           {!isNakshatraPackage && (
-            <div className="flex items-center justify-between bg-cream p-3 rounded-lg border border-secondary/20 mb-3 text-xs">
-              <span className="font-bold text-secondary">
-                Weekend: ₹{weekendRate.toLocaleString('en-IN')}/Night
-              </span>
-              <span className="text-gray-400 text-[11px] font-medium">• Tax Inclusive</span>
+            <div className="bg-cream p-3 rounded-lg border border-secondary/25 mb-3 text-xs space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className={`font-semibold flex items-center gap-1.5 ${!isWeekendToday ? 'text-primary font-bold' : 'text-gray-600'}`}>
+                  <span>Mon–Fri (Weekday):</span>
+                </span>
+                <span className="font-bold text-primary">₹{weekdayRate.toLocaleString('en-IN')}/Night</span>
+              </div>
+              <div className="flex items-center justify-between border-t border-secondary/15 pt-1.5">
+                <span className={`font-semibold flex items-center gap-1.5 ${isWeekendToday ? 'text-secondary font-bold' : 'text-gray-600'}`}>
+                  <span>Sat–Sun (Weekend):</span>
+                </span>
+                <span className="font-bold text-secondary">₹{weekendRate.toLocaleString('en-IN')}/Night</span>
+              </div>
+              <p className="text-[10px] text-gray-400 text-right pt-0.5">All rates tax inclusive</p>
             </div>
           )}
 
           {isNakshatraPackage && (
             <div className="text-xs bg-amber-50 border border-amber-300 text-amber-900 p-3 rounded-lg font-medium flex items-center gap-2 mb-3">
               <Sparkles size={16} className="text-secondary shrink-0" />
-              <span>Included with Nakshatra Hall booking package at no additional charge.</span>
+              <span>Included with Nakshatra Hall 2 booking package at no additional charge.</span>
             </div>
           )}
         </div>

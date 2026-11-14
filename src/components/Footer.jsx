@@ -34,7 +34,7 @@ const Footer = () => {
             <h4 className="text-lg font-heading font-bold mb-6 text-secondary uppercase tracking-widest">Quick Links</h4>
             <ul className="space-y-4 text-sm text-gray-300">
               <li><Link to="/rooms" className="hover:text-white transition-colors">Prestige Rooms</Link></li>
-              <li><Link to="/function-hall" className="hover:text-white transition-colors">Nakshatra & Moon Halls</Link></li>
+              <li><Link to="/function-hall" className="hover:text-white transition-colors">Nakshatra Hall 1 & 2</Link></li>
               <li><Link to="/dining" className="hover:text-white transition-colors">The Amber Dining</Link></li>
               <li><Link to="/pool" className="hover:text-white transition-colors">Wonders Swimming Pool</Link></li>
               <li><Link to="/gallery" className="hover:text-white transition-colors">Resort Gallery</Link></li>

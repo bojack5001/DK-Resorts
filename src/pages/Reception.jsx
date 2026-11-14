@@ -355,7 +355,7 @@ const Reception = () => {
                 <h1 className="text-2xl md:text-3xl font-heading font-bold text-primary flex items-center gap-2">
                   <Activity size={24} className="text-secondary animate-pulse" /> Live Status Grid
                 </h1>
-                <p className="text-gray-500 text-xs mt-1">Interactive overview of all 8 guest rooms and 2 party halls (Indoor & Outdoor).</p>
+                <p className="text-gray-500 text-xs mt-1">Interactive overview of all 9 guest rooms and 2 party halls (Indoor & Outdoor).</p>
               </div>
 
               {/* Status Indicators */}
@@ -369,7 +369,7 @@ const Reception = () => {
 
             {/* Grid of rooms */}
             <div className="space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Guest Rooms (8)</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">Guest Rooms (9)</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {rooms.map(room => {
                   const details = getCellDetails(room, 'room');
