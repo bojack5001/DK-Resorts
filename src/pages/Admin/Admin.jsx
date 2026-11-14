@@ -337,10 +337,10 @@ const Admin = () => {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md w-full bg-white/10 backdrop-blur-xl border border-white/10 p-10 rounded-2xl shadow-2xl text-white z-10"
         >
-          <div className="text-center mb-8">
-            <img src="/logo-v2.png" alt="DK Logo" className="h-16 mx-auto brightness-0 invert" />
-            <h2 className="text-2xl font-heading font-bold mt-4 tracking-wider">Superuser Portal</h2>
-            <p className="text-xs uppercase tracking-widest text-secondary font-bold mt-1">Management Access Gate</p>
+          <div className="text-center mb-8 flex flex-col items-center">
+            <img src="/logo-symbol.png" alt="DK Logo" className="h-16 w-auto brightness-0 invert" />
+            <h2 className="text-2xl font-heading font-bold mt-3 tracking-wider">DK STAR RESORTS</h2>
+            <p className="text-xs uppercase tracking-widest text-secondary font-bold mt-1">Superuser Portal</p>
           </div>
 
           {loginError && (
@@ -385,9 +385,16 @@ const Admin = () => {
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
       <div className="w-64 bg-primary text-white hidden lg:flex flex-col shrink-0">
-        <div className="p-8 border-b border-white/5">
-          <img src="/logo-v2.png" alt="Logo" className="h-14 w-auto brightness-0 invert" />
-          <p className="text-[9px] uppercase tracking-widest text-secondary font-bold mt-2">Admin Dashboard</p>
+        <div className="p-6 border-b border-white/5 flex items-center gap-3">
+          <img src="/logo-symbol.png" alt="Logo" className="h-11 w-auto brightness-0 invert" />
+          <div className="border-l border-secondary/40 pl-3 text-left">
+            <span className="block font-heading font-extrabold text-sm text-white tracking-wider leading-tight">
+              DK STAR RESORTS
+            </span>
+            <span className="block text-[8px] uppercase tracking-widest text-secondary font-bold mt-0.5">
+              Admin Portal
+            </span>
+          </div>
         </div>
         <nav className="flex-1 p-4 space-y-1.5">
           <button 

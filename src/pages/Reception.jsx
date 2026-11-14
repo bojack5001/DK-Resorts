@@ -256,10 +256,10 @@ const Reception = () => {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md w-full bg-white/10 backdrop-blur-xl border border-white/10 p-10 rounded-2xl shadow-2xl text-white z-10"
         >
-          <div className="text-center mb-8">
-            <img src="/logo-v2.png" alt="DK Logo" className="h-16 mx-auto brightness-0 invert" />
-            <h2 className="text-2xl font-heading font-bold mt-4 tracking-wider">Front Desk Terminal</h2>
-            <p className="text-xs uppercase tracking-widest text-secondary font-bold mt-1">Receptionist Access</p>
+          <div className="text-center mb-8 flex flex-col items-center">
+            <img src="/logo-symbol.png" alt="DK Logo" className="h-16 w-auto brightness-0 invert" />
+            <h2 className="text-2xl font-heading font-bold mt-3 tracking-wider">DK STAR RESORTS</h2>
+            <p className="text-xs uppercase tracking-widest text-secondary font-bold mt-1">Front Desk Terminal</p>
           </div>
 
           {loginError && (
@@ -304,10 +304,16 @@ const Reception = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Top Header */}
       <header className="h-20 bg-primary text-white flex items-center justify-between px-6 md:px-8 shrink-0 shadow-md">
-        <div className="flex items-center gap-4">
-          <img src="/logo-v2.png" alt="DK Logo" className="h-10 w-auto brightness-0 invert" />
-          <div className="hidden md:block h-6 w-px bg-white/20" />
-          <span className="hidden md:inline text-xs uppercase tracking-[0.2em] font-bold text-secondary">Front Desk Operations</span>
+        <div className="flex items-center gap-3">
+          <img src="/logo-symbol.png" alt="DK Logo" className="h-10 w-auto brightness-0 invert" />
+          <div className="border-l border-white/20 pl-3 text-left">
+            <span className="block font-heading font-extrabold text-sm text-white tracking-wider leading-tight">
+              DK STAR RESORTS
+            </span>
+            <span className="block text-[8px] uppercase tracking-widest text-secondary font-bold mt-0.5">
+              Front Desk Operations
+            </span>
+          </div>
         </div>
         
         {/* Navigation Tabs */}

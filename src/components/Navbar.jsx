@@ -42,15 +42,19 @@ const Navbar = () => {
       <nav className="fixed w-full z-50 transition-all duration-500 bg-white/95 backdrop-blur-md shadow-sm py-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
               <img
-                src="/logo-v2.png"
-                alt="DK STAR RESORTS Logo"
-                className="h-11 sm:h-12 md:h-14 w-auto object-contain"
+                src="/logo-symbol.png"
+                alt="DK STAR RESORTS Symbol"
+                className="h-10 sm:h-12 md:h-13 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
-              <div className="hidden sm:block text-left border-l border-secondary/30 pl-3 py-0.5">
-                <span className="block text-[9px] tracking-[0.25em] font-extrabold uppercase text-secondary">ROYAL LUXURY</span>
-                <span className="block text-[8px] tracking-[0.2em] uppercase text-primary/70 font-semibold">COLLECTION</span>
+              <div className="text-left border-l border-secondary/35 pl-2.5 sm:pl-3.5 py-0.5">
+                <span className="block font-heading font-extrabold text-sm sm:text-base md:text-lg text-primary tracking-wider leading-tight group-hover:text-secondary transition-colors">
+                  DK STAR RESORTS
+                </span>
+                <span className="block text-[7.5px] sm:text-[9px] tracking-[0.22em] sm:tracking-[0.25em] font-bold uppercase text-secondary leading-none mt-0.5 sm:mt-1">
+                  ROYAL LUXURY COLLECTION
+                </span>
               </div>
             </Link>
 
@@ -122,10 +126,14 @@ const Navbar = () => {
               {/* Drawer Header */}
               <div className="p-6 border-b border-[#C5A059]/20 bg-white/90 backdrop-blur-xs flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img src="/logo-v2.png" alt="DK Star Resorts" className="h-11 w-auto object-contain" />
-                  <div className="border-l border-[#C5A059]/40 pl-3 py-0.5">
-                    <span className="block text-[10px] tracking-[0.2em] font-extrabold text-[#C5A059] uppercase">ROYAL LUXURY</span>
-                    <span className="block text-[8px] tracking-[0.15em] text-[#4A3728]/80 font-bold uppercase">COLLECTION</span>
+                  <img src="/logo-symbol.png" alt="DK Star Resorts" className="h-11 w-auto object-contain" />
+                  <div className="border-l border-[#C5A059]/40 pl-3 py-0.5 text-left">
+                    <span className="block font-heading font-extrabold text-sm text-[#4A3728] tracking-wider leading-tight">
+                      DK STAR RESORTS
+                    </span>
+                    <span className="block text-[8px] tracking-[0.2em] font-bold text-[#C5A059] uppercase mt-1">
+                      ROYAL LUXURY COLLECTION
+                    </span>
                   </div>
                 </div>
                 <button

@@ -9,12 +9,20 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div className="space-y-6">
-            <Link to="/" className="inline-block">
+            <Link to="/" className="inline-flex items-center gap-3.5 group">
               <img 
-                src="/logo-v2.png" 
-                alt="DK STAR RESORTS Logo" 
-                className="h-28 w-auto object-contain brightness-0 invert"
+                src="/logo-symbol.png" 
+                alt="DK STAR RESORTS Emblem" 
+                className="h-14 sm:h-16 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105"
               />
+              <div className="border-l border-secondary/40 pl-3.5 py-1 text-left">
+                <span className="block font-heading font-extrabold text-xl text-white tracking-wider leading-tight">
+                  DK STAR RESORTS
+                </span>
+                <span className="block text-[9px] tracking-[0.25em] font-bold text-secondary uppercase mt-1">
+                  ROYAL LUXURY COLLECTION
+                </span>
+              </div>
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed">
               Experience the royal side of relaxation at DK STAR RESORTS. Discover our Prestige Room Collection, grand celebration halls, Wonders Swimming Pool, and The Grand Pavilion.
