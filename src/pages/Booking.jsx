@@ -118,21 +118,42 @@ const Booking = () => {
     ? rooms.find(r => r.id === Number(itemId))
     : halls.find(h => h.id === itemId);
 
-  // Calculate pricing breakdown
-  const calculateDays = () => {
-    if (!checkIn || !checkOut) return 0;
+  // Calculate pricing breakdown with dynamic weekday/weekend rates
+  const calculateStayBreakdown = () => {
+    if (!checkIn || !checkOut || !selectedItem) return { days: 0, total: 0, nightsBreakdown: [] };
     const date1 = new Date(checkIn);
     const date2 = new Date(checkOut);
     const diffTime = date2 - date1;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 0;
+    if (diffDays <= 0) return { days: 0, total: 0, nightsBreakdown: [] };
+
+    let totalAmount = 0;
+    const nightsBreakdown = [];
+    const cur = new Date(date1);
+    for (let i = 0; i < diffDays; i++) {
+      const day = cur.getDay(); // 0 = Sun, 6 = Sat
+      const isWeekend = (day === 0 || day === 6);
+      const rate = isWeekend
+        ? (selectedItem.price_weekend ?? selectedItem.price ?? 0)
+        : (selectedItem.price_weekday ?? selectedItem.price ?? 0);
+      totalAmount += rate;
+      nightsBreakdown.push({
+        date: cur.toISOString().split('T')[0],
+        isWeekend,
+        rate
+      });
+      cur.setDate(cur.getDate() + 1);
+    }
+
+    return { days: diffDays, total: totalAmount, nightsBreakdown };
   };
 
-  const days = calculateDays();
-  const basePrice = selectedItem ? selectedItem.price : 0;
-  const subtotal = basePrice * days;
-  const gst = Math.round(subtotal * 0.18); // 18% GST for luxury stays
-  const total = subtotal + gst;
+  const stayBreakdown = calculateStayBreakdown();
+  const days = stayBreakdown.days;
+  const total = stayBreakdown.total;
+  // All tariffs are inclusive of applicable taxes
+  const subtotal = Math.round((total / 1.18) * 100) / 100;
+  const gst = Math.round((total - subtotal) * 100) / 100;
 
   // Check date availability
   const checkAvailability = (id, type, start, end) => {
@@ -667,13 +688,13 @@ const Booking = () => {
                     {itemType === 'room' ? (
                       rooms.map(r => (
                         <option key={r.id} value={r.id}>
-                          {r.name} - ₹{r.price.toLocaleString('en-IN')}/night
+                          Room {String(r.id).padStart(2, '0')} – {r.name} ({r.type}) {r.id === 9 ? '• Included in Nakshatra Hall Package' : `• ₹${(r.price_weekday || r.price).toLocaleString('en-IN')} (WD) / ₹${(r.price_weekend || r.price).toLocaleString('en-IN')} (WE)`}
                         </option>
                       ))
                     ) : (
                       halls.map(h => (
                         <option key={h.id} value={h.id}>
-                          {h.name} {h.hasSeparateRoom ? '(Includes 1 Separate Room)' : ''} - ₹{h.price.toLocaleString('en-IN')}/day
+                          {h.name} ({h.type}) • ₹{(h.price_weekday || h.price).toLocaleString('en-IN')} (WD) / ₹{(h.price_weekend || h.price).toLocaleString('en-IN')} (WE) {h.hasSeparateRoom ? ' [Includes Nakshatra Room]' : ''}
                         </option>
                       ))
                     )}
@@ -766,20 +787,29 @@ const Booking = () => {
               {/* Real-time Pricing Summary */}
               {days > 0 && selectedItem && (
                 <div className="bg-cream p-6 border-l-4 border-secondary space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">Cost Summary</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                    Cost Summary (All Taxes Included)
+                  </h4>
                   <div className="space-y-1.5 text-sm">
                     <div className="flex justify-between">
                       <span>{selectedItem.name} ({days} {itemType === 'room' ? 'Nights' : 'Days'})</span>
-                      <span className="font-semibold text-primary">₹{subtotal.toLocaleString('en-IN')}</span>
+                      <span className="font-semibold text-primary">₹{total.toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="flex justify-between text-xs text-gray-400">
-                      <span>GST Tax (18%)</span>
-                      <span>₹{gst.toLocaleString('en-IN')}</span>
-                    </div>
+                    {total > 0 && (
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>Includes GST (18%)</span>
+                        <span>₹{gst.toLocaleString('en-IN')}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between border-t border-gray-200 pt-2 text-base font-bold">
-                      <span className="text-primary font-heading">Estimated Total</span>
-                      <span className="text-secondary font-heading">₹{total.toLocaleString('en-IN')}</span>
+                      <span className="text-primary font-heading">Total Payable</span>
+                      <span className="text-secondary font-heading">
+                        {total === 0 ? 'Complimentary / Included with Hall' : `₹${total.toLocaleString('en-IN')}`}
+                      </span>
                     </div>
+                    <p className="text-[11px] text-gray-400 italic">
+                      * Dynamic Weekday (Mon–Fri) & Weekend (Sat–Sun) tariffs automatically applied. Inclusive of all applicable taxes.
+                    </p>
                   </div>
                 </div>
               )}
@@ -809,7 +839,7 @@ const Booking = () => {
                   <h4 className="text-xl font-heading font-bold text-primary">{selectedItem.name}</h4>
                   {selectedItem.hasSeparateRoom && (
                     <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-50 border border-amber-300 text-amber-900 text-[11px] font-bold">
-                      <span>⭐ Includes 1 Dedicated Separate Room</span>
+                      <span>⭐ Includes Nakshatra Attached Dressing Suite</span>
                     </div>
                   )}
                   <p className="text-xs text-gray-500 leading-relaxed mt-2">{selectedItem.description}</p>
@@ -844,7 +874,7 @@ const Booking = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Phone className="text-secondary" size={18} />
-                  <span className="text-sm font-semibold">+91 98765 43210</span>
+                  <span className="text-sm font-semibold">+91 94894 55977</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="text-secondary" size={18} />

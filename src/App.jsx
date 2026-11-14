@@ -16,7 +16,7 @@ import Contact from './pages/Contact';
 import Admin from './pages/Admin.jsx';
 import Reception from './pages/Reception';
 import MyBookings from './pages/MyBookings';
-import GalaxyDining from './pages/GalaxyDining';
+import TheAmberDining from './pages/TheAmberDining';
 
 const queryClient = new QueryClient();
 
@@ -51,7 +51,8 @@ function AppContent() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/dining" element={<GalaxyDining />} />
+          <Route path="/dining" element={<TheAmberDining />} />
+          <Route path="/amber-dining" element={<TheAmberDining />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/reception" element={<Reception />} />
         </Routes>

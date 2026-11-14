@@ -55,10 +55,10 @@ const HallCard = ({ hall, idx }) => {
             <Sparkles size={18} className="text-secondary shrink-0 mt-0.5" />
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-amber-800">
-                Pluto Attached Room Included
+                Nakshatra Attached Suite Included
               </p>
               <p className="text-xs text-amber-700 mt-0.5">
-                Includes private dressing/bridal suite (Room 09 – Pluto) at no additional charge when booking Sun Hall.
+                Includes private dressing/bridal suite (Room 09 – Nakshatra) at no additional charge when booking Nakshatra Hall.
               </p>
             </div>
           </div>
@@ -195,7 +195,7 @@ const FunctionHall = () => {
       <section className="relative h-[65vh] min-h-[480px] flex items-center justify-center overflow-hidden">
         <img
           src="/outdoor1.png"
-          alt="Sun Hall & Moon Hall Venues"
+          alt="Nakshatra Hall & Moon Hall Venues"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary/70 via-primary/50 to-primary/80"></div>
@@ -212,7 +212,7 @@ const FunctionHall = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="text-5xl md:text-7xl font-heading font-bold mb-4"
           >
-            Sun & Moon Halls
+            Nakshatra & Moon Halls
           </motion.h1>
           <p className="text-gray-200 text-sm md:text-lg max-w-2xl mx-auto">
             From open-air celebrations under the night sky to climate-controlled grand indoor banquets — create timeless memories at DK Star Resorts.
@@ -264,7 +264,7 @@ const FunctionHall = () => {
                   {halls.map((hall) => (
                     <option key={hall.id} value={hall.id}>
                       {hall.name} ({hall.type}) • Up to {hall.capacity} Guests
-                      {hall.hasSeparateRoom ? ' [Includes Pluto Attached Room]' : ''}
+                      {hall.hasSeparateRoom ? ' [Includes Nakshatra Attached Suite]' : ''}
                     </option>
                   ))}
                 </select>

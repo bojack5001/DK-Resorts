@@ -258,7 +258,7 @@ const Pool = () => {
       <section className="relative h-[70vh] min-h-[500px] overflow-hidden flex items-center justify-center">
         <img
           src="/pool4.png"
-          alt="Milky Way Pool at DK Star Resorts"
+          alt="Wonders Swimming Pool at DK Star Resorts"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-primary/80" />
@@ -271,14 +271,14 @@ const Pool = () => {
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <Waves size={28} className="text-secondary" />
-            <span className="text-secondary font-bold uppercase tracking-[0.3em] text-sm">Resort Facilities</span>
+            <span className="text-secondary font-bold uppercase tracking-[0.3em] text-sm">Resort Leisure Facility</span>
             <Waves size={28} className="text-secondary" />
           </div>
           <h1 className="text-5xl md:text-7xl font-heading font-bold text-white mb-4">
-            Milky Way Pool
+            Wonders Swimming Pool
           </h1>
           <p className="text-white/90 text-lg max-w-xl mx-auto">
-            Temperature-controlled resort swimming pool with leisure fountain and ambient night lighting. Reserve your slot today.
+            Temperature-controlled paradise with leisure mushroom fountain, covered pavilion, and ambient night illumination.
           </p>
         </motion.div>
       </section>
@@ -597,10 +597,10 @@ const Pool = () => {
               Visual Tour
             </span>
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary">
-              Milky Way Pool Gallery
+              Wonders Swimming Pool Gallery
             </h2>
             <p className="text-gray-500 text-sm mt-2">
-              Glistening clear water, mushroom splash fountain, and enchanting evening lights
+              Crystal-clear waters, mushroom splash fountain, and enchanting evening LED illumination
             </p>
           </div>
 
@@ -638,7 +638,7 @@ const Pool = () => {
       <section className="bg-primary/5 border-t border-gray-200 py-16">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-heading font-bold text-primary text-center mb-3">What Our Guests Say</h2>
-          <p className="text-gray-500 text-center mb-10 text-sm">About the Milky Way Pool experience</p>
+          <p className="text-gray-500 text-center mb-10 text-sm">About the Wonders Swimming Pool experience</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { name: 'Priya S.', stars: 5, text: 'The evening slot was absolutely magical — ambient lights, cool water, and total peace. Will book again!' },

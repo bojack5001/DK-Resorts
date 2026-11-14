@@ -17,7 +17,10 @@ const Footer = () => {
               />
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed">
-              Experience luxury in the heart of nature. Our resort offers premium rooms, a grand function hall, and a pristine swimming pool for your perfect getaway.
+              Experience the royal side of relaxation at DK STAR RESORTS. Discover our Prestige Room Collection, grand celebration halls, Wonders Swimming Pool, and The Amber Dining.
+            </p>
+            <p className="text-secondary text-xs uppercase tracking-[0.25em] font-bold">
+              A Stay Beyond Expectations
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-secondary transition-colors"><MessageCircle size={20} /></a>
@@ -30,11 +33,11 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-heading font-bold mb-6 text-secondary uppercase tracking-widest">Quick Links</h4>
             <ul className="space-y-4 text-sm text-gray-300">
-              <li><Link to="/rooms" className="hover:text-white transition-colors">Our Rooms</Link></li>
-              <li><Link to="/function-hall" className="hover:text-white transition-colors">Function Hall</Link></li>
-              <li><Link to="/dining" className="hover:text-white transition-colors">Galaxy Dining</Link></li>
-              <li><Link to="/pool" className="hover:text-white transition-colors">Swimming Pool</Link></li>
-              <li><Link to="/gallery" className="hover:text-white transition-colors">Photo Gallery</Link></li>
+              <li><Link to="/rooms" className="hover:text-white transition-colors">Prestige Rooms</Link></li>
+              <li><Link to="/function-hall" className="hover:text-white transition-colors">Nakshatra & Moon Halls</Link></li>
+              <li><Link to="/dining" className="hover:text-white transition-colors">The Amber Dining</Link></li>
+              <li><Link to="/pool" className="hover:text-white transition-colors">Wonders Swimming Pool</Link></li>
+              <li><Link to="/gallery" className="hover:text-white transition-colors">Resort Gallery</Link></li>
               <li><Link to="/booking" className="hover:text-white transition-colors">Book a Stay</Link></li>
             </ul>
           </div>

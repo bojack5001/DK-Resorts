@@ -10,9 +10,9 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Rooms', path: '/rooms' },
-    { name: 'Function Hall', path: '/function-hall' },
-    { name: 'Dining', path: '/dining' },
-    { name: 'Swimming Pool', path: '/pool' },
+    { name: 'Halls', path: '/function-hall' },
+    { name: 'The Amber Dining', path: '/dining' },
+    { name: 'Wonders Pool', path: '/pool' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'My Bookings', path: '/my-bookings' },
     { name: 'Contact', path: '/contact' },
@@ -24,12 +24,16 @@ const Navbar = () => {
     <nav className="fixed w-full z-50 transition-all duration-500 bg-white/90 backdrop-blur-md shadow-sm py-2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center gap-3">
             <img
               src="/logo-v2.png"
               alt="DK STAR RESORTS Logo"
               className="h-12 md:h-14 w-auto object-contain"
             />
+            <div className="hidden sm:block text-left border-l border-secondary/30 pl-3 py-0.5">
+              <span className="block text-[9px] tracking-[0.25em] font-extrabold uppercase text-secondary">ROYAL LUXURY</span>
+              <span className="block text-[8px] tracking-[0.2em] uppercase text-primary/70 font-semibold">COLLECTION</span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}
