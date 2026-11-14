@@ -117,28 +117,28 @@ const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 280 }}
-              className="absolute right-0 top-0 bottom-0 w-full max-w-sm sm:max-w-md bg-[#1A1A1A] text-white shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-[#C5A059]/30"
+              className="absolute right-0 top-0 bottom-0 w-full max-w-sm sm:max-w-md bg-[#FDFBF7] text-[#4A3728] shadow-2xl flex flex-col justify-between overflow-y-auto border-l border-[#C5A059]/30"
             >
               {/* Drawer Header */}
-              <div className="p-6 border-b border-white/10 flex items-center justify-between">
+              <div className="p-6 border-b border-[#C5A059]/20 bg-white/90 backdrop-blur-xs flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img src="/logo-v2.png" alt="DK Star Resorts" className="h-10 w-auto brightness-0 invert" />
-                  <div>
-                    <span className="block text-[10px] tracking-[0.2em] font-extrabold text-[#C5A059] uppercase">DK STAR RESORTS</span>
-                    <span className="block text-[8px] tracking-[0.15em] text-gray-400 uppercase">Royal Luxury Collection</span>
+                  <img src="/logo-v2.png" alt="DK Star Resorts" className="h-11 w-auto object-contain" />
+                  <div className="border-l border-[#C5A059]/40 pl-3 py-0.5">
+                    <span className="block text-[10px] tracking-[0.2em] font-extrabold text-[#C5A059] uppercase">ROYAL LUXURY</span>
+                    <span className="block text-[8px] tracking-[0.15em] text-[#4A3728]/80 font-bold uppercase">COLLECTION</span>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white transition-colors cursor-pointer"
+                  className="p-2 rounded-full bg-cream hover:bg-[#C5A059]/20 text-[#4A3728] hover:text-[#C5A059] transition-colors cursor-pointer border border-[#C5A059]/20"
                   aria-label="Close Menu"
                 >
-                  <X size={22} />
+                  <X size={20} />
                 </button>
               </div>
 
               {/* Navigation Links */}
-              <div className="px-6 py-4 space-y-1 divide-y divide-white/5">
+              <div className="px-6 py-4 space-y-1 divide-y divide-[#C5A059]/15">
                 {navLinks.map((link) => (
                   <Link
                     key={link.name}
@@ -146,42 +146,42 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                     className={`flex items-center justify-between py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all group ${
                       isActive(link.path)
-                        ? 'text-[#C5A059] pl-2 border-l-2 border-[#C5A059]'
-                        : 'text-gray-300 hover:text-[#C5A059] hover:pl-2'
+                        ? 'text-[#C5A059] pl-3 border-l-4 border-[#C5A059] bg-[#C5A059]/10'
+                        : 'text-[#4A3728] hover:text-[#C5A059] hover:bg-[#C5A059]/5 hover:pl-2'
                     }`}
                   >
                     <span>{link.name}</span>
-                    <ChevronRight size={14} className="text-gray-500 group-hover:text-[#C5A059] transition-transform group-hover:translate-x-1" />
+                    <ChevronRight size={14} className="text-gray-400 group-hover:text-[#C5A059] transition-transform group-hover:translate-x-1" />
                   </Link>
                 ))}
               </div>
 
               {/* Drawer Footer & Quick Contact */}
-              <div className="p-6 border-t border-white/10 bg-black/30 space-y-4">
+              <div className="p-6 border-t border-[#C5A059]/20 bg-white space-y-4 shadow-sm">
                 <div className="flex items-center gap-2 text-[#C5A059] text-[10px] uppercase font-bold tracking-widest">
                   <Sparkles size={12} />
                   <span>A Stay Beyond Expectations</span>
                 </div>
 
-                <div className="space-y-2 text-xs text-gray-400">
-                  <a href="tel:+919489455977" className="flex items-center gap-3 hover:text-white transition-colors">
+                <div className="space-y-2 text-xs text-gray-600">
+                  <a href="tel:+919489455977" className="flex items-center gap-3 hover:text-[#4A3728] transition-colors">
                     <Phone size={14} className="text-[#C5A059]" />
-                    <span>+91 94894 55977</span>
+                    <span className="font-semibold">+91 94894 55977</span>
                   </a>
-                  <a href="mailto:destarresorts@gmail.com" className="flex items-center gap-3 hover:text-white transition-colors">
+                  <a href="mailto:destarresorts@gmail.com" className="flex items-center gap-3 hover:text-[#4A3728] transition-colors">
                     <Mail size={14} className="text-[#C5A059]" />
-                    <span>destarresorts@gmail.com</span>
+                    <span className="font-semibold">destarresorts@gmail.com</span>
                   </a>
                   <div className="flex items-start gap-3">
                     <MapPin size={14} className="text-[#C5A059] shrink-0 mt-0.5" />
-                    <span className="text-[11px] leading-tight">Vanjur, Vellore - 632006, Tamil Nadu</span>
+                    <span className="text-[11px] leading-tight text-gray-500">No 202/2, PONNIYAMMAN Kovil St, Vanjur, Vellore - 632006</span>
                   </div>
                 </div>
 
                 <Link
                   to="/booking"
                   onClick={() => setIsOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 bg-[#C5A059] hover:bg-[#b08e4c] text-[#4A3728] font-bold text-xs uppercase tracking-widest py-3.5 rounded-lg shadow-lg transition-transform active:scale-95"
+                  className="w-full flex items-center justify-center gap-2 bg-[#4A3728] hover:bg-[#C5A059] text-white font-bold text-xs uppercase tracking-widest py-3.5 rounded-lg shadow-md transition-all active:scale-95"
                 >
                   <Calendar size={15} />
                   <span>Reserve Your Stay Now</span>

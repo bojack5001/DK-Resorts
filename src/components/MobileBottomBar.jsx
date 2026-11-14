@@ -11,12 +11,12 @@ const MobileBottomBar = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-[#1A1A1A]/95 backdrop-blur-lg border-t border-[#C5A059]/30 px-3 py-2 shadow-2xl safe-area-bottom">
+    <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white/95 backdrop-blur-md border-t border-[#C5A059]/30 px-3 py-2 shadow-[0_-4px_20px_rgba(74,55,40,0.08)] safe-area-bottom">
       <div className="max-w-md mx-auto flex items-center justify-between gap-2">
         {/* Quick Call */}
         <a
           href="tel:+919489455977"
-          className="flex-1 flex flex-col items-center justify-center py-1.5 text-gray-300 hover:text-[#C5A059] transition-colors active:scale-95"
+          className="flex-1 flex flex-col items-center justify-center py-1.5 text-[#4A3728] hover:text-[#C5A059] transition-colors active:scale-95"
           aria-label="Call DK Star Resorts"
         >
           <Phone size={18} className="text-[#C5A059]" />
@@ -28,10 +28,10 @@ const MobileBottomBar = () => {
           href="https://wa.me/919489455977?text=Hello%20DK%20Star%20Resorts,%20I%20would%20like%20to%20enquire%20about%20a%20stay"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 flex flex-col items-center justify-center py-1.5 text-gray-300 hover:text-green-400 transition-colors active:scale-95"
+          className="flex-1 flex flex-col items-center justify-center py-1.5 text-[#4A3728] hover:text-emerald-600 transition-colors active:scale-95"
           aria-label="WhatsApp Enquiry"
         >
-          <MessageCircle size={18} className="text-emerald-400" />
+          <MessageCircle size={18} className="text-emerald-600" />
           <span className="text-[9px] font-bold tracking-wider uppercase mt-1">WhatsApp</span>
         </a>
 
@@ -40,7 +40,7 @@ const MobileBottomBar = () => {
           href="https://maps.app.goo.gl/Lu84a8a5iCgT2rEd9?g_st=ac"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 flex flex-col items-center justify-center py-1.5 text-gray-300 hover:text-[#C5A059] transition-colors active:scale-95"
+          className="flex-1 flex flex-col items-center justify-center py-1.5 text-[#4A3728] hover:text-[#C5A059] transition-colors active:scale-95"
           aria-label="Google Maps Location"
         >
           <MapPin size={18} className="text-[#C5A059]" />
@@ -50,9 +50,9 @@ const MobileBottomBar = () => {
         {/* Primary Action: Book Now */}
         <Link
           to="/booking"
-          className="flex-2 flex items-center justify-center gap-2 bg-[#C5A059] hover:bg-[#b08e4c] active:scale-95 text-[#4A3728] px-4 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider shadow-lg transition-transform"
+          className="flex-2 flex items-center justify-center gap-1.5 bg-[#4A3728] hover:bg-[#C5A059] active:scale-95 text-white px-4 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider shadow-md transition-all"
         >
-          <Calendar size={14} />
+          <Calendar size={14} className="text-[#C5A059]" />
           <span>Book Now</span>
         </Link>
       </div>
@@ -61,3 +61,4 @@ const MobileBottomBar = () => {
 };
 
 export default MobileBottomBar;
+
