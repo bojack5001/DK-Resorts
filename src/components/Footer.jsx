@@ -47,6 +47,7 @@ const Footer = () => {
               <li><Link to="/pool" className="hover:text-white transition-colors">Wonders Swimming Pool</Link></li>
               <li><Link to="/gallery" className="hover:text-white transition-colors">Resort Gallery</Link></li>
               <li><Link to="/booking" className="hover:text-white transition-colors">Book a Stay</Link></li>
+              <li><Link to="/payment" className="hover:text-white transition-colors">UPI & QR Payment</Link></li>
             </ul>
           </div>
 

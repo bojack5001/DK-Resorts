@@ -30,6 +30,7 @@ const Navbar = () => {
     { name: 'Halls', path: '/function-hall' },
     { name: 'The Grand Pavilion', path: '/dining' },
     { name: 'Wonders Pool', path: '/pool' },
+    { name: 'Pay Online', path: '/payment' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'My Bookings', path: '/my-bookings' },
     { name: 'Contact', path: '/contact' },

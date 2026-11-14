@@ -1074,34 +1074,20 @@ const Reception = () => {
                 </div>
               </div>
 
-              {/* UPI PAYMENTS & GST INFO BOX */}
-              <div className="border border-secondary/15 rounded-lg p-3 bg-cream/70 flex items-center gap-4 my-6">
-                {/* SVG mock QR Code */}
-                <svg className="w-12 h-12 text-primary shrink-0" viewBox="0 0 100 100">
-                  <rect x="0" y="0" width="30" height="30" fill="currentColor" />
-                  <rect x="4" y="4" width="22" height="22" fill="white" />
-                  <rect x="8" y="8" width="14" height="14" fill="currentColor" />
-
-                  <rect x="70" y="0" width="30" height="30" fill="currentColor" />
-                  <rect x="74" y="4" width="22" height="22" fill="white" />
-                  <rect x="78" y="8" width="14" height="14" fill="currentColor" />
-
-                  <rect x="0" y="70" width="30" height="30" fill="currentColor" />
-                  <rect x="4" y="74" width="22" height="22" fill="white" />
-                  <rect x="8" y="78" width="14" height="14" fill="currentColor" />
-
-                  <rect x="40" y="10" width="10" height="20" fill="currentColor" />
-                  <rect x="55" y="5" width="10" height="10" fill="currentColor" />
-                  <rect x="45" y="40" width="15" height="15" fill="currentColor" />
-                  <rect x="15" y="45" width="10" height="10" fill="currentColor" />
-                  <rect x="75" y="45" width="20" height="10" fill="currentColor" />
-                  <rect x="40" y="70" width="15" height="10" fill="currentColor" />
-                  <rect x="80" y="80" width="10" height="15" fill="currentColor" />
-                  <rect x="60" y="75" width="10" height="20" fill="currentColor" />
-                </svg>
+              {/* PhonePe UPI PAYMENTS & GST INFO BOX */}
+              <div className="border border-secondary/20 rounded-lg p-3 bg-cream/70 flex items-center gap-3.5 my-6">
+                {/* PhonePe QR Code */}
+                <img
+                  src="/payment-qr.jpg"
+                  alt="PhonePe QR Code - D K STAR RESORTS"
+                  className="w-14 h-auto object-contain rounded border border-gray-300 shadow-xs shrink-0"
+                />
                 <div className="text-[9px] space-y-0.5 font-bold text-gray-500">
-                  <p className="text-primary font-extrabold text-[10px] tracking-wider uppercase">Scan to Pay</p>
-                  <p><span className="text-secondary">UPI ID:</span> dkstarresorts@upi</p>
+                  <p className="text-primary font-extrabold text-[10px] tracking-wider uppercase flex items-center gap-1">
+                    <span className="text-[#5f259f]">PhonePe</span> QR Verified
+                  </p>
+                  <p><span className="text-secondary">Payee:</span> D K STAR RESORTS</p>
+                  <p><span className="text-secondary">Payment Mode:</span> UPI Scan & Pay</p>
                   <p><span className="text-secondary">GSTIN:</span> 33AAXFDK1234H1Z5</p>
                 </div>
               </div>

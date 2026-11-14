@@ -23,6 +23,7 @@ const Booking = () => {
   const [guestsCount, setGuestsCount] = useState(1);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentUtr, setPaymentUtr] = useState('');
   
   // Booking result screen
   const [confirmedBooking, setConfirmedBooking] = useState(null);
@@ -222,6 +223,8 @@ const Booking = () => {
       checkIn,
       checkOut,
       guests: Number(guestsCount),
+      payment_utr: paymentUtr || null,
+      payment_mode: 'PhonePe UPI',
       status: 'Confirmed'
     };
 
@@ -541,33 +544,19 @@ const Booking = () => {
 
               {/* UPI PAYMENTS QR & NOTES BOX */}
               <div className="grid grid-cols-[1.1fr_1fr] gap-4 pt-1 items-stretch">
-                {/* UPI QR code box */}
-                <div className="border border-secondary/15 rounded-lg p-2 bg-cream/70 flex items-center gap-3">
-                  <svg className="w-10 h-10 text-primary shrink-0" viewBox="0 0 100 100">
-                    <rect x="0" y="0" width="30" height="30" fill="currentColor" />
-                    <rect x="4" y="4" width="22" height="22" fill="white" />
-                    <rect x="8" y="8" width="14" height="14" fill="currentColor" />
-
-                    <rect x="70" y="0" width="30" height="30" fill="currentColor" />
-                    <rect x="74" y="4" width="22" height="22" fill="white" />
-                    <rect x="78" y="8" width="14" height="14" fill="currentColor" />
-
-                    <rect x="0" y="70" width="30" height="30" fill="currentColor" />
-                    <rect x="4" y="74" width="22" height="22" fill="white" />
-                    <rect x="8" y="78" width="14" height="14" fill="currentColor" />
-
-                    <rect x="40" y="10" width="10" height="20" fill="currentColor" />
-                    <rect x="55" y="5" width="10" height="10" fill="currentColor" />
-                    <rect x="45" y="40" width="15" height="15" fill="currentColor" />
-                    <rect x="15" y="45" width="10" height="10" fill="currentColor" />
-                    <rect x="75" y="45" width="20" height="10" fill="currentColor" />
-                    <rect x="40" y="70" width="15" height="10" fill="currentColor" />
-                    <rect x="80" y="80" width="10" height="15" fill="currentColor" />
-                    <rect x="60" y="75" width="10" height="20" fill="currentColor" />
-                  </svg>
+                {/* PhonePe UPI QR code box */}
+                <div className="border border-secondary/20 rounded-lg p-2 bg-cream/70 flex items-center gap-2.5">
+                  <img
+                    src="/payment-qr.jpg"
+                    alt="PhonePe QR Code - D K STAR RESORTS"
+                    className="w-14 h-auto object-contain rounded border border-gray-300 shadow-xs shrink-0"
+                  />
                   <div className="text-[8px] space-y-0.5 font-bold text-gray-500">
-                    <p className="text-primary font-extrabold text-[9px] tracking-wider uppercase">Scan to Pay</p>
-                    <p><span className="text-secondary">UPI ID:</span> dkstarresorts@upi</p>
+                    <p className="text-primary font-extrabold text-[9px] tracking-wider uppercase flex items-center gap-1">
+                      <span className="text-[#5f259f]">PhonePe</span> QR Verified
+                    </p>
+                    <p><span className="text-secondary">Payee:</span> D K STAR RESORTS</p>
+                    <p><span className="text-secondary">Payment Mode:</span> UPI Scan & Pay</p>
                     <p><span className="text-secondary">GSTIN:</span> 33AAXFDK1234H1Z5</p>
                   </div>
                 </div>
@@ -852,6 +841,58 @@ const Booking = () => {
                       <p className="text-[11px] text-gray-400 italic pt-1">
                         * Automatic calculation: Mon–Fri weekday tariff + Sat–Sun weekend tariff. Inclusive of all applicable taxes.
                       </p>
+
+                      {/* PhonePe QR Code Scan & Pay Box */}
+                      {total > 0 && (
+                        <div className="mt-3 p-4 bg-white border-2 border-secondary/40 rounded-xl shadow-xs space-y-3">
+                          <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="w-6 h-6 rounded-full bg-[#5f259f] text-white flex items-center justify-center font-bold text-xs">पे</span>
+                              <span className="font-heading font-bold text-primary text-xs uppercase tracking-wider">
+                                Scan & Pay via PhonePe QR
+                              </span>
+                            </div>
+                            <span className="text-[10px] bg-emerald-50 text-emerald-800 font-bold px-2 py-0.5 rounded border border-emerald-200">
+                              Instant UPI
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-4 items-center">
+                            <div className="flex flex-col items-center justify-center bg-black p-2 rounded-lg border border-secondary/30">
+                              <img
+                                src="/payment-qr.jpg"
+                                alt="PhonePe QR Code - D K STAR RESORTS"
+                                className="w-full max-w-[110px] h-auto object-contain rounded"
+                              />
+                              <span className="text-[8px] font-bold text-white tracking-widest uppercase mt-1">D K STAR RESORTS</span>
+                            </div>
+
+                            <div className="space-y-2 text-xs">
+                              <div className="p-2.5 bg-cream/80 rounded-lg border border-secondary/20 flex justify-between items-baseline">
+                                <div>
+                                  <span className="text-[10px] text-gray-500 uppercase font-bold block">Payable Amount</span>
+                                  <span className="text-secondary font-heading font-extrabold text-base">₹{total.toLocaleString('en-IN')}</span>
+                                </div>
+                                <span className="text-[10px] text-emerald-700 font-semibold">Taxes Included</span>
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block">
+                                  UPI Reference / UTR No. (Optional)
+                                </label>
+                                <input
+                                  type="text"
+                                  value={paymentUtr}
+                                  onChange={(e) => setPaymentUtr(e.target.value)}
+                                  placeholder="12-digit UTR after scanning QR"
+                                  className="w-full border border-gray-200 focus:border-secondary rounded-lg px-2.5 py-2 text-xs outline-none bg-white font-mono"
+                                />
+                                <p className="text-[10px] text-gray-400">Payee: <strong>D K STAR RESORTS</strong>. Scan using PhonePe, GPay, Paytm, or BHIM.</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
