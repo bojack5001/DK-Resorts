@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import {
   CreditCard, Sparkles, ShieldCheck, Building, Waves,
   Home as HomeIcon, Phone, Mail, User, ArrowRight,
-  Clock, Calendar, HelpCircle, CheckCircle2, Building2
+  Clock, Calendar, HelpCircle, CheckCircle2, Building2,
+  Copy, Check, QrCode as QrIcon
 } from 'lucide-react';
 import { YOUPI_CONFIG, formatCurrency, generateYoupiOrderId } from '../lib/youpiConfig';
 import YoupiCheckoutModal from '../components/YoupiCheckoutModal';
@@ -66,6 +67,28 @@ const Payment = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeOrderId, setActiveOrderId] = useState('');
   const [finalReceipt, setFinalReceipt] = useState(null);
+
+  // Sidebar QR Standee & Copy States
+  const [sidebarQrMode, setSidebarQrMode] = useState('canara'); // 'canara' | 'phonepe'
+  const [copiedUpi, setCopiedUpi] = useState(false);
+  const [copiedAcc, setCopiedAcc] = useState(false);
+  const [copiedIfsc, setCopiedIfsc] = useState(false);
+
+  const handleCopy = (text, type) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      if (type === 'upi') {
+        setCopiedUpi(true);
+        setTimeout(() => setCopiedUpi(false), 2200);
+      } else if (type === 'acc') {
+        setCopiedAcc(true);
+        setTimeout(() => setCopiedAcc(false), 2200);
+      } else if (type === 'ifsc') {
+        setCopiedIfsc(true);
+        setTimeout(() => setCopiedIfsc(false), 2200);
+      }
+    }
+  };
 
   // ── Compute Total Amount ─────────────────────────────────────────
   const selectedRoom = ROOM_TARIFFS.find(r => r.id === Number(selectedRoomId));
@@ -501,6 +524,93 @@ const Payment = () => {
             {/* Right Column: Bank Details & Direct Settlement Information (5 cols) */}
             <div className="lg:col-span-5 space-y-6">
               
+              {/* Official UPI QR Standees Card */}
+              <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xl border border-secondary/30 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-secondary text-xs uppercase font-bold tracking-widest">
+                    <QrIcon size={16} />
+                    <span>Official UPI QR Standee</span>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                    Direct Settled
+                  </span>
+                </div>
+
+                {/* Standee View Toggle */}
+                <div className="flex bg-[#2D241E]/10 p-1 rounded-xl text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setSidebarQrMode('canara')}
+                    className={`flex-1 py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center ${
+                      sidebarQrMode === 'canara'
+                        ? 'bg-[#1A1410] text-[#E7C77E] shadow-sm'
+                        : 'text-gray-600 hover:text-primary'
+                    }`}
+                  >
+                    Canara Bank QR
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSidebarQrMode('phonepe')}
+                    className={`flex-1 py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center ${
+                      sidebarQrMode === 'phonepe'
+                        ? 'bg-[#1A1410] text-[#E7C77E] shadow-sm'
+                        : 'text-gray-600 hover:text-primary'
+                    }`}
+                  >
+                    PhonePe Standee
+                  </button>
+                </div>
+
+                {/* QR Image Display */}
+                <div className="bg-[#FAF8F5] p-3 rounded-xl border border-gray-200 flex flex-col items-center justify-center">
+                  <img
+                    src={sidebarQrMode === 'canara' ? '/canara-qr.jpg' : '/phonepe-qr.jpg'}
+                    alt={sidebarQrMode === 'canara' ? 'Canara Bank Official QR' : 'PhonePe QR'}
+                    className="w-full max-w-[240px] h-auto object-contain rounded-lg shadow-sm"
+                  />
+                  <span className="text-[10px] text-gray-500 mt-2 font-medium">
+                    {sidebarQrMode === 'canara'
+                      ? 'Official Canara Bank Scan & Pay QR'
+                      : 'Official PhonePe Merchant QR Standee'}
+                  </span>
+                </div>
+
+                {/* Copy UPI Address Card */}
+                <div className="p-3 bg-cream/70 rounded-xl border border-secondary/25 flex items-center justify-between gap-2">
+                  <div className="overflow-hidden">
+                    <span className="text-[9.5px] uppercase font-bold text-gray-500 block tracking-wider">
+                      Resort UPI ID (VPA)
+                    </span>
+                    <span className="font-mono font-bold text-xs sm:text-sm text-primary truncate block">
+                      {YOUPI_CONFIG.merchant.upiId}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(YOUPI_CONFIG.merchant.upiId, 'upi')}
+                    className="px-3 py-1.5 rounded-lg bg-white hover:bg-secondary/20 text-primary border border-secondary/30 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shrink-0 shadow-xs"
+                  >
+                    {copiedUpi ? (
+                      <>
+                        <Check size={12} className="text-emerald-600" />
+                        <span className="text-emerald-700">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={12} className="text-secondary" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="text-[11px] text-gray-500 flex items-center gap-2">
+                  <ShieldCheck size={14} className="text-secondary shrink-0" />
+                  <span>Accepted on BHIM, Canara ail, Google Pay, PhonePe, Paytm, CRED & CBDC.</span>
+                </div>
+              </div>
+
               {/* Bank Account Transfer Card */}
               <div className="bg-[#1A1410] text-white p-6 sm:p-7 rounded-2xl shadow-xl border border-[#C5A059]/40 space-y-4">
                 <div className="flex items-center gap-2.5 text-[#C5A059] text-xs uppercase font-bold tracking-widest">
@@ -508,13 +618,13 @@ const Payment = () => {
                   <span>Direct Bank Account Transfer</span>
                 </div>
                 <h3 className="text-lg font-heading font-bold text-white">
-                  IMPS / NEFT / RTGS Wire Details
+                  Canara Bank Wire Details
                 </h3>
                 <p className="text-xs text-gray-400 leading-relaxed">
-                  For high-value reservations, event booking advances, or corporate wire transfers:
+                  Direct resort settlement account for IMPS / NEFT / RTGS wire transfers:
                 </p>
 
-                <div className="space-y-2 text-xs bg-white/5 p-4 rounded-xl border border-white/10">
+                <div className="space-y-2.5 text-xs bg-white/5 p-4 rounded-xl border border-white/10">
                   <div className="flex justify-between border-b border-white/10 pb-2">
                     <span className="text-gray-400">Account Name:</span>
                     <span className="font-bold text-white">{YOUPI_CONFIG.merchant.bankDetails.accountHolder}</span>
@@ -523,23 +633,55 @@ const Payment = () => {
                     <span className="text-gray-400">Bank Name:</span>
                     <span className="font-semibold text-white">{YOUPI_CONFIG.merchant.bankDetails.bankName}</span>
                   </div>
-                  <div className="flex justify-between border-b border-white/10 pb-2">
-                    <span className="text-gray-400">Account Number:</span>
-                    <span className="font-mono font-bold text-[#E7C77E]">{YOUPI_CONFIG.merchant.bankDetails.accountNumber}</span>
+                  <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                    <div>
+                      <span className="text-gray-400 block text-[10px] uppercase font-bold">Account Number:</span>
+                      <span className="font-mono font-bold text-[#E7C77E] text-sm">{YOUPI_CONFIG.merchant.bankDetails.accountNumber}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(YOUPI_CONFIG.merchant.bankDetails.accountNumber, 'acc')}
+                      className="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-[#E7C77E] text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedAcc ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                      <span>{copiedAcc ? 'Copied' : 'Copy'}</span>
+                    </button>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                    <div>
+                      <span className="text-gray-400 block text-[10px] uppercase font-bold">IFSC Code:</span>
+                      <span className="font-mono font-bold text-white">{YOUPI_CONFIG.merchant.bankDetails.ifscCode}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(YOUPI_CONFIG.merchant.bankDetails.ifscCode, 'ifsc')}
+                      className="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 text-[#E7C77E] text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedIfsc ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                      <span>{copiedIfsc ? 'Copied' : 'Copy'}</span>
+                    </button>
                   </div>
                   <div className="flex justify-between border-b border-white/10 pb-2">
-                    <span className="text-gray-400">IFSC Code:</span>
-                    <span className="font-mono font-bold text-white">{YOUPI_CONFIG.merchant.bankDetails.ifscCode}</span>
+                    <span className="text-gray-400">Account Type:</span>
+                    <span className="text-gray-300 font-medium">{YOUPI_CONFIG.merchant.bankDetails.accountType}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/10 pb-2">
+                    <span className="text-gray-400">MICR Code:</span>
+                    <span className="font-mono text-gray-300">{YOUPI_CONFIG.merchant.bankDetails.micrCode}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/10 pb-2">
+                    <span className="text-gray-400">Branch:</span>
+                    <span className="text-gray-300 font-medium">{YOUPI_CONFIG.merchant.bankDetails.branch}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Branch:</span>
-                    <span className="text-gray-300">{YOUPI_CONFIG.merchant.bankDetails.branch}</span>
+                    <span className="text-gray-400">Address:</span>
+                    <span className="text-gray-300 text-right max-w-xs">{YOUPI_CONFIG.merchant.bankDetails.branchAddress}</span>
                   </div>
                 </div>
 
                 <div className="text-[11px] text-gray-400 flex items-center gap-2">
                   <ShieldCheck size={14} className="text-[#C5A059] shrink-0" />
-                  <span>100% Direct settlement to resort verified account.</span>
+                  <span>100% Direct settlement to verified Canara Bank current account.</span>
                 </div>
               </div>
 

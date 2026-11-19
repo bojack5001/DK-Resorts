@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldCheck, CheckCircle2, Copy, Check, Clock, AlertCircle,
   ExternalLink, Smartphone, CreditCard, Banknote, Building2,
-  X, Sparkles, RefreshCw, ArrowRight, Info
+  X, Sparkles, RefreshCw, ArrowRight, Info, QrCode as QrIcon
 } from 'lucide-react';
 import {
   YOUPI_CONFIG,
@@ -24,7 +24,10 @@ export default function YoupiCheckoutModal({
   onSuccess,
 }) {
   const [activeTab, setActiveTab] = useState('UPI'); // 'UPI' | 'CASH' | 'CARD' | 'BANK'
+  const [qrViewMode, setQrViewMode] = useState('canara'); // 'canara' | 'dynamic' | 'phonepe'
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [copiedAcc, setCopiedAcc] = useState(false);
+  const [copiedIfsc, setCopiedIfsc] = useState(false);
   const [utrNumber, setUtrNumber] = useState('');
   const [utrError, setUtrError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -88,6 +91,22 @@ export default function YoupiCheckoutModal({
       navigator.clipboard.writeText(YOUPI_CONFIG.merchant.upiId);
       setCopiedUpi(true);
       setTimeout(() => setCopiedUpi(false), 2200);
+    }
+  };
+
+  const handleCopyAcc = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(YOUPI_CONFIG.merchant.bankDetails.accountNumber);
+      setCopiedAcc(true);
+      setTimeout(() => setCopiedAcc(false), 2200);
+    }
+  };
+
+  const handleCopyIfsc = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(YOUPI_CONFIG.merchant.bankDetails.ifscCode);
+      setCopiedIfsc(true);
+      setTimeout(() => setCopiedIfsc(false), 2200);
     }
   };
 
@@ -344,20 +363,79 @@ export default function YoupiCheckoutModal({
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                    {/* Left: Dynamic SVG QR Code (5 cols) */}
+                    {/* Left: QR Code Preview with Multi-View Selector (5 cols) */}
                     <div className="md:col-span-5 flex flex-col items-center text-center">
-                      <div className="bg-white p-3 rounded-2xl border-2 border-[#C5A059]/40 shadow-xl max-w-[210px] w-full aspect-square flex items-center justify-center">
-                        <div
-                          className="w-full h-full [&>svg]:w-full [&>svg]:h-full"
-                          dangerouslySetInnerHTML={{ __html: qrSvgString }}
-                        />
+                      {/* Standee / Mode Selector Pills */}
+                      <div className="flex items-center justify-center gap-1 mb-2 bg-[#2D241E]/10 p-1 rounded-xl w-full max-w-[230px]">
+                        <button
+                          type="button"
+                          onClick={() => setQrViewMode('canara')}
+                          className={`flex-1 py-1 px-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer truncate ${
+                            qrViewMode === 'canara'
+                              ? 'bg-[#1A1410] text-[#E7C77E] shadow-xs'
+                              : 'text-gray-600 hover:text-primary'
+                          }`}
+                        >
+                          Canara Bank QR
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setQrViewMode('dynamic')}
+                          className={`flex-1 py-1 px-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer truncate ${
+                            qrViewMode === 'dynamic'
+                              ? 'bg-[#1A1410] text-[#E7C77E] shadow-xs'
+                              : 'text-gray-600 hover:text-primary'
+                          }`}
+                        >
+                          Dynamic (₹{formatCurrency(amount)})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setQrViewMode('phonepe')}
+                          className={`flex-1 py-1 px-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer truncate ${
+                            qrViewMode === 'phonepe'
+                              ? 'bg-[#1A1410] text-[#E7C77E] shadow-xs'
+                              : 'text-gray-600 hover:text-primary'
+                          }`}
+                        >
+                          PhonePe
+                        </button>
                       </div>
-                      <div className="mt-2.5 space-y-1">
+
+                      {/* QR Display Card */}
+                      <div className="bg-white p-2.5 rounded-2xl border-2 border-[#C5A059]/40 shadow-xl max-w-[210px] w-full min-h-[210px] flex items-center justify-center overflow-hidden">
+                        {qrViewMode === 'dynamic' && (
+                          <div
+                            className="w-full h-full [&>svg]:w-full [&>svg]:h-full"
+                            dangerouslySetInnerHTML={{ __html: qrSvgString }}
+                          />
+                        )}
+                        {qrViewMode === 'canara' && (
+                          <img
+                            src="/canara-qr.jpg"
+                            alt="Canara Bank Official QR Standee - 338553589802770@cnrb"
+                            className="w-full h-auto max-h-[200px] object-contain rounded-lg"
+                          />
+                        )}
+                        {qrViewMode === 'phonepe' && (
+                          <img
+                            src="/phonepe-qr.jpg"
+                            alt="PhonePe Standee - DK STAR RESORTS"
+                            className="w-full h-auto max-h-[200px] object-contain rounded-lg"
+                          />
+                        )}
+                      </div>
+
+                      <div className="mt-2 space-y-0.5">
                         <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
-                          Scan to Pay ₹{formatCurrency(amount)}
+                          {qrViewMode === 'dynamic'
+                            ? `Amount: ₹${formatCurrency(amount)} Auto-Filled`
+                            : 'UPI ID: 338553589802770@cnrb'}
                         </p>
                         <p className="text-[10px] text-gray-500">
-                          Scan with PhonePe, GPay, Paytm, CRED or BHIM
+                          {qrViewMode === 'dynamic'
+                            ? 'Exact order sum pre-coded into QR'
+                            : 'Canara Bank Scan & Pay · All UPI Apps'}
                         </p>
                       </div>
                     </div>
@@ -590,21 +668,53 @@ export default function YoupiCheckoutModal({
                       <span className="text-gray-400 font-bold uppercase text-[10px]">Bank Name</span>
                       <span className="font-semibold text-primary">{YOUPI_CONFIG.merchant.bankDetails.bankName}</span>
                     </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-400 font-bold uppercase text-[10px]">Account Number</span>
-                      <span className="font-mono font-bold text-secondary text-sm">{YOUPI_CONFIG.merchant.bankDetails.accountNumber}</span>
+                    <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                      <div>
+                        <span className="text-gray-400 font-bold uppercase text-[10px] block">Account Number</span>
+                        <span className="font-mono font-bold text-secondary text-sm">{YOUPI_CONFIG.merchant.bankDetails.accountNumber}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCopyAcc}
+                        className="px-2.5 py-1 rounded-md bg-cream hover:bg-secondary/20 text-primary border border-secondary/30 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                      >
+                        {copiedAcc ? <Check size={11} className="text-emerald-600" /> : <Copy size={11} className="text-secondary" />}
+                        <span>{copiedAcc ? 'Copied' : 'Copy A/C'}</span>
+                      </button>
                     </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-400 font-bold uppercase text-[10px]">IFSC Code</span>
-                      <span className="font-mono font-bold text-primary">{YOUPI_CONFIG.merchant.bankDetails.ifscCode}</span>
+                    <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                      <div>
+                        <span className="text-gray-400 font-bold uppercase text-[10px] block">IFSC Code</span>
+                        <span className="font-mono font-bold text-primary">{YOUPI_CONFIG.merchant.bankDetails.ifscCode}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleCopyIfsc}
+                        className="px-2.5 py-1 rounded-md bg-cream hover:bg-secondary/20 text-primary border border-secondary/30 text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                      >
+                        {copiedIfsc ? <Check size={11} className="text-emerald-600" /> : <Copy size={11} className="text-secondary" />}
+                        <span>{copiedIfsc ? 'Copied' : 'Copy IFSC'}</span>
+                      </button>
                     </div>
                     <div className="flex justify-between border-b border-gray-100 pb-2">
                       <span className="text-gray-400 font-bold uppercase text-[10px]">Account Type</span>
                       <span className="font-semibold text-primary">{YOUPI_CONFIG.merchant.bankDetails.accountType}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between border-b border-gray-100 pb-2">
+                      <span className="text-gray-400 font-bold uppercase text-[10px]">MICR Code</span>
+                      <span className="font-mono text-gray-700">{YOUPI_CONFIG.merchant.bankDetails.micrCode}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-gray-100 pb-2">
+                      <span className="text-gray-400 font-bold uppercase text-[10px]">Customer ID</span>
+                      <span className="font-mono text-gray-700">{YOUPI_CONFIG.merchant.bankDetails.customerId}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-gray-100 pb-2">
                       <span className="text-gray-400 font-bold uppercase text-[10px]">Branch</span>
-                      <span className="text-gray-600">{YOUPI_CONFIG.merchant.bankDetails.branch}</span>
+                      <span className="text-gray-700 font-medium">{YOUPI_CONFIG.merchant.bankDetails.branch}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400 font-bold uppercase text-[10px]">Address</span>
+                      <span className="text-gray-600 text-right max-w-xs">{YOUPI_CONFIG.merchant.bankDetails.branchAddress}</span>
                     </div>
                   </div>
 

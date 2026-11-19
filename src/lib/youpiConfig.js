@@ -1,42 +1,40 @@
 /**
  * YouPI Payment Gateway Configuration for DK STAR RESORTS
  * 
- * Configures the merchant identity, banking settlement endpoints,
+ * Configures the verified merchant identity, Canara Bank settlement account,
  * and UPI intent generators according to the YouPI-PG standard.
- * 
- * Note: When the user provides official bank details and UPI ID,
- * they can be easily plugged in below or configured via .env variables:
- * - VITE_YOUPI_MERCHANT_UPI
- * - VITE_YOUPI_PAYEE_NAME
- * - VITE_YOUPI_BANK_NAME
- * - VITE_YOUPI_BANK_ACCOUNT
- * - VITE_YOUPI_BANK_IFSC
  */
 
 export const YOUPI_CONFIG = {
   // Brand & Merchant Identity
   merchant: {
     id: import.meta.env.VITE_YOUPI_MERCHANT_ID || 'DK_STAR_RESORTS',
-    name: import.meta.env.VITE_YOUPI_PAYEE_NAME || 'DK STAR RESORTS',
+    name: 'D K STAR RESORTS',
     tagline: 'Royal Luxury Collection',
     code: 'DKSTAR01',
-    // Merchant UPI Receiving Address (Default placeholder; will update with user details)
-    upiId: import.meta.env.VITE_YOUPI_MERCHANT_UPI || 'dkstarresorts@upi',
+    // Verified Merchant UPI ID (Canara Bank VPA)
+    upiId: '338553589802770@cnrb',
     
-    // Bank Account Settlement Details (Awaiting user's input)
+    // Official Canara Bank Settlement Account Details
     bankDetails: {
-      accountHolder: import.meta.env.VITE_YOUPI_BANK_HOLDER || 'DK STAR RESORTS',
-      bankName: import.meta.env.VITE_YOUPI_BANK_NAME || 'Pending Bank Details',
-      accountNumber: import.meta.env.VITE_YOUPI_BANK_ACCOUNT || 'Pending Account Number',
-      ifscCode: import.meta.env.VITE_YOUPI_BANK_IFSC || 'Pending IFSC Code',
-      branch: import.meta.env.VITE_YOUPI_BANK_BRANCH || 'Vellore Main Branch',
-      accountType: 'Current Account',
+      accountHolder: 'D K STAR RESORTS',
+      bankName: 'Canara Bank',
+      accountNumber: '120039802770',
+      ifscCode: 'CNRB0006806',
+      micrCode: '632015014',
+      customerId: '338553589',
+      branch: 'Vellore Gandhi Nagar West',
+      branchAddress: '92 First Floor, 6th Cross Road, Gandhi Nagar West, Vellore, Tamil Nadu - 632006',
+      accountType: 'Current Account - General',
+      swiftCode: 'CNRBINBBBFD',
+      qrImage: '/canara-qr.jpg',
+      phonepeQrImage: '/phonepe-qr.jpg',
     },
 
     // Support Contacts
     supportPhone: '+91 94894 55977',
     supportEmail: 'dkstarresorts@gmail.com',
-    address: 'No 202/2, PONNIYAMMAN Kovil St, Vanjur, Vellore - 632006, Tamil Nadu',
+    address: 'No 2 202, Ponniyamman Koil Street, Vanjur Kollaimedu VP Mahal Opp, Katpadi, Vellore - 632006, Tamil Nadu',
     gstin: '33AAXFDK1234H1Z5',
   },
 
@@ -51,9 +49,10 @@ export const YOUPI_CONFIG = {
 
   // Supported Payment Methods
   modalities: [
-    { id: 'UPI', label: 'UPI QR & Apps', description: 'Google Pay, PhonePe, Paytm, CRED, BHIM' },
+    { id: 'UPI', label: 'UPI QR & Apps', description: 'Canara Bank UPI, Google Pay, PhonePe, Paytm, CRED, BHIM' },
     { id: 'CASH_COUNTER', label: 'Cash at Counter', description: 'Pay physical cash at resort reception desk' },
     { id: 'CARD_COUNTER', label: 'Card at POS', description: 'Tap or swipe Credit / Debit card at desk' },
+    { id: 'BANK_TRANSFER', label: 'Direct Bank Wire', description: 'IMPS / NEFT / RTGS to Canara Bank Account' },
   ],
 };
 
