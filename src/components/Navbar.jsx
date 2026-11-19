@@ -40,10 +40,10 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed w-full z-50 transition-all duration-500 bg-white/95 backdrop-blur-md shadow-sm py-2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="fixed w-full z-50 transition-all duration-500 bg-white/95 backdrop-blur-md shadow-sm py-1.5 sm:py-2">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
               <img
                 src="/logo-symbol.png"
                 alt="DK STAR RESORTS Symbol"
@@ -60,24 +60,33 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Nav (XL screens >= 1280px) */}
-            <div className="hidden xl:flex items-center space-x-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className={`text-[11px] uppercase tracking-widest font-bold transition-colors duration-300 ${
-                    isActive(link.path)
-                      ? 'text-secondary border-b-2 border-secondary'
-                      : 'text-primary hover:text-secondary'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
+            <div className="hidden xl:flex items-center gap-2.5 2xl:gap-4.5 shrink-0">
+              {navLinks.map((link) => {
+                const active = isActive(link.path);
+                return (
+                  <Link
+                    key={link.name}
+                    to={link.path}
+                    className={`relative py-1.5 px-1 whitespace-nowrap text-[11px] 2xl:text-[12px] uppercase font-bold tracking-wider 2xl:tracking-widest transition-colors duration-200 shrink-0 inline-flex items-center ${
+                      active
+                        ? 'text-secondary font-extrabold'
+                        : 'text-primary/90 hover:text-secondary'
+                    }`}
+                  >
+                    <span>{link.name}</span>
+                    {active && (
+                      <span className="absolute bottom-0 left-1 right-1 h-[2px] bg-secondary rounded-full" />
+                    )}
+                  </Link>
+                );
+              })}
 
-              <Link to="/booking" className="btn-primary py-2 px-5 text-[11px] flex items-center gap-2">
-                <Calendar size={15} />
-                Book Now
+              <Link
+                to="/booking"
+                className="ml-1 2xl:ml-2 shrink-0 whitespace-nowrap bg-primary hover:bg-secondary text-white py-2 px-3.5 2xl:px-4 rounded-lg text-[11px] 2xl:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer"
+              >
+                <Calendar size={13} className="text-secondary shrink-0" />
+                <span>Book Now</span>
               </Link>
             </div>
 
