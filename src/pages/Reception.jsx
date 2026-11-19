@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, 
-  Search, 
-  DoorOpen, 
-  ClipboardList, 
-  FileText, 
-  CheckCircle, 
-  Activity, 
-  Sparkles, 
-  Lock, 
-  UserPlus, 
+import {
+  Users,
+  Search,
+  DoorOpen,
+  ClipboardList,
+  FileText,
+  CheckCircle,
+  Activity,
+  Sparkles,
+  Lock,
+  UserPlus,
   LogOut,
   Calendar,
   Phone,
@@ -25,15 +25,15 @@ import {
 import { useResort } from '../context/ResortContext';
 
 const Reception = () => {
-  const { 
-    rooms, 
-    halls, 
-    bookings, 
+  const {
+    rooms,
+    halls,
+    bookings,
     contactMessages,
-    roomStates, 
-    addBooking, 
-    updateBookingStatus, 
-    setRoomCleaningStatus 
+    roomStates,
+    addBooking,
+    updateBookingStatus,
+    setRoomCleaningStatus
   } = useResort();
 
   // Formatting Helpers for redesigned Invoice
@@ -68,7 +68,7 @@ const Reception = () => {
   const numberToWords = (num) => {
     const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
     const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-    
+
     const convert = (n) => {
       if (n < 20) return a[n];
       const digit = n % 10;
@@ -81,7 +81,7 @@ const Reception = () => {
 
     const integerPart = Math.floor(num);
     const decimalPart = Math.round((num - integerPart) * 100);
-    
+
     let result = convert(integerPart) + ' Rupees';
     if (decimalPart > 0) {
       result += ' and ' + convert(decimalPart) + ' Paise';
@@ -146,10 +146,10 @@ const Reception = () => {
       const bId = itemType === 'room' ? Number(b.itemId) : b.itemId;
       const matchId = itemType === 'room' ? Number(itemId) : itemId;
       return (
-        bId === matchId && 
-        b.itemType === itemType && 
+        bId === matchId &&
+        b.itemType === itemType &&
         (b.status === 'Confirmed' || b.status === 'Checked-in' || b.status === 'Pending') &&
-        todayStr >= b.checkIn && 
+        todayStr >= b.checkIn &&
         todayStr <= b.checkOut
       );
     });
@@ -159,7 +159,7 @@ const Reception = () => {
   const getCellDetails = (item, type) => {
     const stateObj = roomStates[item.id] || { status: 'available' };
     const todayBooking = getTodayBooking(item.id, type);
-    
+
     let visualStatus = stateObj.status; // 'available', 'occupied', 'dirty'
     if (visualStatus === 'available' && todayBooking && todayBooking.status === 'Confirmed') {
       visualStatus = 'booked'; // Highlight as booked (orange) if confirmed booking exists today
@@ -225,7 +225,7 @@ const Reception = () => {
     };
 
     addBooking(newBookingData);
-    
+
     // Reset inputs
     setWalkinGuestName('');
     setWalkinGuestEmail('');
@@ -239,10 +239,10 @@ const Reception = () => {
   // Filtered check-in ledger search
   const filteredBookings = bookings.filter(b => {
     const q = searchQuery.toLowerCase();
-    return (b.guestName  || '').toLowerCase().includes(q) ||
-           (b.id         || '').toLowerCase().includes(q) ||
-           (b.guestEmail || '').toLowerCase().includes(q) ||
-           (b.guestPhone || '').includes(q);
+    return (b.guestName || '').toLowerCase().includes(q) ||
+      (b.id || '').toLowerCase().includes(q) ||
+      (b.guestEmail || '').toLowerCase().includes(q) ||
+      (b.guestPhone || '').includes(q);
   });
 
   if (!isAuthenticated) {
@@ -251,7 +251,7 @@ const Reception = () => {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-secondary/15 rounded-full filter blur-[80px]" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/25 rounded-full filter blur-[80px]" />
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md w-full bg-white/10 backdrop-blur-xl border border-white/10 p-10 rounded-2xl shadow-2xl text-white z-10"
@@ -271,9 +271,9 @@ const Reception = () => {
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-bold tracking-widest text-gray-300">Front Desk Username</label>
-              <input 
+              <input
                 required
-                type="text" 
+                type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="e.g. deena@staff"
@@ -282,9 +282,9 @@ const Reception = () => {
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-bold tracking-widest text-gray-300">Passcode</label>
-              <input 
+              <input
                 required
-                type="password" 
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -315,22 +315,22 @@ const Reception = () => {
             </span>
           </div>
         </div>
-        
+
         {/* Navigation Tabs */}
         <div className="flex gap-1">
-          <button 
+          <button
             onClick={() => setActiveTab('grid')}
             className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'grid' ? 'bg-secondary text-primary' : 'text-gray-300 hover:text-white'}`}
           >
             Room Grid
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('search')}
             className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${activeTab === 'search' ? 'bg-secondary text-primary' : 'text-gray-300 hover:text-white'}`}
           >
             Guest Registry
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('messages')}
             className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 ${activeTab === 'messages' ? 'bg-secondary text-primary' : 'text-gray-300 hover:text-white'}`}
           >
@@ -343,7 +343,7 @@ const Reception = () => {
           </button>
         </div>
 
-        <button 
+        <button
           onClick={handleLogout}
           className="flex items-center gap-2 text-red-400 hover:text-red-300 text-xs font-bold uppercase tracking-wider"
         >
@@ -457,7 +457,7 @@ const Reception = () => {
 
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
+              <input
                 type="text"
                 placeholder="Search guest name, email, booking ID or phone..."
                 value={searchQuery}
@@ -500,11 +500,10 @@ const Reception = () => {
                           {b.checkIn} to {b.checkOut}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider rounded-full ${
-                            b.status === 'Checked-in' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                          <span className={`px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wider rounded-full ${b.status === 'Checked-in' ? 'bg-blue-100 text-blue-700 border-blue-200' :
                             b.status === 'Checked-out' ? 'bg-gray-100 text-gray-700 border-gray-200' :
-                            b.status === 'Confirmed' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-amber-100 text-amber-700 border-amber-200'
-                          }`}>
+                              b.status === 'Confirmed' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-amber-100 text-amber-700 border-amber-200'
+                            }`}>
                             {b.status}
                           </span>
                         </td>
@@ -563,7 +562,7 @@ const Reception = () => {
       {/* DRAWER/MODAL: CELL ACTION */}
       {selectedCell && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-end p-0">
-          <motion.div 
+          <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -607,14 +606,14 @@ const Reception = () => {
               {/* Status specific panel */}
               <div className="space-y-4 pt-4 border-t border-gray-100">
                 <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400">Current Occupancy</h4>
-                
+
                 {/* Available Status */}
                 {selectedCell.status === 'available' && (
                   <div className="space-y-4">
                     <div className="p-4 bg-green-50 border-l-4 border-green-500 text-green-800 text-xs">
                       This unit is vacant and prepared for check-in.
                     </div>
-                    <button 
+                    <button
                       onClick={() => setShowWalkinModal(true)}
                       className="w-full btn-primary py-3 text-xs flex justify-center items-center gap-2"
                     >
@@ -647,7 +646,7 @@ const Reception = () => {
                         <span className="text-secondary font-bold">₹{selectedCell.booking.amount.toLocaleString('en-IN')}</span>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleCheckIn(selectedCell.booking.id)}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 text-xs font-bold uppercase tracking-widest transition-colors flex justify-center items-center gap-2"
                     >
@@ -684,7 +683,7 @@ const Reception = () => {
                         <span className="text-secondary font-bold">₹{selectedCell.booking.amount.toLocaleString('en-IN')}</span>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleCheckOut(selectedCell.booking)}
                       className="w-full bg-red-600 hover:bg-red-700 text-white py-3.5 text-xs font-bold uppercase tracking-widest transition-colors flex justify-center items-center gap-2"
                     >
@@ -699,7 +698,7 @@ const Reception = () => {
                     <div className="p-4 bg-red-50 border-l-4 border-red-500 text-red-800 text-xs">
                       This unit requires cleaning and sanitization before it can be assigned to new arrivals.
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleCleaned(selectedCell.item.id)}
                       className="w-full bg-green-600 hover:bg-green-700 text-white py-3.5 text-xs font-bold uppercase tracking-widest transition-colors flex justify-center items-center gap-2"
                     >
@@ -710,7 +709,7 @@ const Reception = () => {
               </div>
             </div>
 
-            <button 
+            <button
               onClick={() => setSelectedCell(null)}
               className="w-full btn-outline py-2.5 text-xs mt-6"
             >
@@ -723,7 +722,7 @@ const Reception = () => {
       {/* MODAL: WALK-IN BOOKING FORM */}
       {showWalkinModal && selectedCell && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="max-w-md w-full bg-white shadow-2xl p-8 rounded-xl border border-gray-100"
@@ -737,9 +736,9 @@ const Reception = () => {
             <form onSubmit={handleWalkinSubmit} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold text-gray-400">Guest Full Name</label>
-                <input 
+                <input
                   required
-                  type="text" 
+                  type="text"
                   value={walkinGuestName}
                   onChange={(e) => setWalkinGuestName(e.target.value)}
                   className="w-full border border-gray-200 px-3 py-2 text-sm outline-none font-medium"
@@ -748,9 +747,9 @@ const Reception = () => {
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold text-gray-400">Phone Number</label>
-                <input 
+                <input
                   required
-                  type="tel" 
+                  type="tel"
                   value={walkinGuestPhone}
                   onChange={(e) => setWalkinGuestPhone(e.target.value)}
                   className="w-full border border-gray-200 px-3 py-2 text-sm outline-none font-medium"
@@ -759,9 +758,9 @@ const Reception = () => {
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold text-gray-400">Email Address</label>
-                <input 
+                <input
                   required
-                  type="email" 
+                  type="email"
                   value={walkinGuestEmail}
                   onChange={(e) => setWalkinGuestEmail(e.target.value)}
                   className="w-full border border-gray-200 px-3 py-2 text-sm outline-none font-medium"
@@ -771,9 +770,9 @@ const Reception = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] uppercase font-bold text-gray-400">Check-Out Date</label>
-                  <input 
+                  <input
                     required
-                    type="date" 
+                    type="date"
                     value={walkinCheckOut}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setWalkinCheckOut(e.target.value)}
@@ -782,9 +781,9 @@ const Reception = () => {
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] uppercase font-bold text-gray-400">Guest Count</label>
-                  <input 
+                  <input
                     required
-                    type="number" 
+                    type="number"
                     min={1}
                     value={walkinGuestsCount}
                     onChange={(e) => setWalkinGuestsCount(Number(e.target.value))}
@@ -809,7 +808,7 @@ const Reception = () => {
         const cgst = Math.round((gstTotal / 2) * 100) / 100;
         const sgst = Math.round((gstTotal - cgst) * 100) / 100;
         const nights = getNights(showCheckoutInvoice.checkIn, showCheckoutInvoice.checkOut);
-        
+
         return (
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
             {/* Inject print stylesheet rule */}
@@ -845,8 +844,8 @@ const Reception = () => {
                 }
               }
             `}</style>
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               id="invoice-print-container"
@@ -988,7 +987,7 @@ const Reception = () => {
                       <td className="px-4 py-3 text-right text-gray-600">{formatCurrency(subtotal / nights)}</td>
                       <td className="px-4 py-3 text-right font-bold text-primary">{formatCurrency(subtotal)}</td>
                     </tr>
-                    
+
                     {/* Breakfast row */}
                     <tr className="hover:bg-gray-50/50">
                       <td className="px-4 py-3 text-left text-gray-600 italic">Complimentary Breakfast</td>
@@ -1024,19 +1023,19 @@ const Reception = () => {
                   <div className="pt-2">
                     {/* Artistic signature SVG path */}
                     <svg className="w-32 h-10 text-primary opacity-90" viewBox="0 0 150 50">
-                      <path 
-                        d="M10,38 C25,28 35,8 45,28 C55,48 65,18 78,28 C90,38 105,18 120,28 C135,38 145,28 148,32" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
+                      <path
+                        d="M10,38 C25,28 35,8 45,28 C55,48 65,18 78,28 C90,38 105,18 120,28 C135,38 145,28 148,32"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
                       />
-                      <path 
-                        d="M35,28 C55,18 85,14 110,24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="1.2" 
-                        strokeLinecap="round" 
+                      <path
+                        d="M35,28 C55,18 85,14 110,24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
                       />
                     </svg>
                     <div className="h-px bg-secondary/35 w-40 mt-1"></div>
@@ -1074,20 +1073,34 @@ const Reception = () => {
                 </div>
               </div>
 
-              {/* PhonePe UPI PAYMENTS & GST INFO BOX */}
-              <div className="border border-secondary/20 rounded-lg p-3 bg-cream/70 flex items-center gap-3.5 my-6">
-                {/* PhonePe QR Code */}
-                <img
-                  src="/payment-qr.jpg"
-                  alt="PhonePe QR Code - D K STAR RESORTS"
-                  className="w-14 h-auto object-contain rounded border border-gray-300 shadow-xs shrink-0"
-                />
+              {/* UPI PAYMENTS & GST INFO BOX */}
+              <div className="border border-secondary/15 rounded-lg p-3 bg-cream/70 flex items-center gap-4 my-6">
+                {/* SVG mock QR Code */}
+                <svg className="w-12 h-12 text-primary shrink-0" viewBox="0 0 100 100">
+                  <rect x="0" y="0" width="30" height="30" fill="currentColor" />
+                  <rect x="4" y="4" width="22" height="22" fill="white" />
+                  <rect x="8" y="8" width="14" height="14" fill="currentColor" />
+
+                  <rect x="70" y="0" width="30" height="30" fill="currentColor" />
+                  <rect x="74" y="4" width="22" height="22" fill="white" />
+                  <rect x="78" y="8" width="14" height="14" fill="currentColor" />
+
+                  <rect x="0" y="70" width="30" height="30" fill="currentColor" />
+                  <rect x="4" y="74" width="22" height="22" fill="white" />
+                  <rect x="8" y="78" width="14" height="14" fill="currentColor" />
+
+                  <rect x="40" y="10" width="10" height="20" fill="currentColor" />
+                  <rect x="55" y="5" width="10" height="10" fill="currentColor" />
+                  <rect x="45" y="40" width="15" height="15" fill="currentColor" />
+                  <rect x="15" y="45" width="10" height="10" fill="currentColor" />
+                  <rect x="75" y="45" width="20" height="10" fill="currentColor" />
+                  <rect x="40" y="70" width="15" height="10" fill="currentColor" />
+                  <rect x="80" y="80" width="10" height="15" fill="currentColor" />
+                  <rect x="60" y="75" width="10" height="20" fill="currentColor" />
+                </svg>
                 <div className="text-[9px] space-y-0.5 font-bold text-gray-500">
-                  <p className="text-primary font-extrabold text-[10px] tracking-wider uppercase flex items-center gap-1">
-                    <span className="text-[#5f259f]">PhonePe</span> QR Verified
-                  </p>
-                  <p><span className="text-secondary">Payee:</span> D K STAR RESORTS</p>
-                  <p><span className="text-secondary">Payment Mode:</span> UPI Scan & Pay</p>
+                  <p className="text-primary font-extrabold text-[10px] tracking-wider uppercase">Scan to Pay</p>
+                  <p><span className="text-secondary">UPI ID:</span> dkstarresorts@upi</p>
                   <p><span className="text-secondary">GSTIN:</span> 33AAXFDK1234H1Z5</p>
                 </div>
               </div>
@@ -1123,13 +1136,13 @@ const Reception = () => {
 
               {/* print-hide CTA buttons */}
               <div className="mt-8 flex gap-4 print-hide">
-                <button 
+                <button
                   onClick={() => window.print()}
                   className="w-1/2 btn-outline py-2.5 text-xs flex justify-center items-center gap-1.5 border-gray-300 text-gray-600 hover:bg-gray-50 font-bold uppercase tracking-wider cursor-pointer"
                 >
                   <Printer size={13} /> Print Invoice
                 </button>
-                <button 
+                <button
                   onClick={() => setShowCheckoutInvoice(null)}
                   className="w-1/2 btn-primary py-2.5 text-xs font-bold uppercase tracking-wider cursor-pointer"
                 >

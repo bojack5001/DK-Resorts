@@ -54,9 +54,9 @@ const SLOTS = [
 // ─── Features strip ──────────────────────────────────────────
 const FEATURES = [
   { icon: Thermometer, label: 'Temp. Controlled', value: '28°C' },
-  { icon: Droplets,   label: 'Pool Size',         value: '25m × 12m' },
-  { icon: Users,      label: 'Max Capacity',       value: '40 guests' },
-  { icon: Wind,       label: 'Infinity Edge',      value: 'Hill View' },
+  { icon: Droplets, label: 'Pool Size', value: '25m × 12m' },
+  { icon: Users, label: 'Max Capacity', value: '40 guests' },
+  { icon: Wind, label: 'Infinity Edge', value: 'Hill View' },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────
@@ -81,7 +81,6 @@ const Pool = () => {
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
-  const [paymentUtr, setPaymentUtr] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(null);
@@ -94,7 +93,7 @@ const Pool = () => {
   // ── Step 1 → Step 2 ──────────────────────────────────────
   const proceedToForm = () => {
     if (!selectedSlot) { setError('Please select a session window.'); return; }
-    if (!bookingDate)  { setError('Please select a date.'); return; }
+    if (!bookingDate) { setError('Please select a date.'); return; }
     if (bookingDate < today()) { setError('Date cannot be in the past.'); return; }
     if (totalGuests < 1) { setError('Please select at least 1 guest (Age 6+ or Age 1-5).'); return; }
     if (hours < 1) { setError('Please select a valid duration (minimum 1 hour).'); return; }
@@ -116,20 +115,18 @@ const Pool = () => {
       const booking = {
         id,
         booking_date: bookingDate,
-        slot:         selectedSlot,
+        slot: selectedSlot,
         duration_hrs: hours,
         adults_count: adults,
-        kids_count:   kids,
-        guests:       totalGuests,
-        guest_name:   guestName,
-        guest_email:  guestEmail,
-        guest_phone:  guestPhone,
-        amount:       total,
-        payment_utr:  paymentUtr || null,
-        payment_mode: 'PhonePe UPI',
+        kids_count: kids,
+        guests: totalGuests,
+        guest_name: guestName,
+        guest_email: guestEmail,
+        guest_phone: guestPhone,
+        amount: total,
         rate_summary: `${adults} Age 6+ (@₹150/hr), ${kids} Age 1-5 (@₹100/hr) for ${hours} hr(s)`,
-        status:       'Confirmed',
-        created_at:   new Date().toISOString(),
+        status: 'Confirmed',
+        created_at: new Date().toISOString(),
       };
 
       if (supabase) {
@@ -249,23 +246,6 @@ const Pool = () => {
                   <span className="text-[11px] font-normal text-emerald-700">Tax Inclusive</span>
                 </div>
                 <span className="font-heading text-secondary text-2xl">₹{fmtCurrency(conf.amount)}</span>
-              </div>
-            </div>
-
-            {/* PhonePe QR Code on Pool Ticket */}
-            <div className="border border-secondary/20 rounded-xl p-3 bg-cream/70 flex items-center gap-3">
-              <img
-                src="/payment-qr.jpg"
-                alt="PhonePe QR Code - D K STAR RESORTS"
-                className="w-14 h-auto object-contain rounded border border-gray-300 shadow-xs shrink-0"
-              />
-              <div className="text-[9px] space-y-0.5 font-bold text-gray-600">
-                <p className="text-primary font-extrabold text-[10px] tracking-wider uppercase flex items-center gap-1">
-                  <span className="text-[#5f259f]">PhonePe</span> QR Verified
-                </p>
-                <p><span className="text-secondary">Payee:</span> D K STAR RESORTS</p>
-                <p><span className="text-secondary">Pass Type:</span> Wonders Swimming Pool Hourly Pass</p>
-                <p className="text-[8.5px] text-gray-400 font-normal">Present this ticket and PhonePe transaction slip at pool deck</p>
               </div>
             </div>
           </div>
@@ -459,11 +439,10 @@ const Pool = () => {
                         key={hr}
                         type="button"
                         onClick={() => setHours(hr)}
-                        className={`py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border-2 text-center cursor-pointer ${
-                          hours === hr
-                            ? 'bg-primary text-white border-primary shadow-md'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-secondary hover:bg-cream'
-                        }`}
+                        className={`py-3 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border-2 text-center cursor-pointer ${hours === hr
+                          ? 'bg-primary text-white border-primary shadow-md'
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-secondary hover:bg-cream'
+                          }`}
                       >
                         {hr} {hr === 1 ? 'Hour' : 'Hours'}
                       </button>
@@ -549,11 +528,10 @@ const Pool = () => {
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
                         onClick={() => setSelectedSlot(s.id)}
-                        className={`w-full text-left p-6 border-2 rounded-xl transition-all duration-200 cursor-pointer ${
-                          chosen
-                            ? `${s.border} bg-white shadow-lg ring-2 ring-secondary/20`
-                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
-                        }`}
+                        className={`w-full text-left p-6 border-2 rounded-xl transition-all duration-200 cursor-pointer ${chosen
+                          ? `${s.border} bg-white shadow-lg ring-2 ring-secondary/20`
+                          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                          }`}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-4">
@@ -681,56 +659,6 @@ const Pool = () => {
                         value={`${hours} hr(s) · ${totalGuests} guests (${adults} Age 6+, ${kids} Age 1-5)`}
                         className="w-full border-b-2 border-gray-100 outline-none py-3 bg-transparent text-primary font-semibold text-xs cursor-default"
                       />
-                    </div>
-                  </div>
-
-                  {/* PhonePe QR Code Scan & Pay Box for Pool */}
-                  <div className="p-4 bg-white border-2 border-secondary/40 rounded-xl shadow-xs space-y-3">
-                    <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-[#5f259f] text-white flex items-center justify-center font-bold text-xs">पे</span>
-                        <span className="font-heading font-bold text-primary text-xs uppercase tracking-wider">
-                          Scan & Pay via PhonePe QR Code
-                        </span>
-                      </div>
-                      <span className="text-[10px] bg-emerald-50 text-emerald-800 font-bold px-2 py-0.5 rounded border border-emerald-200">
-                        Official Pool Pass
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-4 items-center">
-                      <div className="flex flex-col items-center justify-center bg-black p-2 rounded-lg border border-secondary/30">
-                        <img
-                          src="/payment-qr.jpg"
-                          alt="PhonePe QR Code - D K STAR RESORTS"
-                          className="w-full max-w-[110px] h-auto object-contain rounded"
-                        />
-                        <span className="text-[8px] font-bold text-white tracking-widest uppercase mt-1">D K STAR RESORTS</span>
-                      </div>
-
-                      <div className="space-y-2 text-xs">
-                        <div className="p-2.5 bg-cream/80 rounded-lg border border-secondary/20 flex justify-between items-baseline">
-                          <div>
-                            <span className="text-[10px] text-gray-500 uppercase font-bold block">Pass Payable Amount</span>
-                            <span className="text-secondary font-heading font-extrabold text-base">₹{fmtCurrency(total)}</span>
-                          </div>
-                          <span className="text-[10px] text-emerald-700 font-semibold">Tax Inclusive</span>
-                        </div>
-
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 block">
-                            UPI Reference / UTR No. (Optional)
-                          </label>
-                          <input
-                            type="text"
-                            value={paymentUtr}
-                            onChange={(e) => setPaymentUtr(e.target.value)}
-                            placeholder="12-digit UTR after scanning QR"
-                            className="w-full border border-gray-200 focus:border-secondary rounded-lg px-2.5 py-2 text-xs outline-none bg-white font-mono"
-                          />
-                          <p className="text-[10px] text-gray-400">Scan QR using PhonePe, GPay, Paytm, or BHIM. Payee: <strong>D K STAR RESORTS</strong></p>
-                        </div>
-                      </div>
                     </div>
                   </div>
 

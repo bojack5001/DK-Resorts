@@ -10,9 +10,9 @@ const Footer = () => {
           {/* Brand */}
           <div className="space-y-6">
             <Link to="/" className="inline-flex items-center gap-3.5 group">
-              <img 
-                src="/logo-symbol.png" 
-                alt="DK STAR RESORTS Emblem" 
+              <img
+                src="/logo-symbol.png"
+                alt="DK STAR RESORTS Emblem"
                 className="h-14 sm:h-16 w-auto object-contain brightness-0 invert transition-transform group-hover:scale-105"
               />
               <div className="border-l border-secondary/40 pl-3.5 py-1 text-left">
@@ -47,7 +47,6 @@ const Footer = () => {
               <li><Link to="/pool" className="hover:text-white transition-colors">Wonders Swimming Pool</Link></li>
               <li><Link to="/gallery" className="hover:text-white transition-colors">Resort Gallery</Link></li>
               <li><Link to="/booking" className="hover:text-white transition-colors">Book a Stay</Link></li>
-              <li><Link to="/payment" className="hover:text-white transition-colors">UPI & QR Payment</Link></li>
             </ul>
           </div>
 
