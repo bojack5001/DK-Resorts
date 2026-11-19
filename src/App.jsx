@@ -20,6 +20,7 @@ import Admin from './pages/Admin.jsx';
 import Reception from './pages/Reception';
 import MyBookings from './pages/MyBookings';
 import TheAmberDining from './pages/TheAmberDining';
+import Payment from './pages/Payment';
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,8 @@ function AppContent() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/pay" element={<Payment />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/dining" element={<TheAmberDining />} />
           <Route path="/grand-pavilion" element={<TheAmberDining />} />

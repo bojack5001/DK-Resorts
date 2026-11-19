@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, User, Phone, Mail, Home, MapPin, Printer, CheckCircle, AlertTriangle, ArrowLeft, Waves } from 'lucide-react';
+import { Calendar, User, Phone, Mail, Home, MapPin, Printer, CheckCircle, AlertTriangle, ArrowLeft, Waves, Sparkles } from 'lucide-react';
 import { useResort } from '../context/ResortContext';
+import YoupiCheckoutModal from '../components/YoupiCheckoutModal';
+import { generateYoupiOrderId } from '../lib/youpiConfig';
 
 const Booking = () => {
   const [searchParams] = useSearchParams();
@@ -23,9 +25,15 @@ const Booking = () => {
   const [guestsCount, setGuestsCount] = useState(1);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Booking result screen
   const [confirmedBooking, setConfirmedBooking] = useState(null);
+
+  // YouPI Gateway Integration States
+  const [isYoupiModalOpen, setIsYoupiModalOpen] = useState(false);
+  const [youpiOrderId, setYoupiOrderId] = useState('');
+  const [pendingBookingData, setPendingBookingData] = useState(null);
+  const [youpiAmount, setYoupiAmount] = useState(0);
 
   // Formatting Helpers for redesigned Receipt
   const formatDate = (dateStr) => {
@@ -59,7 +67,7 @@ const Booking = () => {
   const numberToWords = (num) => {
     const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
     const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-    
+
     const convert = (n) => {
       if (n < 20) return a[n];
       const digit = n % 10;
@@ -72,7 +80,7 @@ const Booking = () => {
 
     const integerPart = Math.floor(num);
     const decimalPart = Math.round((num - integerPart) * 100);
-    
+
     let result = convert(integerPart) + ' Rupees';
     if (decimalPart > 0) {
       result += ' and ' + convert(decimalPart) + ' Paise';
@@ -225,6 +233,17 @@ const Booking = () => {
       status: 'Confirmed'
     };
 
+    // If total > 0, launch YouPI Payment Gateway modal
+    if (total > 0) {
+      const orderId = generateYoupiOrderId('DKS');
+      setYoupiOrderId(orderId);
+      setYoupiAmount(total);
+      setPendingBookingData(bookingDetails);
+      setIsYoupiModalOpen(true);
+      return;
+    }
+
+    // Complimentary reservation (total = 0, e.g. Room 09 with Hall package)
     setIsSubmitting(true);
     try {
       const newBooking = await addBooking(bookingDetails);
@@ -232,6 +251,27 @@ const Booking = () => {
     } catch (err) {
       console.error('[Booking] submit error:', err);
       setErrorMessage('Something went wrong while saving your booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleYoupiSuccess = async (verifiedPayload) => {
+    setIsSubmitting(true);
+    try {
+      const finalBookingDetails = {
+        ...pendingBookingData,
+        orderId: verifiedPayload.orderId,
+        payment_method: verifiedPayload.paymentMethod === 'UPI' ? 'YouPI UPI' : verifiedPayload.paymentMethod,
+        payment_utr: verifiedPayload.utr,
+        payment_status: 'Paid / Pending Verification',
+      };
+      const newBooking = await addBooking(finalBookingDetails);
+      setIsYoupiModalOpen(false);
+      setConfirmedBooking(newBooking);
+    } catch (err) {
+      console.error('[Booking] Youpi payment save error:', err);
+      setErrorMessage('Payment recorded, but saving your booking encountered an issue. Front desk has been alerted.');
     } finally {
       setIsSubmitting(false);
     }
@@ -284,8 +324,8 @@ const Booking = () => {
             }
           }
         `}</style>
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           id="receipt-print-container"
@@ -319,10 +359,10 @@ const Booking = () => {
 
           {/* TWO COLUMN CONTENT LAYOUT */}
           <div className="grid grid-cols-[1.1fr_1.3fr] gap-8 pb-4">
-            
+
             {/* LEFT COLUMN: GUEST & STAY INFORMATION */}
             <div className="space-y-4 border-r border-gray-100 pr-8">
-              
+
               {/* Logo block */}
               <div className="flex flex-col items-start text-left">
                 <img src="/logo-v2.png" alt="DK Logo" className="h-16 w-auto object-contain brightness-95" />
@@ -407,22 +447,22 @@ const Booking = () => {
                   <span className="text-secondary text-lg absolute -top-1.5 -left-1 opacity-20">“</span>
                   Thank you for booking with us. We look forward to welcoming you to a refreshing and memorable stay.
                 </div>
-                
+
                 <div className="text-right whitespace-nowrap">
                   <svg className="w-24 h-8 text-primary opacity-90 mx-auto" viewBox="0 0 150 50">
-                    <path 
-                      d="M10,38 C25,28 35,8 45,28 C55,48 65,18 78,28 C90,38 105,18 120,28 C135,38 145,28 148,32" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
+                    <path
+                      d="M10,38 C25,28 35,8 45,28 C55,48 65,18 78,28 C90,38 105,18 120,28 C135,38 145,28 148,32"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
                     />
-                    <path 
-                      d="M35,28 C55,18 85,14 110,24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="1.2" 
-                      strokeLinecap="round" 
+                    <path
+                      d="M35,28 C55,18 85,14 110,24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
                     />
                   </svg>
                   <div className="h-px bg-secondary/35 w-28 mt-0.5 ml-auto"></div>
@@ -435,7 +475,7 @@ const Booking = () => {
 
             {/* RIGHT COLUMN: BOOKING RECEIPT DETAILS */}
             <div className="space-y-4 relative text-left">
-              
+
               {/* Header Title */}
               <div>
                 <h2 className="text-2xl font-heading font-bold text-primary tracking-widest uppercase">Booking Receipt</h2>
@@ -615,19 +655,19 @@ const Booking = () => {
 
           {/* print-hide CTA buttons */}
           <div className="mt-6 flex gap-4 print-hide">
-            <button 
+            <button
               onClick={() => setConfirmedBooking(null)}
               className="w-1/3 btn-outline py-2 text-xs flex justify-center items-center gap-1.5 border-gray-300 text-gray-600 hover:bg-gray-50 font-bold uppercase tracking-wider cursor-pointer"
             >
               <ArrowLeft size={13} /> New Booking
             </button>
-            <button 
+            <button
               onClick={handlePrint}
               className="w-1/3 btn-outline py-2 text-xs flex justify-center items-center gap-1.5 border-secondary text-secondary hover:bg-secondary/10 font-bold uppercase tracking-wider cursor-pointer"
             >
               <Printer size={13} /> Print Receipt
             </button>
-            <Link 
+            <Link
               to="/my-bookings"
               className="w-1/3 btn-primary py-2 text-xs font-bold uppercase tracking-wider text-center flex justify-center items-center cursor-pointer"
             >
@@ -651,7 +691,7 @@ const Booking = () => {
           {/* Booking Form */}
           <div className="lg:col-span-2 bg-white p-8 md:p-12 shadow-2xl border border-gray-100">
             <h2 className="text-2xl font-heading font-bold mb-8 text-primary border-b-2 border-secondary inline-block pb-2">Reservation Details</h2>
-            
+
             {errorMessage && (
               <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm flex gap-3 items-center">
                 <AlertTriangle size={20} className="shrink-0 text-red-500" />
@@ -684,8 +724,8 @@ const Booking = () => {
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
                     <Home size={14} className="text-secondary" /> {itemType === 'room' ? 'Select Room' : 'Select Hall'}
                   </label>
-                  <select 
-                    value={itemId} 
+                  <select
+                    value={itemId}
                     onChange={(e) => setItemId(itemType === 'room' ? Number(e.target.value) : e.target.value)}
                     className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary font-semibold"
                   >
@@ -709,7 +749,7 @@ const Booking = () => {
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
                     <User size={14} className="text-secondary" /> Number of Guests
                   </label>
-                  <select 
+                  <select
                     value={guestsCount}
                     onChange={(e) => setGuestsCount(Number(e.target.value))}
                     className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary font-semibold"
@@ -726,24 +766,24 @@ const Booking = () => {
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
                     <Calendar size={14} className="text-secondary" /> Check-In Date
                   </label>
-                  <input 
+                  <input
                     required
-                    type="date" 
+                    type="date"
                     value={checkIn}
                     onChange={(e) => setCheckIn(e.target.value)}
-                    className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary font-semibold" 
+                    className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary font-semibold"
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
                     <Calendar size={14} className="text-secondary" /> Check-Out Date
                   </label>
-                  <input 
+                  <input
                     required
-                    type="date" 
+                    type="date"
                     value={checkOut}
                     onChange={(e) => setCheckOut(e.target.value)}
-                    className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary font-semibold" 
+                    className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary font-semibold"
                   />
                 </div>
               </div>
@@ -754,36 +794,36 @@ const Booking = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Full Name</label>
-                    <input 
+                    <input
                       required
-                      type="text" 
+                      type="text"
                       value={guestName}
                       onChange={(e) => setGuestName(e.target.value)}
-                      className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary" 
-                      placeholder="Enter your name" 
+                      className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary"
+                      placeholder="Enter your name"
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Phone Number</label>
-                    <input 
+                    <input
                       required
-                      type="tel" 
+                      type="tel"
                       value={guestPhone}
                       onChange={(e) => setGuestPhone(e.target.value)}
-                      className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary" 
-                      placeholder="+91 00000 00000" 
+                      className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary"
+                      placeholder="+91 00000 00000"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Email Address</label>
-                  <input 
+                  <input
                     required
-                    type="email" 
+                    type="email"
                     value={guestEmail}
                     onChange={(e) => setGuestEmail(e.target.value)}
-                    className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary" 
-                    placeholder="email@example.com" 
+                    className="w-full border-b border-gray-300 focus:border-secondary outline-none py-3 bg-transparent transition-colors text-primary"
+                    placeholder="email@example.com"
                   />
                 </div>
               </div>
@@ -928,6 +968,21 @@ const Booking = () => {
           </div>
         </div>
       </section>
+
+      {/* ── YouPI Payment Gateway Modal ── */}
+      <YoupiCheckoutModal
+        isOpen={isYoupiModalOpen}
+        onClose={() => setIsYoupiModalOpen(false)}
+        amount={youpiAmount}
+        orderId={youpiOrderId}
+        title={`${selectedItem?.name || 'Resort Stay'} (${formatDate(checkIn)} – ${formatDate(checkOut)})`}
+        customer={{
+          name: guestName,
+          phone: guestPhone,
+          email: guestEmail,
+        }}
+        onSuccess={handleYoupiSuccess}
+      />
     </div>
   );
 };

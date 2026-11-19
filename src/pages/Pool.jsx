@@ -7,6 +7,7 @@ import {
   User, CheckCircle, Clock, Droplets, Wind, Thermometer,
   ArrowLeft, Printer, Star, Sparkles, ShieldCheck
 } from 'lucide-react';
+import YoupiCheckoutModal from '../components/YoupiCheckoutModal';
 
 // ─── Hourly Pool Rates ─────────────────────────────────────────
 const POOL_RATES = {
@@ -85,6 +86,10 @@ const Pool = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmed, setConfirmed] = useState(null);
 
+  // YouPI Gateway states
+  const [isYoupiOpen, setIsYoupiOpen] = useState(false);
+  const [pendingPoolBooking, setPendingPoolBooking] = useState(null);
+
   const slot = SLOTS.find(s => s.id === selectedSlot);
   const totalGuests = adults + kids;
   const hourlyRate = (adults * POOL_RATES.ADULT) + (kids * POOL_RATES.KIDS);
@@ -103,48 +108,60 @@ const Pool = () => {
   };
 
   // ── Form Submit ───────────────────────────────────────────
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
     if (!guestName.trim()) { setError('Please enter your name.'); return; }
     if (!guestEmail.trim()) { setError('Please enter your email.'); return; }
 
+    const id = genId();
+    const booking = {
+      id,
+      booking_date: bookingDate,
+      slot: selectedSlot,
+      duration_hrs: hours,
+      adults_count: adults,
+      kids_count: kids,
+      guests: totalGuests,
+      guest_name: guestName,
+      guest_email: guestEmail,
+      guest_phone: guestPhone,
+      amount: total,
+      rate_summary: `${adults} Age 6+ (@₹150/hr), ${kids} Age 1-5 (@₹100/hr) for ${hours} hr(s)`,
+      status: 'Confirmed',
+      created_at: new Date().toISOString(),
+    };
+
+    setPendingPoolBooking(booking);
+    setIsYoupiOpen(true);
+  };
+
+  const handleYoupiSuccess = async (verifiedPayload) => {
     setIsSubmitting(true);
     try {
-      const id = genId();
-      const booking = {
-        id,
-        booking_date: bookingDate,
-        slot: selectedSlot,
-        duration_hrs: hours,
-        adults_count: adults,
-        kids_count: kids,
-        guests: totalGuests,
-        guest_name: guestName,
-        guest_email: guestEmail,
-        guest_phone: guestPhone,
-        amount: total,
-        rate_summary: `${adults} Age 6+ (@₹150/hr), ${kids} Age 1-5 (@₹100/hr) for ${hours} hr(s)`,
-        status: 'Confirmed',
-        created_at: new Date().toISOString(),
+      const finalBooking = {
+        ...pendingPoolBooking,
+        payment_method: verifiedPayload.paymentMethod === 'UPI' ? 'YouPI UPI' : verifiedPayload.paymentMethod,
+        payment_utr: verifiedPayload.utr,
       };
 
       if (supabase) {
-        const { error: sbError } = await supabase.from('pool_bookings').insert(booking);
+        const { error: sbError } = await supabase.from('pool_bookings').insert(finalBooking);
         if (sbError) {
-          console.warn('[Supabase] pool_bookings insert failed, falling back to localStorage:', sbError.message);
+          console.warn('[Supabase] pool_bookings insert notice:', sbError.message);
         }
       }
 
       // Local storage fallback so the UI works even without Supabase
       const cached = JSON.parse(localStorage.getItem('dk_pool_bookings') || '[]');
-      cached.push(booking);
+      cached.push(finalBooking);
       localStorage.setItem('dk_pool_bookings', JSON.stringify(cached));
 
+      setIsYoupiOpen(false);
       setConfirmed({
-        ...booking,
-        slotLabel: slot.label,
-        slotTime: slot.time,
+        ...finalBooking,
+        slotLabel: slot?.label || 'Session Slot',
+        slotTime: slot?.time || 'Scheduled Time',
         hours,
         adults,
         kids,
@@ -895,6 +912,21 @@ const Pool = () => {
           </div>
         </div>
       </section>
+
+      {/* ── YouPI Payment Gateway Modal for Pool Passes ── */}
+      <YoupiCheckoutModal
+        isOpen={isYoupiOpen}
+        onClose={() => setIsYoupiOpen(false)}
+        amount={total}
+        orderId={pendingPoolBooking?.id || 'POOL'}
+        title={`Wonders Pool Pass: ${slot?.label || 'Session'} (${hours} hr${hours > 1 ? 's' : ''})`}
+        customer={{
+          name: guestName,
+          phone: guestPhone,
+          email: guestEmail,
+        }}
+        onSuccess={handleYoupiSuccess}
+      />
     </div>
   );
 };
