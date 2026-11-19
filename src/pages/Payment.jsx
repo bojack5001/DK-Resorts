@@ -68,8 +68,7 @@ const Payment = () => {
   const [activeOrderId, setActiveOrderId] = useState('');
   const [finalReceipt, setFinalReceipt] = useState(null);
 
-  // Sidebar QR Standee & Copy States
-  const [sidebarQrMode, setSidebarQrMode] = useState('canara'); // 'canara' | 'phonepe'
+  // Copy States
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [copiedAcc, setCopiedAcc] = useState(false);
   const [copiedIfsc, setCopiedIfsc] = useState(false);
@@ -524,55 +523,32 @@ const Payment = () => {
             {/* Right Column: Bank Details & Direct Settlement Information (5 cols) */}
             <div className="lg:col-span-5 space-y-6">
               
-              {/* Official UPI QR Standees Card */}
+              {/* Official UPI QR Code Card */}
               <div className="bg-white p-6 sm:p-7 rounded-2xl shadow-xl border border-secondary/30 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-secondary text-xs uppercase font-bold tracking-widest">
                     <QrIcon size={16} />
-                    <span>Official UPI QR Standee</span>
+                    <span>Scan & Pay via UPI</span>
                   </div>
                   <span className="text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
                     Direct Settled
                   </span>
                 </div>
 
-                {/* Standee View Toggle */}
-                <div className="flex bg-[#2D241E]/10 p-1 rounded-xl text-xs font-bold">
-                  <button
-                    type="button"
-                    onClick={() => setSidebarQrMode('canara')}
-                    className={`flex-1 py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center ${
-                      sidebarQrMode === 'canara'
-                        ? 'bg-[#1A1410] text-[#E7C77E] shadow-sm'
-                        : 'text-gray-600 hover:text-primary'
-                    }`}
-                  >
-                    Canara Bank QR
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSidebarQrMode('phonepe')}
-                    className={`flex-1 py-1.5 px-2 rounded-lg transition-all cursor-pointer text-center ${
-                      sidebarQrMode === 'phonepe'
-                        ? 'bg-[#1A1410] text-[#E7C77E] shadow-sm'
-                        : 'text-gray-600 hover:text-primary'
-                    }`}
-                  >
-                    PhonePe Standee
-                  </button>
-                </div>
-
                 {/* QR Image Display */}
-                <div className="bg-[#FAF8F5] p-3 rounded-xl border border-gray-200 flex flex-col items-center justify-center">
-                  <img
-                    src={sidebarQrMode === 'canara' ? '/canara-qr.jpg' : '/phonepe-qr.jpg'}
-                    alt={sidebarQrMode === 'canara' ? 'Canara Bank Official QR' : 'PhonePe QR'}
-                    className="w-full max-w-[240px] h-auto object-contain rounded-lg shadow-sm"
-                  />
-                  <span className="text-[10px] text-gray-500 mt-2 font-medium">
-                    {sidebarQrMode === 'canara'
-                      ? 'Official Canara Bank Scan & Pay QR'
-                      : 'Official PhonePe Merchant QR Standee'}
+                <div className="bg-[#FAF8F5] p-4 rounded-xl border border-gray-200 flex flex-col items-center justify-center">
+                  <div className="bg-white p-2 rounded-xl border border-gray-200 shadow-xs max-w-[220px] w-full aspect-square flex items-center justify-center">
+                    <img
+                      src="/payment-qr.jpg"
+                      alt="DK Star Resorts Official UPI QR Code"
+                      className="w-full h-full object-contain rounded-lg"
+                    />
+                  </div>
+                  <span className="text-[11px] text-primary mt-2.5 font-bold uppercase tracking-wider">
+                    Official Resort Payment QR
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-medium">
+                    Scan with PhonePe, Google Pay, Paytm, CRED or BHIM
                   </span>
                 </div>
 
@@ -607,7 +583,7 @@ const Payment = () => {
 
                 <div className="text-[11px] text-gray-500 flex items-center gap-2">
                   <ShieldCheck size={14} className="text-secondary shrink-0" />
-                  <span>Accepted on BHIM, Canara ail, Google Pay, PhonePe, Paytm, CRED & CBDC.</span>
+                  <span>0% gateway fee · Instant settlement.</span>
                 </div>
               </div>
 

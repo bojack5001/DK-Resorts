@@ -24,7 +24,6 @@ export default function YoupiCheckoutModal({
   onSuccess,
 }) {
   const [activeTab, setActiveTab] = useState('UPI'); // 'UPI' | 'CASH' | 'CARD' | 'BANK'
-  const [qrViewMode, setQrViewMode] = useState('canara'); // 'canara' | 'dynamic' | 'phonepe'
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [copiedAcc, setCopiedAcc] = useState(false);
   const [copiedIfsc, setCopiedIfsc] = useState(false);
@@ -296,11 +295,10 @@ export default function YoupiCheckoutModal({
                   <button
                     type="button"
                     onClick={() => setActiveTab('UPI')}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${
-                      activeTab === 'UPI'
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${activeTab === 'UPI'
                         ? 'bg-[#1A1410] text-[#E7C77E] shadow-sm'
                         : 'text-gray-600 hover:text-primary hover:bg-cream'
-                    }`}
+                      }`}
                   >
                     <Smartphone size={14} className="text-[#C5A059]" />
                     <span>UPI QR & Apps</span>
@@ -309,11 +307,10 @@ export default function YoupiCheckoutModal({
                   <button
                     type="button"
                     onClick={() => setActiveTab('CASH')}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${
-                      activeTab === 'CASH'
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${activeTab === 'CASH'
                         ? 'bg-[#1A1410] text-[#E7C77E] shadow-sm'
                         : 'text-gray-600 hover:text-primary hover:bg-cream'
-                    }`}
+                      }`}
                   >
                     <Banknote size={14} className="text-[#C5A059]" />
                     <span>Cash at Desk</span>
@@ -322,11 +319,10 @@ export default function YoupiCheckoutModal({
                   <button
                     type="button"
                     onClick={() => setActiveTab('CARD')}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${
-                      activeTab === 'CARD'
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${activeTab === 'CARD'
                         ? 'bg-[#1A1410] text-[#E7C77E] shadow-sm'
                         : 'text-gray-600 hover:text-primary hover:bg-cream'
-                    }`}
+                      }`}
                   >
                     <CreditCard size={14} className="text-[#C5A059]" />
                     <span>Card at POS</span>
@@ -335,11 +331,10 @@ export default function YoupiCheckoutModal({
                   <button
                     type="button"
                     onClick={() => setActiveTab('BANK')}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${
-                      activeTab === 'BANK'
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${activeTab === 'BANK'
                         ? 'bg-[#1A1410] text-[#E7C77E] shadow-sm'
                         : 'text-gray-600 hover:text-primary hover:bg-cream'
-                    }`}
+                      }`}
                   >
                     <Building2 size={14} className="text-[#C5A059]" />
                     <span>Bank Transfer</span>
@@ -363,79 +358,23 @@ export default function YoupiCheckoutModal({
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                    {/* Left: QR Code Preview with Multi-View Selector (5 cols) */}
+                    {/* Left: Official QR Code (5 cols) */}
                     <div className="md:col-span-5 flex flex-col items-center text-center">
-                      {/* Standee / Mode Selector Pills */}
-                      <div className="flex items-center justify-center gap-1 mb-2 bg-[#2D241E]/10 p-1 rounded-xl w-full max-w-[230px]">
-                        <button
-                          type="button"
-                          onClick={() => setQrViewMode('canara')}
-                          className={`flex-1 py-1 px-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer truncate ${
-                            qrViewMode === 'canara'
-                              ? 'bg-[#1A1410] text-[#E7C77E] shadow-xs'
-                              : 'text-gray-600 hover:text-primary'
-                          }`}
-                        >
-                          Canara Bank QR
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setQrViewMode('dynamic')}
-                          className={`flex-1 py-1 px-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer truncate ${
-                            qrViewMode === 'dynamic'
-                              ? 'bg-[#1A1410] text-[#E7C77E] shadow-xs'
-                              : 'text-gray-600 hover:text-primary'
-                          }`}
-                        >
-                          Dynamic (₹{formatCurrency(amount)})
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setQrViewMode('phonepe')}
-                          className={`flex-1 py-1 px-1.5 text-[10px] font-bold rounded-lg transition-all cursor-pointer truncate ${
-                            qrViewMode === 'phonepe'
-                              ? 'bg-[#1A1410] text-[#E7C77E] shadow-xs'
-                              : 'text-gray-600 hover:text-primary'
-                          }`}
-                        >
-                          PhonePe
-                        </button>
-                      </div>
-
                       {/* QR Display Card */}
-                      <div className="bg-white p-2.5 rounded-2xl border-2 border-[#C5A059]/40 shadow-xl max-w-[210px] w-full min-h-[210px] flex items-center justify-center overflow-hidden">
-                        {qrViewMode === 'dynamic' && (
-                          <div
-                            className="w-full h-full [&>svg]:w-full [&>svg]:h-full"
-                            dangerouslySetInnerHTML={{ __html: qrSvgString }}
-                          />
-                        )}
-                        {qrViewMode === 'canara' && (
-                          <img
-                            src="/canara-qr.jpg"
-                            alt="Canara Bank Official QR Standee - 338553589802770@cnrb"
-                            className="w-full h-auto max-h-[200px] object-contain rounded-lg"
-                          />
-                        )}
-                        {qrViewMode === 'phonepe' && (
-                          <img
-                            src="/phonepe-qr.jpg"
-                            alt="PhonePe Standee - DK STAR RESORTS"
-                            className="w-full h-auto max-h-[200px] object-contain rounded-lg"
-                          />
-                        )}
+                      <div className="bg-white p-3 rounded-2xl border-2 border-[#C5A059]/40 shadow-xl max-w-[210px] w-full aspect-square flex items-center justify-center overflow-hidden">
+                        <img
+                          src="/payment-qr.jpg"
+                          alt="DK Star Resorts UPI QR Code"
+                          className="w-full h-full object-contain rounded-lg"
+                        />
                       </div>
 
-                      <div className="mt-2 space-y-0.5">
+                      <div className="mt-2.5 space-y-1">
                         <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
-                          {qrViewMode === 'dynamic'
-                            ? `Amount: ₹${formatCurrency(amount)} Auto-Filled`
-                            : 'UPI ID: 338553589802770@cnrb'}
+                          Scan to Pay ₹{formatCurrency(amount)}
                         </p>
                         <p className="text-[10px] text-gray-500">
-                          {qrViewMode === 'dynamic'
-                            ? 'Exact order sum pre-coded into QR'
-                            : 'Canara Bank Scan & Pay · All UPI Apps'}
+                          Scan with PhonePe, Google Pay, Paytm, CRED or BHIM
                         </p>
                       </div>
                     </div>

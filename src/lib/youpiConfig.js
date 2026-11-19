@@ -27,8 +27,7 @@ export const YOUPI_CONFIG = {
       branchAddress: '92 First Floor, 6th Cross Road, Gandhi Nagar West, Vellore, Tamil Nadu - 632006',
       accountType: 'Current Account - General',
       swiftCode: 'CNRBINBBBFD',
-      qrImage: '/canara-qr.jpg',
-      phonepeQrImage: '/phonepe-qr.jpg',
+      qrImage: '/payment-qr.jpg',
     },
 
     // Support Contacts
